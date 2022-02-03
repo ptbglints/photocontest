@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  name String 
+  email String @unique
+  address String
+  role Int
+  photo_profile String
+}
+
+model Photo {
+  id Int @id @default(autoincrement())
+  title String
+  contest_id Int
+  description String
+  photo_path String
+  entries Contest @relation(fields: [contest_id], references: [id])
+}
+
+model Contest {
+  id Int @id @default(autoincrement())
+  contest_name String @db.VarChar(255)
+  description String
+  startDate DateTime @default(now())
+  endDate DateTime
+  winner String
+  photos Photo[]
+}
