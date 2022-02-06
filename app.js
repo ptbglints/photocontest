@@ -1,5 +1,4 @@
 const express = require('express')
-const { PrismaClient } = require('@prisma/client')
 const enrouten = require('express-enrouten')
 const path = require('path');
 const app = express()
