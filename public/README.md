@@ -1,0 +1,1 @@
+# folder ini khusus untuk menyimpan file yang berhubungan dengan server
