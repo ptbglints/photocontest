@@ -1,3 +1,10 @@
+# PHOTOCONTEST BACKEND SERVER
+
+### installation
+```bash
+npm install
+```
+#### Folder structure
 ```
 ├── api (router directory)
 │   └── users
