@@ -23,5 +23,5 @@ app.use(enrouten({
 
 
 app.listen(NODE_PORT, '0.0.0.0', () => {
-    console.log(`\n🚀 Server started on http://localhost:${NODE_PORT}\n`);
+    console.log(`\n🚀 emoji Server started on http://localhost:${NODE_PORT}\n`);
 });
