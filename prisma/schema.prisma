@@ -9,16 +9,23 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum Role {
+  ADMIN
+  MODERATOR
+  JUDGE
+  USER
+}
 
 model User {
   id Int @id @default(autoincrement())
   username String @unique
-  name String 
+  name String? 
   email String @unique
   password String
   address String?
-  role Int @default(3)
+  role Role @default(USER)
   photoprofile String?
+  photo Photo[]
 }
 
 model Photo {
@@ -26,16 +33,18 @@ model Photo {
   title String
   description String?
   path String
-  contest Contest @relation(fields: [contestid], references: [id])
-  contestid Int
+  user User @relation(fields: [userid], references: [id])
+  userid Int
+  // contest Contest @relation(fields: [contestid], references: [id])
+  // contestid Int
 }
 
-model Contest {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(255)
-  description String
-  startdate DateTime @default(now())
-  enddate DateTime
-  winneruserid String[]
-  winnerphotoid Photo[]
-}
+// model Contest {
+//   id Int @id @default(autoincrement())
+//   name String @db.VarChar(255)
+//   description String
+//   startdate DateTime @default(now())
+//   enddate DateTime
+//   winneruserid Int[]
+//   winnerphotoid Photo[]
+// }
