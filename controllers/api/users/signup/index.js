@@ -1,7 +1,7 @@
-const {User} = require('../../../model')
-const {EncriptPassword} = require('../../../utils/bcrypt');
+const { User } = require('../../../../model')
+const { EncriptPassword } = require('../../../../utils/bcrypt');
 
-const signup = async (req, res) => {
+const signup = async(req, res) => {
     try {
         let { username, name, email, password, role } = req.body
 

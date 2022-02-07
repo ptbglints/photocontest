@@ -6,14 +6,16 @@ npm install
 ```
 #### Folder structure
 ```
-├── api (router directory)
-│   └── users
-│       ├── login
-│       │   └── index.js
-│       ├── profile
-│       │   └── index.js
-│       └── signup
-│           └── index.js
+├── controllers
+│   ├── api
+│   │   └── users
+│   │       ├── index.js
+│   │       ├── login
+│   │       │   └── index.js
+│   │       ├── profile
+│   │       │   └── index.js
+│   │       └── signup
+│   │           └── index.js
 ├── midleware (middleware directory, khusus menyimpan fungsi midleware)
 │   └── index.js
 ├── public (public directory, khusus menyimpan file yang berhubungan dengan aplikasi)
