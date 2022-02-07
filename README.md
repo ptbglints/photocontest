@@ -18,6 +18,8 @@ npm install
 │   │           └── index.js
 ├── midleware (middleware directory, khusus menyimpan fungsi midleware)
 │   └── index.js
+├── model
+│   └── index.js
 ├── public (public directory, khusus menyimpan file yang berhubungan dengan aplikasi)
 │   └── README.md
 ├── prisma
