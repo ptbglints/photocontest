@@ -1,17 +1,32 @@
-const { PrismaClient } = require('@prisma/client')
-
-const prisma = new PrismaClient()
+const { User } = require('../../../../model')
+const { EncriptPassword } = require('../../../../utils/bcrypt');
 
 const signup = async(req, res) => {
-    const { username, email, password } = req.body
-    const result = await prisma.user.create({
-        data: {
-            username,
-            email,
-            password,
-        },
-    })
-    res.json(result)
+    try {
+        let { username, name, email, password, role } = req.body
+
+        if (role) {
+            role = Number(role)
+        } else role = 3 // defaulted to basic user
+
+        const encryptedPassword = await EncriptPassword(password)
+
+        const result = await User.create({
+            data: {
+                username,
+                name,
+                email,
+                password: encryptedPassword,
+                role
+            },
+        })
+        res.json(result)
+    } catch (err) {
+        let message = err.message || "Error occurred."
+        res.status(400).send({
+            message: message
+        });
+    }
 }
 
 

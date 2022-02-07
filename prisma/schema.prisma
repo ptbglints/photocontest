@@ -15,26 +15,27 @@ model User {
   username String @unique
   name String 
   email String @unique
-  address String
-  role Int
-  photo_profile String
+  password String
+  address String?
+  role Int @default(3)
+  photoprofile String?
 }
 
 model Photo {
   id Int @id @default(autoincrement())
   title String
-  contest_id Int
-  description String
-  photo_path String
-  entries Contest @relation(fields: [contest_id], references: [id])
+  description String?
+  path String
+  contest Contest @relation(fields: [contestid], references: [id])
+  contestid Int
 }
 
 model Contest {
   id Int @id @default(autoincrement())
-  contest_name String @db.VarChar(255)
+  name String @db.VarChar(255)
   description String
-  startDate DateTime @default(now())
-  endDate DateTime
-  winner String
-  photos Photo[]
+  startdate DateTime @default(now())
+  enddate DateTime
+  winneruserid String[]
+  winnerphotoid Photo[]
 }
