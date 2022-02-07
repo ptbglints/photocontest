@@ -4,7 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
+    "delay": 2000,
+    "events": {
+      "crash": "kill-port 8000"
+    }
   },
   "repository": {
     "type": "git",
@@ -19,6 +30,8 @@
   "homepage": "https://github.com/ptbglints/photocontest#readme",
   "devDependencies": {
     "@types/node": "^17.0.14",
+    "kill-port": "^1.6.1",
+    "nodemon": "^2.0.15",
     "prisma": "^3.9.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"
@@ -34,6 +47,12 @@
   },
   "dependencies": {
     "@prisma/client": "^3.9.1",
-    "express-enrouten": "^1.3.0"
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "express-enrouten": "^1.3.0",
+    "express-validator": "^6.14.0",
+    "jsonwebtoken": "^8.5.1"
   }
 }

@@ -1,15 +1,22 @@
-const prisma = new PrismaClient()
+const {User} = require('../../../model')
 
-const signup = async(req, res) => {
-    const { username, email, password } = req.body
-    const result = await prisma.user.create({
-        data: {
-            username,
-            email,
-            password,
-        },
-    })
-    res.json(result)
+const signup = async (req, res) => {
+    try {
+        const { username, email, password } = req.body
+        await User.create({
+            data: {
+                username,
+                email,
+                password,
+            },
+        })
+        res.json(result)
+    } catch (err) {
+        res.status(400).send({
+            message:
+                err.message || "Some error occurred while retrieving users."
+        });
+    }
 }
 
 

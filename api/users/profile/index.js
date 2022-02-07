@@ -1,25 +1,39 @@
-const prisma = new PrismaClient()
+const {User} = require('../../../model')
 
 const getProfile = async(req, res) => {
-    const result = await prisma.user.findUnique({
-        where: {
-            id: parseInt(req.params.id)
-        },
-        include: {
-            photo: true
-        }
-    })
-    res.json(result)
+    try {
+        const result = await User.findUnique({
+            where: {
+                id: parseInt(req.params.id)
+            },
+            include: {
+                photo: true
+            }
+        })
+        res.json(result)
+    } catch (err) {
+        res.status(400).send({
+            message:
+                err.message || "Some error occurred while retrieving users."
+        });
+    }
 }
 const updateProfile = async(req, res) => {
-    const { id } = req.body
-    const result = await prisma.user.update({
-        where: {
-            id: parseInt(req.params.id)
-        },
-        data: { id }
-    })
-    res.json(result)
+    try {
+        const { id } = req.body
+        const result = await User.update({
+            where: {
+                id: parseInt(req.params.id)
+            },
+            data: { id }
+        })
+        res.json(result)
+    } catch (err) {
+        res.status(400).send({
+            message:
+                err.message || "Some error occurred while retrieving users."
+        });
+    }
 }
 
 module.exports = routes => {
