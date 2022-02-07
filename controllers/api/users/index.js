@@ -1,5 +1,5 @@
-const { GetAllData, GetOneDataById, DeleteDataById } = require('../../model')
-const { User } = require('../../model')
+const { GetAllData, GetOneDataById, DeleteDataById } = require('../../../model')
+const { User } = require('../../../model')
 
 const getAllUser = async (req, res) => {
     try {
