@@ -9,7 +9,7 @@ const getMany = async (req, res) => {
         console.log(err)
         code = err.code || 'Unknown'
         message = err.message || "Error occurred."
-        res.status(400).json({code, message});
+        res.status(400).json({ code, message });
     }
 }
 
@@ -25,7 +25,7 @@ const getOne = async (req, res, next) => {
         console.log(err)
         code = err.code || 'Unknown'
         message = err.message || "Error occurred."
-        res.status(400).json({code, message});
+        res.status(400).json({ code, message });
     }
 }
 
@@ -43,14 +43,23 @@ const delUser = async (req, res) => {
         console.log(err)
         code = err.code || 'Unknown'
         message = err.message || "Error occurred."
-        res.status(400).json({code, message});
+        res.status(400).json({ code, message });
     }
 }
 
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/
-    routes.get('/', verifyJWT, getMany)
-    routes.get('/:id', getOne)
-    routes.delete('/', delUser)
+    routes.get('/',
+        verifyJWT,
+        getMany
+    )
+    routes.get('/:id',
+        verifyJWT,
+        getOne
+    )
+    routes.delete('/',
+        verifyJWT,
+        delUser
+    )
 }

@@ -1,8 +1,8 @@
 const { Profile } = require('../../../../model')
-const { CreateData, GetOneDataById } = require('../../../../model')
+const { verifyJWT } = require('../../../../middleware/authJwt')
 
 const getProfile = async (req, res) => {
-    try {        
+    try {
         const userid = parseInt(req.params.id)
         let option = {}
         option.where = { userid: userid }
@@ -44,7 +44,10 @@ module.exports = routes => {
      * @returns {object} 200 - An array of user info
      * @returns {Error}  default - Unexpected error
      */
-    routes.get('/:id', getProfile);
+    routes.get('/:id',
+        verifyJWT,
+        getProfile
+    );
     /**
      * This api updating the user profile by id
      * @route PUT /api/users/profile/{id}
@@ -54,5 +57,8 @@ module.exports = routes => {
      * @returns {object} 200 - An array of user info
      * @returns {Error} default - Unexpected error
      */
-    routes.put('/:userid', updateProfile);
+    routes.put('/:userid',
+        verifyJWT,
+        updateProfile
+    );
 }

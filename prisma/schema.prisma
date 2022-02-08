@@ -22,9 +22,10 @@ model User {
   username String   @unique
   email    String   @unique
   password String
-  role     Role     @default(USER)
+  role     Role     @default(USER)  
   profile  Profile?
   photo    Photo[]
+  // createdAt  DateTime   @default(now())
 }
 
 model Profile {
