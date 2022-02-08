@@ -35,6 +35,9 @@ const verifyJWT = function (req, res, next) {
         console.log({ JWT: decoded, expireIn: `${decoded.exp - Math.floor(Date.now() / 1000)} second` })
         // console.log(decoded.exp-decoded.iat)
 
+        // attach user info to req
+        req.user = decoded
+
         next()
     }
     catch (err) {

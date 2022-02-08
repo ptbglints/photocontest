@@ -1,5 +1,6 @@
 const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
+const { ValidateRegisterUser, CheckValidatorResult } = require('../../../../utils/validator')
 
 const signup = async (req, res) => {
     try {
@@ -34,5 +35,9 @@ const signup = async (req, res) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/signup
-    routes.post('/', signup)
+    routes.post('/',
+        ValidateRegisterUser,
+        CheckValidatorResult,
+        signup
+    )
 }
