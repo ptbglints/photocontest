@@ -1,35 +1,41 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { Profile } = require('../../../../model')
+const { CreateData, GetOneDataById } = require('../../../../model')
 
-
-
-const getProfile = async(req, res) => {
-    console.log(req.params)
-
-    const result = await prisma.user.findUnique({
-        where: {
-            id: parseInt(req.params.id)
-        },
-        // include: {
-        //     photo: true
-        // }
-    })
-    res.json(result)
+const getProfile = async (req, res) => {
+    try {        
+        const userid = parseInt(req.params.id)
+        let option = {}
+        option.where = { userid: userid }
+        const result = await Profile.findUnique(option)
+        res.json(result)
+    } catch (err) {
+        console.log(err)
+        code = err.code || 'Unknown'
+        message = err.message || "Error occurred."
+        res.status(400).json({ code, message });
+    }
 }
 
-const updateProfile = async(req, res) => {
-    const { id } = req.body
-    const result = await prisma.user.update({
-        where: {
-            id: parseInt(req.params.id)
-        },
-        data: { id }
-    })
-    res.json(result)
+
+const updateProfile = async (req, res) => {
+    try {
+        const userid = parseInt(req.params.userid)
+        const { name, address, photoprofile } = req.body
+        let option = {}
+        option.where = { userid: userid }
+        option.data = { name, address, photoprofile }
+        const result = await Profile.update(option)
+        res.json(result)
+    } catch (err) {
+        console.log(err)
+        code = err.code || 'Unknown'
+        message = err.message || "Error occurred."
+        res.status(400).json({ code, message });
+    }
 }
 
 module.exports = routes => {
-    // disini sama dengan baseurl/api/users/profile/:id
+    // disini sama dengan baseurl/api/users/profile
     /**
      * This api getting the user profile by id
      * @route GET /api/users/profile/{id}
@@ -48,5 +54,5 @@ module.exports = routes => {
      * @returns {object} 200 - An array of user info
      * @returns {Error} default - Unexpected error
      */
-    routes.put('/:id', updateProfile);
+    routes.put('/:userid', updateProfile);
 }

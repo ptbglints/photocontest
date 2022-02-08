@@ -1,33 +1,50 @@
 const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient({
+// import the "Role" enum we declare in the schema.prisma
+const { Role } = require('@prisma/client')
+
+const globalConfig = {
+    datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
     errorFormat: 'minimal',
+    rejectOnNotFound: true,
+    log: [
+        { level: 'query', emit: 'event' },
+        { level: 'warn', emit: 'event' },
+        { level: 'info', emit: 'event' },
+        { level: 'error', emit: 'event' },
+    ],
+}
+
+// initialize
+const prisma = new PrismaClient(globalConfig)
+
+// tables
+const User = prisma.user
+const Profile = prisma.profile
+const Photo = prisma.photo
+
+// event emitters
+prisma.$on('query', (e) => {
+    console.log(e)
+})
+prisma.$on('warn', (e) => {
+    console.log(e)
+})
+prisma.$on('info', (e) => {
+    console.log(e)
+})
+prisma.$on('error', (e) => {
+    console.log(e)
 })
 
-const User = prisma.user
-const Photo = prisma.photo
-const Contest = prisma.contest
-
-const GetAllData = async (dbTable) => {
-    return await dbTable.findMany()
-}
-
-const GetOneDataById = async (dbTable, id) => {
-    return await dbTable.findUnique({
-        where: {id:id}
-    })
-}
-
-const DeleteDataById = async (dbTable, id) => {
-    return await dbTable.delete({
-        where: {id:id}
-    })
-}
 
 module.exports = {
+    prisma,
+    ROLE: Role,
     User,
-    Photo,
-    Contest,
-    GetAllData,
-    GetOneDataById,
-    DeleteDataById
+    Profile,
+    Photo
 }

@@ -5,11 +5,14 @@ const enrouten = require('express-enrouten')
 const path = require('path');
 const app = express()
 const expressSwagger = require('express-swagger-generator')(app);
-
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({
     extended: true
 }))
+
+
 
 let options = {
     swaggerDefinition: {
@@ -38,17 +41,18 @@ let options = {
     files: ['./controllers/**/*.js'] //Path to the API handle folder
 };
 expressSwagger(options)
-    // enrouten di buat untuk membaca folder sebagai route
-    // route di sini kita definisikan ke folder api
-    // default javascript akan membaca folder index.js sebagai route module
+// enrouten di buat untuk membaca folder sebagai route
+// route di sini kita definisikan ke folder api
+// default javascript akan membaca folder index.js sebagai route module
 app.use(enrouten({
     directory: path.join(__dirname, 'controllers'),
 }));
 
 
 
-
-
-app.listen(NODE_PORT, '0.0.0.0', () => {
-    console.log(`\n🚀 emoji Server started on http://localhost:${NODE_PORT}\n`);
+var http = require('http');
+var server = http.createServer(app).listen(NODE_PORT, '0.0.0.0', () => {
+    console.log(`\n🚀 Server started on http://localhost:${NODE_PORT}\n`);
 });
+
+// console.log(server)
