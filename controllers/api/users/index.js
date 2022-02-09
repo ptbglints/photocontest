@@ -50,16 +50,75 @@ const delUser = async (req, res) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/
+
+    /**
+     * @swagger
+     *  /api/users/:
+     *    get:
+     *      summary: Retrieves a user
+     *      tags: [User APIs]
+     *      responses:
+     *        "200":
+     *          description: Corporate org structure for a client
+     */
     routes.get('/',
-        verifyJWT,
+        // verifyJWT,
         getMany
     )
+
+    /**
+     * @swagger
+     *  /api/users/{id}:
+     *    get:
+     *      summary: Retrieves a user
+     *      tags: [User APIs]
+     *      parameters:
+     *      - in: path
+     *        name: id
+     *        schema:
+     *          type: string
+     *        required: true
+     *        description: User ID
+     *      responses:
+     *        "200":
+     *          description: Corporate org structure for a client
+     */
     routes.get('/:id',
-        verifyJWT,
+        // verifyJWT,
         getOne
     )
     routes.delete('/',
         verifyJWT,
         delUser
     )
+
+    /**
+     * @swagger
+     * tags:
+     *   name: User APIs
+     *   description: APIs to handle user resources.
+     */
+
+
+    /**
+     * @swagger
+     *  /api/user/{userId}:
+     *    get:
+     *      summary: Retrieves a user
+     *      tags: [User APIs]
+     *      parameters:
+     *      - in: path
+     *        name: userId
+     *        schema:
+     *          type: string
+     *        required: true
+     *        description: User ID
+     *      responses:
+     *        "200":
+     *          description: Corporate org structure for a client
+     */
+    // routes.get("/:userId", userService.getUser);
+
+
 }
+

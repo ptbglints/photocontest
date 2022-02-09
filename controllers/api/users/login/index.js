@@ -3,6 +3,7 @@ const { CheckPassword } = require('../../../../utils/bcrypt');
 const { GenerateAccessToken, verifyJWT, GenerateRefreshToken } = require('../../../../middleware/authJwt')
 
 const login = async (req, res) => {
+    // console.log(req.body)
     try {
         const { username, password } = req.body
         let option = {}
@@ -44,5 +45,54 @@ const login = async (req, res) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/login
+
+    /**
+     * @swagger
+     *  /api/users/login:
+     *   post:
+     *     tags:
+     *       - Users
+     *     summary: User login
+     *     requestBody:
+     *       description: A JSON object containing login credentials
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required:
+     *               - username
+     *               - password
+     *             properties:
+     *               username:
+     *                 type: string
+     *                 example: jhonyboy
+     *               password:
+     *                 type: string
+     *                 example: Password2?
+     *     responses:
+     *       "200":
+     *         description: Corporate org structure for a client
+     */
     routes.post('/', login)
+
+    // post:
+    //   summary: Creates a new user.
+    //   consumes:
+    //     - application/json
+    //   parameters:
+    //     - in: body
+    //       name: user
+    //       description: The user to create.
+    //       schema:
+    //         type: object
+    //         required:
+    //           - userName
+    //         properties:
+    //           userName:
+    //             type: string
+    //           firstName:
+    //             type: string
+    //           lastName:
+    //             type: string
 }
