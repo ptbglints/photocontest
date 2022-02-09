@@ -1,36 +1,43 @@
-const { User } = require('../../../../model')
+const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
+const { ValidateRegisterUser, CheckValidatorResult } = require('../../../../utils/validator')
 
-const signup = async(req, res) => {
+const signup = async (req, res) => {
     try {
-        let { username, name, email, password, role } = req.body
+        let { username, email, password, role } = req.body
 
-        if (role) {
-            role = Number(role)
-        } else role = 3 // defaulted to basic user
+        if (!ROLE.hasOwnProperty(role)) role = 'USER' // defaulted to basic role 'USER'
 
         const encryptedPassword = await EncriptPassword(password)
 
-        const result = await User.create({
-            data: {
-                username,
-                name,
-                email,
-                password: encryptedPassword,
-                role
-            },
-        })
+        let option = {}
+        option.data = {
+            username,
+            email,
+            password: encryptedPassword,
+            role,
+            profile: {
+                create: { name: username || email }
+            }
+        }
+
+        const result = await User.create(option)
+
         res.json(result)
     } catch (err) {
-        let message = err.message || "Error occurred."
-        res.status(400).send({
-            message: message
-        });
+        console.log(err)
+        code = err.code || 'Unknown'
+        message = err.message || "Error occurred."
+        res.status(400).json({ code, message });
     }
 }
 
 
 module.exports = routes => {
-    // disini sama dengan baseurl/api/users/register
-    routes.post('/', signup)
+    // disini sama dengan baseurl/api/users/signup
+    routes.post('/',
+        ValidateRegisterUser,
+        CheckValidatorResult,
+        signup
+    )
 }

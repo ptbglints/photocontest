@@ -9,6 +9,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum Role {
   ADMIN
   MODERATOR
@@ -17,24 +18,33 @@ enum Role {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  username String @unique
-  name String? 
-  email String @unique
-  password String
-  address String?
-  role Role @default(USER)
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  profile   Profile?
+  photo     Photo[]
+  createdat DateTime @default(now())
+}
+
+model Profile {
+  id           Int     @id @default(autoincrement())
+  name         String?
+  address      String?
   photoprofile String?
-  photo Photo[]
+  user         User    @relation(fields: [userid], references: [id], onDelete: Cascade)
+  userid       Int     @unique
 }
 
 model Photo {
-  id Int @id @default(autoincrement())
-  title String
+  id          Int      @id @default(autoincrement())
+  title       String
   description String?
-  path String
-  user User @relation(fields: [userid], references: [id])
-  userid Int
+  path        String
+  user        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  userid      Int
+  createdat   DateTime @default(now())
   // contest Contest @relation(fields: [contestid], references: [id])
   // contestid Int
 }
