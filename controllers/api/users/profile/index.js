@@ -3,7 +3,7 @@ const { verifyJWT } = require('../../../../middleware/authJwt')
 
 const getProfile = async (req, res) => {
     try {
-        const userid = parseInt(req.params.id)
+        const userid = parseInt(req.params.userid)
         let option = {}
         option.where = { userid: userid }
         const result = await Profile.findUnique(option)
@@ -44,7 +44,7 @@ module.exports = routes => {
      * @returns {object} 200 - An array of user info
      * @returns {Error}  default - Unexpected error
      */
-    routes.get('/:id',
+    routes.get('/:userid',
         verifyJWT,
         getProfile
     );
