@@ -4,9 +4,7 @@ const { ValidateRegisterUser, CheckValidatorResult } = require('../../../../util
 
 const signup = async (req, res) => {
     try {
-        let { username, email, password, role } = req.body
-
-        if (!ROLE.hasOwnProperty(role)) role = 'USER' // defaulted to basic role 'USER'
+        let { username, email, password } = req.body
 
         const encryptedPassword = await EncriptPassword(password)
 
@@ -15,7 +13,6 @@ const signup = async (req, res) => {
             username,
             email,
             password: encryptedPassword,
-            role,
             profile: {
                 create: { name: username || email }
             }
