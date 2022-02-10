@@ -1,0 +1,11 @@
+{
+    "ext": "js, mjs, coffee, litcoffee, json, yaml, yml",
+    "ignore": [
+        "test/*",
+        "docs/*"
+    ],
+    "delay": 2000,
+    "events": {
+        "crash": "kill-port 8000"
+    }
+}

@@ -7,16 +7,6 @@
         "dev": "nodemon app",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "nodemonConfig": {
-        "ignore": [
-            "test/*",
-            "docs/*"
-        ],
-        "delay": 2000,
-        "events": {
-            "crash": "kill-port 8000"
-        }
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/ptbglints/photocontest.git"
@@ -55,7 +45,10 @@
         "express-swagger-generator": "^1.1.17",
         "express-validator": "^6.14.0",
         "jsonwebtoken": "^8.5.1",
+        "morgan": "^1.10.0",
+        "morgan-body": "^2.6.6",
         "swagger-jsdoc": "^6.1.0",
-        "swagger-ui-express": "^4.3.0"
+        "swagger-ui-express": "^4.3.0",
+        "yamljs": "^0.3.0"
     }
 }
