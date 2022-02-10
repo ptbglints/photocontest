@@ -8,11 +8,13 @@ const expressSwagger = require('express-swagger-generator')(app);
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use(express.json())
+app.use(express.urlencoded())
 app.use(express.urlencoded({
     extended: true
 }))
 
-
+const formidableMiddleware = require('express-formidable');
+app.use(formidableMiddleware());
 
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
