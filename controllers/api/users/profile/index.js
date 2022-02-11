@@ -1,5 +1,6 @@
-const { Profile } = require('../../../../model')
+const { ROLE, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
+const { authRole } = require('../../../../middleware/authRole')
 
 const getProfile = async (req, res) => {
     try {
@@ -46,6 +47,7 @@ module.exports = routes => {
      */
     routes.get('/:userid',
         verifyJWT,
+        authRole([ROLE.MODERATOR, ROLE.ADMIN]),
         getProfile
     );
     /**
