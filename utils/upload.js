@@ -1,12 +1,12 @@
 const multer = require('multer');
 let fs = require('fs-extra');
 const paths = require('path');
-const { register } = require('ts-node');
+const { verifyJWT } = require('../middleware/authJwt')
 
 
 let storageUser = multer.diskStorage({
     destination: function(req, file, cb) {
-        let userId = 1;
+        let userId = req.user;
         let path_name = `/public/user/${userId}`
             // simpan format path untuk di gunakana nanti ke dalam request
         req._filepath = path_name;
@@ -30,10 +30,23 @@ let storageUser = multer.diskStorage({
         cb(null, filename)
     }
 })
+// penambahan filter dari size dan file type.
+let upload = multer({ 
+    storage: storageUser,
+    limits: {
+        fileSize: 2000000 // 2000000 bytes = 2 MB
+    },
+    fileFilter(req,file,cb){
+        if(!file.originalname.match(/\.(png | jpg)$/)){
+            // upload only png and jpg format
+        return cb(new Error('Please upload a Image jpg and png only'))
+        }
+        cb(undefined,true)
+        }
+        
+ });
 
-let upload = multer({ storage: storageUser });
-
-let uploadPhoto = upload.single('profile-file')
+let uploadPhoto = upload.single('user-photo')
 
 module.exports = {
     uploadPhoto,

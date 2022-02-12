@@ -6,19 +6,19 @@ const { uploadPhoto, storageUser } = require('../../../utils/upload')
 //API to upload a photo (or many photos) to a collection/galery User
 const uploadPhotoUser = async(req, res) => {
     // kita error tadi karena salah field pass request
-    // kenapa?? karena field file nya harus nya profile-file bukan path 
+    // kenapa?? karena field file nya harus nya user-photo bukan path 
     // definisi field nya di sini 
-    // let uploadPhoto = upload.single('profile-file')
+    // let uploadPhoto = upload.single('user-photo')
     // contoh request, metode tetap menggunakan multipart/form-data
     // body
     // {
     //     "title": "test",
     //     "description": "test",
 
-    //     profile-file = file yang di upload
+    //     user-photo = file yang di upload
 
     // tadi kita salah..
-    // karena field file nya namanya profile-file bukan path
+    // karena field file nya namanya user-photo bukan path
     // }
 
     try {
@@ -138,6 +138,22 @@ const get15LatestPhotoUser = async(req, res, next) => {
     }
 }
 
+const updatePhotoDetail = async (req, res) => {
+    try {
+        const userid = parseInt(req.user.id)
+        const { title, description } = req.body
+        let option = {}
+        option.where = { userid: userid }
+        option.data = { title, description }
+        const result = await Profile.update(option)
+        res.json(result)
+    } catch (err) {
+        console.log(err)
+        code = err.code || 'Unknown'
+        message = err.message || "Error occurred."
+        res.status(400).json({ code, message });
+    }
+}
 
 
 const delPhoto = async(req, res) => {
@@ -165,13 +181,17 @@ module.exports = routes => {
         getOnePhotoUser
     )
     routes.post('/upload/',
-        // verifyJWT,
+        verifyJWT,
         uploadPhoto,
         uploadPhotoUser
     )
     routes.delete('/',
         verifyJWT,
         delPhoto
+    )
+    routes.put('/:id', 
+        verifyJWT,
+        updatePhotoDetail
     )
 
 }
