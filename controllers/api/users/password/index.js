@@ -1,24 +1,23 @@
-const { User } = require('../../../../model')
+const { ROLE, User } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
 const { ValidatePassword, CheckValidatorResult } = require('../../../../utils/validator')
+const { authChangePassword } = require('../../../../middleware/authChangePassword')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
 
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
     try {
-        const {id, password} = req.body
+        const { id, password } = req.body
         const newPassword = req.body.password
-        const whoseId = id
+        const whoseId = parseInt(id)
         const newEncryptedPassword = await EncriptPassword(newPassword)
         let option = {}
-        option.where = {id: whoseId}
-        option.data = {password: newEncryptedPassword}
+        option.where = { id: whoseId }
+        option.data = { password: newEncryptedPassword }
         const result = await User.update(option)
-        res.json(result)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 }
 
@@ -28,6 +27,7 @@ module.exports = routes => {
         verifyJWT,
         ValidatePassword,
         CheckValidatorResult,
+        authChangePassword,
         changePassword
     )
 }

@@ -17,5 +17,5 @@ function authRole(allowedRoleArray) {
 
 
 module.exports = {
-  authRole,
+  authRole
 }

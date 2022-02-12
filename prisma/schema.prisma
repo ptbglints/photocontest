@@ -18,7 +18,7 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int      @unique @default(autoincrement())
   username  String   @unique
   email     String   @unique
   password  String
@@ -26,15 +26,23 @@ model User {
   profile   Profile?
   photo     Photo[]
   createdat DateTime @default(now())
+  updatedat DateTime @default(now())
+
+  @@id([id, username])
 }
 
 model Profile {
-  id           Int     @id @default(autoincrement())
+  userid       Int      @unique
+  username     String   @unique
+  user         User     @relation(fields: [userid, username], references: [id, username], onDelete: Cascade)
   name         String?
   address      String?
-  photoprofile String?
-  user         User    @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid       Int     @unique
+  profilephoto String?
+  coverphoto   String?
+  createdat    DateTime @default(now())
+  updatedat    DateTime @default(now())
+
+  @@id([userid, username])
 }
 
 model Photo {
@@ -45,6 +53,7 @@ model Photo {
   user        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
   userid      Int
   createdat   DateTime @default(now())
+  updatedat   DateTime @default(now())
   // contest Contest @relation(fields: [contestid], references: [id])
   // contestid Int
 }
