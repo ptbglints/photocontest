@@ -1,6 +1,6 @@
 const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
-const { authRole } = require('../../../../middleware/authRole')
+const { authChangeProfile } = require('../../../../middleware/authUpdateProfile')
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -31,10 +31,9 @@ const getProfileByUserName = async (req, res, next) => {
 
 const updateProfileByUserId = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id)
-        const { name, address, photoprofile } = req.body
+        const { id, name, address, photoprofile } = req.body
         let option = {}
-        option.where = { userid: id }
+        option.where = { userid: parseInt(id) }
         option.data = { name, address, photoprofile }
         const result = await Profile.update(option)
         req.result = result
@@ -46,12 +45,10 @@ const updateProfileByUserId = async (req, res, next) => {
 
 const updateProfileByUserName = async (req, res, next) => {
     try {
-        const username = req.params.username
-        const { name, address, photoprofile } = req.body
+        const { username, name, address, photoprofile } = req.body
         let option = {}
         option.where = { username: username }
         option.data = { name, address, photoprofile }
-        // option.data.profile = { name, address, photoprofile }
         const result = await Profile.update(option)
         req.result = result
         next()
@@ -70,13 +67,15 @@ module.exports = routes => {
         getProfileByUserName
     );
 
-    routes.put('/id/:id',
+    routes.put('/id',
         verifyJWT,
+        authChangeProfile,
         updateProfileByUserId
     );
 
-    routes.put('/username/:username',
+    routes.put('/username/',
         verifyJWT,
+        authChangeProfile,
         updateProfileByUserName
     );
 }

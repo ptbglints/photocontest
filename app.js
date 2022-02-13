@@ -17,12 +17,14 @@ app.use(express.urlencoded({
     extended: true
 }))
 
-const morganBody = require('morgan-body')
-morganBody(app, {logResponseBody: false});
-
+// swagger
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yml');
 const swaggerUi = require('swagger-ui-express')
+
+// morgan logger
+const morganBody = require('morgan-body')
+morganBody(app, { logResponseBody: false });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -33,26 +35,16 @@ app.use(enrouten({
     directory: path.join(__dirname, 'controllers'),
 }));
 
-/* ***************
- * API V2
- * ***************/
-
-const userApi = require('./controllers/apiv2/users')
-const profilesApi = require('./controllers/apiv2/profiles')
-app.use('/api/v2/users', userApi)
-app.use('/api/v2/users/profiles', profilesApi)
-
-// success response middlewares
+// success response middleware
 app.use(responseSuccess)
 
-// catch error middlewares
+// catch errors
 app.use(logErrors)
 app.use(clientErrorHandler)
 app.use(errorHandler)
 
 
-var http = require('http');
-var server = http.createServer(app).listen(NODE_PORT, '0.0.0.0', () => {
+var server = app.listen(NODE_PORT, () => {
     console.log(`ENV = ${process.env.NODE_ENV}`)
     console.log(`🚀 Server started on http://localhost:${NODE_PORT}\n`);
 });

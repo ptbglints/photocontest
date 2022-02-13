@@ -1,10 +1,13 @@
-function responseSuccess(req,res) {
-    const response = {
-        status: res.statusCode,
-        message: 'Success',
-        data: req.result,
+function responseSuccess(req,res, next) {
+    if (req.result) {
+        const response = {
+            status: res.statusCode,
+            message: 'Success',
+            data: req.result,
+        }
+        return res.json(response)
     }
-    res.json(response)
+    next()
 }
 
 module.exports = {
