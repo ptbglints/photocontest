@@ -21,7 +21,7 @@ const getProfileByUserName = async (req, res, next) => {
         let option = {}
         option.where = { username: username }
         option.select = { profile: true }
-        const result = await User.findUnique(option)
+        const result = await Profile.findUnique(option)
         req.result = result
         next()
     } catch (err) {
