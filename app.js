@@ -24,13 +24,7 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yml');
 const swaggerUi = require('swagger-ui-express')
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.use('/api-docs', function(req, res, next){
-    swaggerDocument.host = req.get('host');
-    req.swaggerDoc = swaggerDocument;
-    next();
-}, swaggerUi.serve, swaggerUi.setup());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // enrouten di buat untuk membaca folder sebagai route
 // route di sini kita definisikan ke folder api
