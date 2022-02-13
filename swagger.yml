@@ -15,7 +15,7 @@ externalDocs:
   description: "Find more info here"
   url: "https://example.com"
 servers:
-- url: http://localhost:8000/api
+- url: http://ptb-photocontest.herokuapp.com/api
 tags:
 - name: User
 - name: Profile
