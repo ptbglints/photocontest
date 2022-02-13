@@ -15,8 +15,8 @@ externalDocs:
   description: "Find more info here"
   url: "https://example.com"
 servers:
-- url: https://ptb-photocontest.herokuapp.com/api
 - url: http://localhost:8000/api
+- url: https://ptb-photocontest.herokuapp.com/api
 tags:
 - name: User
 - name: Profile
@@ -120,6 +120,7 @@ paths:
           schema:
             type: integer
             format: int64
+            example: 4
       responses:
         '200':
           description: Successful operation
@@ -142,6 +143,7 @@ paths:
           schema:
             type: integer
             format: int64
+            example: 4
       requestBody:
         required: false
         content:
@@ -179,6 +181,7 @@ paths:
           required: true
           schema:
             type: string
+            example: 'alice'
       responses:
         '200':
           description: Successful operation
@@ -200,6 +203,7 @@ paths:
           required: true
           schema:
             type: string
+            example: 'arman'
       requestBody:
         required: false
         content:
@@ -209,10 +213,10 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'Arman Maulana'
+                  example: 'Arman Bojongsoang'
                 address:
                   type: string
-                  example: 'Jl. Pinang Kayu no.30 Bandung'
+                  example: 'Jl. Timor no.28 Soroako'
                 profilephoto:
                   type: string
                 coverphoto:
