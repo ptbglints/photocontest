@@ -128,22 +128,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-
+  
+  /users/profile/id/:
     put:
       tags:
       - Profile
-      summary: Update user profile
+      summary: Update user profile by Id
       # description: This can only be done by the logged in user.
       # operationId: createUser
-      parameters:
-        - name: id
-          in: path
-          description: User id
-          required: true
-          schema:
-            type: integer
-            format: int64
-            example: 4
       requestBody:
         required: false
         content:
@@ -151,6 +143,10 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  type: integer
+                  format: int64
+                  example: 4
                 name:
                   type: string
                   example: 'Arman Maulalan'
@@ -190,20 +186,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Profile'
 
+  /users/profile/username/:
     put:
       tags:
       - Profile
-      summary: Update user profile
+      summary: Update user profile by username
       # description: This can only be done by the logged in user.
       # operationId: createUser
-      parameters:
-        - name: username
-          in: path
-          description: User name
-          required: true
-          schema:
-            type: string
-            example: 'arman'
       requestBody:
         required: false
         content:
@@ -211,6 +200,9 @@ paths:
             schema:
               type: object
               properties:
+                username:
+                  type: string
+                  example: 'arman'
                 name:
                   type: string
                   example: 'Arman Bojongsoang'
