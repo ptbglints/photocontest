@@ -5,21 +5,6 @@ const { modifyImagePath } = require('../../../middleware/modifyReqImagePath')
 
 //API to upload a photo (or many photos) to a collection/galery User
 const uploadPhotoUser = async(req, res,next) => {
-    // kita error tadi karena salah field pass request
-    // kenapa?? karena field file nya harus nya user-photo bukan path 
-    // definisi field nya di sini 
-    // let uploadPhoto = upload.single('user-photo')
-    // contoh request, metode tetap menggunakan multipart/form-data
-    // body
-    // {
-    //     "title": "test",
-    //     "description": "test",
-
-    //     user-photo = file yang di upload
-
-    // tadi kita salah..
-    // karena field file nya namanya user-photo bukan path
-    // }
 
     try {
         let { title, description } = req.body
@@ -38,8 +23,6 @@ const uploadPhotoUser = async(req, res,next) => {
         }
         console.log(title, description, pathPhoto)
         const result = await Photo.create(option)
-        const imageUrl = `${req.protocol}://${req.headers.host}${result.path}`
-        result.path = imageUrl
         req.result = result
         next()
     } catch (err) {
@@ -86,29 +69,9 @@ const updatePhotoDetail = async (req, res) => {
         const result = await Photo.update(option)
         res.json(result)
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 }
-
-
-// const delPhoto = async(req, res) => {
-//     try {
-//         let { id } = req.body
-//         id = Number(id)
-//         let option = {}
-//         option.where = { id: id }
-//         const result = await Photo.delete(option)
-//         res.json(result)
-//     } catch (err) {
-//         console.log(err)
-//         code = err.code || 'Unknown'
-//         message = err.message || "Error occurred."
-//         res.status(400).json({ code, message })
-//     }
-// }
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/photos/
@@ -127,10 +90,6 @@ module.exports = routes => {
         uploadPhoto,
         uploadPhotoUser
     )
-    // routes.delete('/',
-    //     verifyJWT,
-    //     delPhoto
-    // )
     routes.put('/:id', 
         verifyJWT,
         updatePhotoDetail
