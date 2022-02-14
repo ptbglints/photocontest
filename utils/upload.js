@@ -36,13 +36,13 @@ let upload = multer({
     limits: {
         fileSize: 2000000 // 2000000 bytes = 2 MB
     },
-    fileFilter(req,file,cb){
-        if(!file.originalname.match(/\.(png | jpg)$/)){
-            // upload only png and jpg format
-        return cb(new Error('Please upload a Image jpg and png only'))
-        }
-        cb(undefined,true)
-        }
+    // fileFilter(req,file,cb){
+    //     if(!file.originalname.match(/\.(png | jpg)$/)){
+    //         // upload only png and jpg format
+    //     return cb(new Error('Please upload a Image jpg and png only'))
+    //     }
+    //     cb(undefined,true)
+    //     }
         
  });
 

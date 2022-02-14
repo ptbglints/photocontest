@@ -1,10 +1,10 @@
 const { Photo, User } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
 const { uploadPhoto, storageUser } = require('../../../utils/upload')
-
+const { modifyImagePath } = require('../../../middleware/modifyReqImagePath')
 
 //API to upload a photo (or many photos) to a collection/galery User
-const uploadPhotoUser = async(req, res) => {
+const uploadPhotoUser = async(req, res,next) => {
     // kita error tadi karena salah field pass request
     // kenapa?? karena field file nya harus nya user-photo bukan path 
     // definisi field nya di sini 
@@ -26,41 +26,39 @@ const uploadPhotoUser = async(req, res) => {
             // kita ambil format path dari req yang kita buat di multer storage
         let pathPhoto = `${req._filepath}` // di sini kita sudah dapat fullpath string dari file yang diupload
             // tinggal massukkan ke database
+        const id = parseInt(req.user.id)
         let option = {}
             // lanjutkan memasukkan ke data base
+        // option.where = { userid : id}
         option.data = {
             title,
             description,
-            path: pathPhoto
+            path: pathPhoto,
+            userid: id
         }
         console.log(title, description, pathPhoto)
-        res.json("result")
+        const result = await Photo.create(option)
+        const imageUrl = `${req.protocol}://${req.headers.host}${result.path}`
+        result.path = imageUrl
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 
 }
 
 //API to get all photos from a specific user
-const getAllPhotoUser = async(req, res) => {
+const getAllPhotoUser = async(req, res,next) => {
     try {
         const id = parseInt(req.user.id)
         let option = {}
-        option.where = { id: id }
-        let result = await User.findUnique(option, {
-            include: {
-                Photo: true
-            }
-        })
-        res.json(result)
+        option.where = { userid: id }
+        let result = await Photo.findMany(option)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 }
 
@@ -69,83 +67,23 @@ const getOnePhotoUser = async(req, res, next) => {
     try {
         const id = parseInt(req.params.id)
         let option = {}
-        option.where = { userid: userid }
-        let result = await User.findUnique(option, {
-            include: {
-                Photo: {
-                    id: req.params.id
-                }
-            }
-        })
-        res.json(result)
+        option.where = { id: parseInt(id)}
+        let result = await Photo.findUnique(option)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
-    }
-}
-
-//API to get 3 or specific number latest photos from a specific user
-const get3LatestPhotoUser = async(req, res, next) => {
-    try {
-        const id = parseInt(req.user.id)
-        let option = {}
-        option.where = { userid: userid }
-        let result = await User.findUnique(option, {
-            include: {
-                Photo: {
-                    take: parseInt(req.query.limit),
-                    orderBy: {
-                        createdAt: 'desc',
-
-                    }
-                }
-            }
-        })
-        res.json(result)
-    } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
-    }
-}
-
-//API to get default 15 latest photos from a specific user
-const get15LatestPhotoUser = async(req, res, next) => {
-    try {
-        const id = parseInt(req.user.id)
-        let option = {}
-        option.where = { userid: userid }
-        let result = await User.findUnique(option, {
-            include: {
-                Photo: {
-                    take: parseInt(req.query.limit) || 15,
-                    orderBy: {
-                        createdAt: 'desc',
-
-                    }
-                }
-            }
-        })
-        res.json(result)
-    } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 }
 
 const updatePhotoDetail = async (req, res) => {
     try {
-        const userid = parseInt(req.user.id)
+        const id = parseInt(req.user.id)
         const { title, description } = req.body
         let option = {}
-        option.where = { userid: userid }
+        option.where = { id: parseInt(id)}
         option.data = { title, description }
-        const result = await Profile.update(option)
+        const result = await Photo.update(option)
         res.json(result)
     } catch (err) {
         console.log(err)
@@ -156,39 +94,43 @@ const updatePhotoDetail = async (req, res) => {
 }
 
 
-const delPhoto = async(req, res) => {
-    try {
-        let { id } = req.body
-        id = Number(id)
-        let option = {}
-        option.where = { id: id }
-        const result = await Photo.delete(option)
-        res.json(result)
-    } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message })
-    }
-}
+// const delPhoto = async(req, res) => {
+//     try {
+//         let { id } = req.body
+//         id = Number(id)
+//         let option = {}
+//         option.where = { id: id }
+//         const result = await Photo.delete(option)
+//         res.json(result)
+//     } catch (err) {
+//         console.log(err)
+//         code = err.code || 'Unknown'
+//         message = err.message || "Error occurred."
+//         res.status(400).json({ code, message })
+//     }
+// }
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/photos/
     routes.get('/',
-        getAllPhotoUser
+        verifyJWT,
+        getAllPhotoUser,
+        modifyImagePath
     )
     routes.get('/:id',
-        getOnePhotoUser
+        verifyJWT,
+        getOnePhotoUser,
+        modifyImagePath
     )
     routes.post('/upload/',
         verifyJWT,
         uploadPhoto,
         uploadPhotoUser
     )
-    routes.delete('/',
-        verifyJWT,
-        delPhoto
-    )
+    // routes.delete('/',
+    //     verifyJWT,
+    //     delPhoto
+    // )
     routes.put('/:id', 
         verifyJWT,
         updatePhotoDetail

@@ -19,8 +19,7 @@ app.use(express.urlencoded({
     }))
     // NEW: kita buka folder public di route public
 app.use('/public', express.static('public'))
-const morganBody = require('morgan-body')
-morganBody(app);
+
 
 
 const YAML = require('yamljs');
