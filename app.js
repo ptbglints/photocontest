@@ -13,11 +13,16 @@ const app = express()
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use(express.json())
+app.use(express.urlencoded())
 app.use(express.urlencoded({
-    extended: true
-}))
+        extended: true
+    }))
+    // NEW: kita buka folder public di route public
+app.use('/public', express.static('public'))
+const morganBody = require('morgan-body')
+morganBody(app);
 
-// swagger
+
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yml');
 const swaggerUi = require('swagger-ui-express')
