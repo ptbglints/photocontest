@@ -15,7 +15,7 @@ const globalConfig = {
         // { level: 'warn', emit: 'event' },
         // { level: 'info', emit: 'event' },
         // { level: 'error', emit: 'event' },
-        { level: 'query', emit: 'stdout' },
+        // { level: 'query', emit: 'stdout' },
         { level: 'warn', emit: 'stdout' },
         { level: 'info', emit: 'stdout' },
         { level: 'error', emit: 'stdout' },

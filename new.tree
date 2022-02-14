@@ -1,0 +1,49 @@
+├── .env
+├── .gitignore
+├── app.js
+├── controllers
+│  ├── api
+│  │  └── users
+│  │    ├── index.js
+│  │    ├── login
+│  │    │  └── index.js
+│  │    ├── password
+│  │    │  └── index.js
+│  │    ├── profile
+│  │    │  └── index.js
+│  │    └── signup
+│  │      └── index.js
+│  └── apiv2
+│    ├── profiles
+│    │  └── index.js
+│    └── users
+│      └── index.js
+├── docker-compose.yml
+├── example.env
+├── middleware
+│  ├── authChangePassword.js
+│  ├── authJwt.js
+│  ├── authRole.js
+│  ├── cache.js
+│  ├── errorHandler.js
+│  └── responseSuccess.js
+├── model
+│  └── index.js
+├── nodemon.json
+├── package-lock.json
+├── package.json
+├── permission
+│  └── index.js
+├── prisma
+│  ├── schema.prisma
+│  └── seed.ts
+├── public
+│  └── README.md
+├── README.md
+├── swagger.example.yml
+├── swagger.yml
+├── thunder-collection_Photo Contest.json
+└── utils
+  ├── bcrypt.js
+  ├── index.js
+  └── validator.js
