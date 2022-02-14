@@ -1,10 +1,12 @@
+const express = require('express')
+const router = express.Router()
+
 const { User } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
 
 const getMany = async (req, res, next) => {
     try {
-        const result = await User.findMany()
-        req.result = result
+        req.result= await User.findMany()
         next()
     } catch (err) {
         next(err)
@@ -23,8 +25,7 @@ const getOne = async (req, res, next) => {
             email: true,
             role: true
         }
-        const result = await User.findUnique(option)
-        req.result = result
+        req.result = await User.findUnique(option)
         next()
     } catch (err) {
         next(err)
@@ -32,34 +33,33 @@ const getOne = async (req, res, next) => {
 }
 
 
-const delUser = async (req, res, next) => {
+const delUser = async (req, res) => {
     try {
+        let { id } = req.body
         // sanitize
-        id = parseInt(req.body.id)
+        id = Number(id)
         let option = {}
         option.where = { id: id }
         const result = await User.delete(option)
-        req.result = result
-        next()
+        res.json(result)
     } catch (err) {
         next(err)
     }
 }
 
 
-module.exports = routes => {
-    // disini sama dengan baseurl/api/users/
-    routes.get('/',
-        getMany
-    )
+// disini sama dengan baseurl/api/users/
+router.get('/',
+    // verifyJWT,
+    getMany
+)
+router.get('/:id',
+    // verifyJWT,
+    getOne
+)
+router.delete('/',
+    verifyJWT,
+    delUser
+)
 
-    routes.get('/:id',
-        getOne
-    )
-
-    routes.delete('/',
-        verifyJWT,
-        delUser
-    )
-}
-
+module.exports = router

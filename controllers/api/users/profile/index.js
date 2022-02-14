@@ -1,64 +1,81 @@
-const { Profile } = require('../../../../model')
+const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
+const { authChangeProfile } = require('../../../../middleware/authUpdateProfile')
 
-const getProfile = async (req, res) => {
+const getProfileByUserId = async (req, res, next) => {
     try {
-        const userid = parseInt(req.params.userid)
+        const id = parseInt(req.params.id)
         let option = {}
-        option.where = { userid: userid }
+        option.where = { userid: id }
         const result = await Profile.findUnique(option)
-        res.json(result)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
+    }
+}
+
+const getProfileByUserName = async (req, res, next) => {
+    try {
+        const username = (req.params.username)
+        let option = {}
+        option.where = { username: username }
+        const result = await Profile.findUnique(option)
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
     }
 }
 
 
-const updateProfile = async (req, res) => {
+const updateProfileByUserId = async (req, res, next) => {
     try {
-        const userid = parseInt(req.params.userid)
-        const { name, address, photoprofile } = req.body
+        const { id, name, address, photoprofile } = req.body
         let option = {}
-        option.where = { userid: userid }
+        option.where = { userid: parseInt(id) }
         option.data = { name, address, photoprofile }
         const result = await Profile.update(option)
-        res.json(result)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
+    }
+}
+
+const updateProfileByUserName = async (req, res, next) => {
+    try {
+        const { username, name, address, photoprofile } = req.body
+        let option = {}
+        option.where = { username: username }
+        option.data = { name, address, photoprofile }
+        const result = await Profile.update(option)
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
     }
 }
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/profile
-    /**
-     * This api getting the user profile by id
-     * @route GET /api/users/profile/{id}
-     * @group user - get user
-     * @param {string} id.param.required - id of user
-     * @returns {object} 200 - An array of user info
-     * @returns {Error}  default - Unexpected error
-     */
-    routes.get('/:userid',
-        verifyJWT,
-        getProfile
+    routes.get('/id/:id',
+        getProfileByUserId
     );
-    /**
-     * This api updating the user profile by id
-     * @route PUT /api/users/profile/{id}
-     * @group user - update user
-     * @param {string} id.param.required - id of user
-     * @param {object} body.required - payload of user
-     * @returns {object} 200 - An array of user info
-     * @returns {Error} default - Unexpected error
-     */
-    routes.put('/:userid',
+
+    routes.get('/username/:username',
+        getProfileByUserName
+    );
+
+    routes.put('/id',
         verifyJWT,
-        updateProfile
+        authChangeProfile,
+        updateProfileByUserId
+    );
+
+    routes.put('/username/',
+        verifyJWT,
+        authChangeProfile,
+        updateProfileByUserName
     );
 }

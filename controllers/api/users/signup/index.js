@@ -1,8 +1,9 @@
+const { nextTick } = require('process');
 const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
 const { ValidateRegisterUser, CheckValidatorResult } = require('../../../../utils/validator')
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
     try {
         let { username, email, password } = req.body
 
@@ -20,12 +21,10 @@ const signup = async (req, res) => {
 
         const result = await User.create(option)
 
-        res.json(result)
+        req.result = result
+        next()
     } catch (err) {
-        console.log(err)
-        code = err.code || 'Unknown'
-        message = err.message || "Error occurred."
-        res.status(400).json({ code, message });
+        next(err)
     }
 }
 
