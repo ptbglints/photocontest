@@ -1,27 +1,27 @@
 const { Photo, User } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
-const { uploadPhoto, storageUser } = require('../../../utils/upload')
-const { modifyImagePath } = require('../../../middleware/modifyReqImagePath')
+const { uploadSinglePhoto } = require('../../../middleware/uploadPhoto')
+const { modifyImagePath } = require('../../../middleware/modifyImagePath')
 
 //API to upload a photo (or many photos) to a collection/galery User
-const uploadPhotoUser = async(req, res,next) => {
+const uploadPhotoUser = async (req, res, next) => {
 
     try {
         let { title, description } = req.body
-            // kita ambil format path dari req yang kita buat di multer storage
-        let pathPhoto = `${req._filepath}` // di sini kita sudah dapat fullpath string dari file yang diupload
-            // tinggal massukkan ke database
-        const id = parseInt(req.user.id)
+        // if title not supplied, change the title with original file name
+        if (!title) title = req.file.originalname
+        // kita ambil format path dari req yang kita buat di multer storage
+        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
+        // get the userid from Jwt
+        const userid = parseInt(req.user.id)
         let option = {}
-            // lanjutkan memasukkan ke data base
-        // option.where = { userid : id}
+        // tinggal massukkan ke database
         option.data = {
             title,
             description,
-            path: pathPhoto,
-            userid: id
+            path,
+            userid
         }
-        console.log(title, description, pathPhoto)
         const result = await Photo.create(option)
         req.result = result
         next()
@@ -32,7 +32,7 @@ const uploadPhotoUser = async(req, res,next) => {
 }
 
 //API to get all photos from a specific user
-const getAllPhotoUser = async(req, res,next) => {
+const getAllPhotoUser = async (req, res, next) => {
     try {
         const id = parseInt(req.user.id)
         let option = {}
@@ -46,11 +46,11 @@ const getAllPhotoUser = async(req, res,next) => {
 }
 
 //API to get a spesific photos from a specific user
-const getOnePhotoUser = async(req, res, next) => {
+const getOnePhotoUser = async (req, res, next) => {
     try {
         const id = parseInt(req.params.id)
         let option = {}
-        option.where = { id: parseInt(id)}
+        option.where = { id: parseInt(id) }
         let result = await Photo.findUnique(option)
         req.result = result
         next()
@@ -64,7 +64,7 @@ const updatePhotoDetail = async (req, res) => {
         const id = parseInt(req.user.id)
         const { title, description } = req.body
         let option = {}
-        option.where = { id: parseInt(id)}
+        option.where = { id: parseInt(id) }
         option.data = { title, description }
         const result = await Photo.update(option)
         res.json(result)
@@ -87,10 +87,10 @@ module.exports = routes => {
     )
     routes.post('/upload/',
         verifyJWT,
-        uploadPhoto,
+        uploadSinglePhoto,
         uploadPhotoUser
     )
-    routes.put('/:id', 
+    routes.put('/:id',
         verifyJWT,
         updatePhotoDetail
     )
