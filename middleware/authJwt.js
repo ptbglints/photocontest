@@ -1,19 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-function GenerateAccessToken(payload) {
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-        algorithm: "HS256",
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRE
-    })
-}
-
-function GenerateRefreshToken(payload) {
-    return  jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-        algorithm: "HS256",
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRE
-    })
-}
-
 const verifyJWT = function (req, res, next) {
     try {
         let accessToken
@@ -81,8 +67,6 @@ const refreshJWT = function (req, res) {
 }
 
 module.exports = {
-    GenerateAccessToken,
-    GenerateRefreshToken,
     verifyJWT,
     refreshJWT
 }

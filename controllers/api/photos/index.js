@@ -43,6 +43,7 @@ const uploadPhotoUser = async (req, res, next) => {
         if (!title) title = req.file.originalname
         // kita ambil format path dari req yang kita buat di multer storage
         let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
+        console.log(req.file)
         // get the userid from Jwt
         const userid = parseInt(req.user.id)
 
@@ -57,6 +58,20 @@ const uploadPhotoUser = async (req, res, next) => {
             description,
             path,
             User: { connect: { id: userid } },
+            PhotoDetail: {
+                connectOrCreate: {
+                    where: {
+                        filename: req.file.filename,
+                    },
+                    create: {
+                        filename: req.file.filename,
+                        originalname: req.file.originalname,
+                        mimetype: req.file.mimetype,
+                        encoding: req.file.encoding,
+                        size: req.file.size
+                    }
+                }
+            }
         }
 
         // check if album title is specified
@@ -114,6 +129,9 @@ const getOnePhotoUser = async (req, res, next) => {
         const id = parseInt(req.params.id)
         let option = {}
         option.where = { id: parseInt(id) }
+        option.include = {
+            PhotoDetail: true
+        }
         let result = await Photo.findUnique(option)
         req.result = result
         next()

@@ -56,15 +56,19 @@ model Photo {
 }
 
 model PhotoDetail {
-  path         String   @unique
   Photo        Photo    @relation(fields: [photoid], references: [id], onDelete: Cascade)
-  photoid      Int      @unique
+  photoid      Int
+  filename     String   @unique
+  originalname String
+  mimetype     String
+  encoding     String
+  size         Int
   isprivate    Boolean? @default(false)
   views        Int?     @default(0)
   likes        Int?     @default(0)
   downloaded   Int?     @default(0)
   starrating   Float?   @default(0)
-  camera       String?
+  cameramake   String?
   shutterspeed String?
   aperture     String?
   focallength  String?

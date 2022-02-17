@@ -12,7 +12,7 @@ function modifyImagePath(req,res,next) {
     // Check for empty object
     else if (Object.keys(resultObj).length > 0){
         // console.log('resultObj must be an Object')
-        const modifiedPath = `${req.protocol}://${req.headers.host}/${resultObj[i].path}`
+        const modifiedPath = `${req.protocol}://${req.headers.host}/${resultObj.path}`
         resultObj.path = modifiedPath
     }
 
