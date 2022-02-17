@@ -272,11 +272,16 @@ paths:
               properties:
                 title:
                   type: string
+                  example: 'Standing & terbang'
                 description:
                   type: string
+                  example: 'Lagi liburan di Papua New Guinea'
                 user-photo:
                   type: string
                   format: binary
+                tag:
+                  type: string
+                  example: 'sport,bunga,ikan,bekasi'
 
       responses:
         default:
