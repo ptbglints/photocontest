@@ -4,9 +4,9 @@ const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../uti
 
 const getProfileByUserId = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id)
+        const userId = parseInt(req.params.id)
         let option = {}
-        option.where = { userid: id }
+        option.where = { userId: userId }
         const result = await Profile.findUnique(option)
         req.result = result
         next()
@@ -17,9 +17,9 @@ const getProfileByUserId = async (req, res, next) => {
 
 const getProfileByUserName = async (req, res, next) => {
     try {
-        const username = (req.params.username)
+        const userName = (req.params.userName)
         let option = {}
-        option.where = { username: username }
+        option.where = { userName: userName }
         option.select = { profile: true }
         const result = await User.findUnique(option)
         req.result = result.profile
@@ -33,10 +33,15 @@ const getProfileByUserName = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
     try {
         const id = req.user.id
-        const { name, address, profilephoto, coverphoto } = req.body
+        const { name, address, profilePhoto, coverPhoto } = req.body
         let option = {}
-        option.where = { userid: id }
-        option.data = { name, address, profilephoto, coverphoto }
+        option.where = { userId: id }
+        option.data = {
+            name,
+            address,
+            profilePhoto,
+            coverPhoto
+        }
         const result = await Profile.update(option)
         req.result = result
         next()
@@ -47,11 +52,11 @@ const updateProfile = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/profile
-    routes.get('/id/:id',
+    routes.get('/userid/:id',
         getProfileByUserId
     );
 
-    routes.get('/username/:username',
+    routes.get('/username/:userName',
         getProfileByUserName
     );
 

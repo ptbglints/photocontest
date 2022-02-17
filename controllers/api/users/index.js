@@ -15,9 +15,9 @@ const getManyNested = async (req, res, next) => {
     try {
         console.log('nested')
         let option = new Object
-        option.include = {
-            photo: true,
-            album: true
+        option.select = {
+            photos: true,
+            albums: true
         }
         const result = await User.findMany()
         req.result = result
@@ -35,9 +35,11 @@ const getOne = async (req, res, next) => {
         option.where = { id: id }
         option.select = {
             id: true,
-            username: true,
+            userName: true,
             email: true,
-            role: true
+            role: true,
+            profile: true,
+            albums: true
         }
         const result = await User.findUnique(option)
         req.result = result

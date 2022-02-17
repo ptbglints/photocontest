@@ -10,7 +10,7 @@ const login = async (req, res, next) => {
         const { username, password } = req.body
         let option = {}
         option.where = {
-            OR: [{ username: username }, { email: username }]
+            OR: [{ userName: username }, { email: username }]
         }
         const user = await User.findFirst(option) // will throw error if no record found
         const passwordIsValid = await CheckPassword(password, user.password)

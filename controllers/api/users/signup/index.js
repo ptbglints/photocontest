@@ -12,10 +12,10 @@ const signup = async (req, res, next) => {
 
         let option = {}
         option.data = {
-            username,
+            userName: username,
             email,
             password: encryptedPassword,
-            Profile: {
+            profile: {
                 create: { name: username || email }
             },
             // Album: {
