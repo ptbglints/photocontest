@@ -1,4 +1,4 @@
-const { User } = require('../../../model')
+const { User, Profile } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
 
 const getMany = async (req, res, next) => {
@@ -14,12 +14,13 @@ const getMany = async (req, res, next) => {
 const getManyNested = async (req, res, next) => {
     try {
         console.log('nested')
-        let option = new Object
-        option.select = {
+        let option = {}
+        option.include = {
+            profile: true,
+            albums: true,
             photos: true,
-            albums: true
         }
-        const result = await User.findMany()
+        const result = await User.findMany(option)
         req.result = result
         next()
     } catch (err) {
