@@ -1,9 +1,9 @@
 openapi: 3.0.1
 info:
   title: Photo Contest
-  description: 'This is Glints PTB1 Final Project.  
-    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)  
-    For this sample, you can use the api key `special-key` to test the authorization filters.'
+  description: "This is Glints PTB1 Final Project.
+    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)
+    For this sample, you can use the api key `special-key` to test the authorization filters."
   termsOfService: http://swagger.io/terms/
   contact:
     email: apiteam@swagger.io
@@ -15,13 +15,12 @@ externalDocs:
   description: "Find more info here"
   url: "https://example.com"
 servers:
-- url: http://localhost:8000/api
-- url: https://ptb-photocontest.herokuapp.com/api
+  - url: http://localhost:8000/api
+  - url: https://ptb-photocontest.herokuapp.com/api
 tags:
-- name: User
-- name: Profile
-- name: Photos
-- name: Upload
+  - name: User
+  - name: Profile
+  - name: Photos
 
 paths:
   /users:
@@ -42,7 +41,7 @@ paths:
       #       type: integer
       #       format: int64
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -50,12 +49,12 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
 
   /users/signup:
     post:
       tags:
-      - User
+        - User
       summary: Create user
       description: This can only be done by the logged in user.
       operationId: createUser
@@ -68,13 +67,13 @@ paths:
               properties:
                 username:
                   type: string
-                  example: 'jokox'
+                  example: "broto"
                 email:
                   type: string
-                  example: 'jkx@mantab.io'
+                  example: "broto@mantab.io"
                 password:
                   type: string
-                  example: 'Pass123?'
+                  example: "Pass123?"
       responses:
         default:
           description: successful operation
@@ -84,7 +83,7 @@ paths:
   /users/login:
     post:
       tags:
-      - User
+        - User
       summary: User login
       # description: This can only be done by the logged in user.
       # operationId: createUser
@@ -97,21 +96,21 @@ paths:
               properties:
                 username:
                   type: string
-                  example: 'arman'
+                  example: "arman"
                 password:
                   type: string
-                  example: 'Pass123?'
+                  example: "Pass123?"
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
 
-  /users/profile/id/{id}:
+  /users/profile/userid/{id}:
     get:
       tags:
         - Profile
-      summary: Gets profile by Id
+      summary: Gets profile by userId
       # description:
       # operationId: getUserById
       parameters:
@@ -124,18 +123,18 @@ paths:
             format: int64
             example: 4
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
-  
-  /users/profile/id/:
+                $ref: "#/components/schemas/Profile"
+
+  /users/profile/:
     put:
       tags:
-      - Profile
-      summary: Update user profile by Id
+        - Profile
+      summary: Update users own profile
       # description: This can only be done by the logged in user.
       # operationId: createUser
       requestBody:
@@ -151,7 +150,7 @@ paths:
                   example: 4
                 name:
                   type: string
-                  example: 'Arman Maulalan'
+                  example: "Arman Maulalan"
                 # address:
                 #   type: string
                 #   example: 'Jl. Pinang Kayu no.30 Bandung'
@@ -163,13 +162,13 @@ paths:
         default:
           description: successful operation
           content: {}
-      x-codegen-request-body-name: body                
+      x-codegen-request-body-name: body
 
   /users/profile/username/{username}:
     get:
       tags:
         - Profile
-      summary: Gets profile by Username
+      summary: Gets specific profile by Username
       # description:
       # operationId: getUserById
       parameters:
@@ -179,57 +178,31 @@ paths:
           required: true
           schema:
             type: string
-            example: 'alice'
+            example: "alice"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
-
-  /users/profile/username/:
-    put:
-      tags:
-      - Profile
-      summary: Update user profile by username
-      # description: This can only be done by the logged in user.
-      # operationId: createUser
-      requestBody:
-        required: false
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: 'arman'
-                name:
-                  type: string
-                  example: 'Arman Bojongsoang'
-                address:
-                  type: string
-                  example: 'Jl. Timor no.28 Soroako'
-                profilephoto:
-                  type: string
-                coverphoto:
-                  type: string
-      responses:
-        default:
-          description: successful operation
-          content: {}
-      x-codegen-request-body-name: body
+                $ref: "#/components/schemas/Profile"
 
   /photos:
     get:
       tags:
         - Photos
-      summary: Get all photos from logged in user.
+      summary: Get all photos from database with limit
       description: >
-        use JWT to identify which user id who wants get all their photo
+        Get all photos from database with limit
+      parameters:
+      - name: limit
+        in: query
+        description: limit
+        required: true
+        schema:
+          type: integer
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -237,34 +210,56 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/components/schemas/Photos'
-                  
-  /photos:{id}:
+                  $ref: "#/components/schemas/Photos"
+
+  /photos/user/{id}:
     get:
       tags:
-        -Photos
-      summary: Get spesific photo from logged in user.
+        - Photos
+      summary: Get all photos from a specific user
       parameters:
         - name: id
           in: path
-          description: Photo ID
+          description: User ID
           required: true
           schema:
             type: integer
             format: int64
             example: 4
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Photos'
+                $ref: "#/components/schemas/Photos"
 
-  /upload:
+  /photos/{photoId}:
+    get:
+      tags:
+        - Photos
+      summary: Get a specific photo by photo ID
+      parameters:
+        - name: photoId
+          in: path
+          description: photo ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 4
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photos"
+
+  /photos/upload:
     post:
       tags:
-      - Upload
+        - Photos
       summary: Upload photo to collection User
       description: Logged user only
       operationId: uploadePhoto
@@ -275,30 +270,21 @@ paths:
             schema:
               type: object
               properties:
-                orderId:
-                  type: integer
-                userId:
-                  type: integer
-                fileName:
+                title:
+                  type: string
+                description:
+                  type: string
+                user-photo:
                   type: string
                   format: binary
-                  
+
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-      
-      
+
 components:
-  requestBodies:
-    PetBody:
-      description: A JSON object containing pet information
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/User'
   schemas:
     User:
       type: object
@@ -306,7 +292,7 @@ components:
         id:
           type: integer
           format: int64
-        username:
+        userName:
           type: string
         email:
           type: string
@@ -316,10 +302,10 @@ components:
           maxLength: 254
         role:
           type: string
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
 
@@ -330,35 +316,37 @@ components:
           type: string
         addres:
           type: string
-        profilephoto:
+        profilePhoto:
           type: string
-        coverphoto:
+        coverPhoto:
           type: string
-        userid:
+        userId:
           type: integer
           format: int64
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
 
     Photos:
       type: object
       properties:
+        id:
+          type: integer
         title:
           type: string
         description:
           type: string
         path:
           type: string
-        userid:
+        userId:
           type: integer
           format: int64
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
