@@ -20,6 +20,8 @@ servers:
 tags:
 - name: User
 - name: Profile
+- name: Photos
+- name: Upload
 
 paths:
   /users:
@@ -219,7 +221,75 @@ paths:
           content: {}
       x-codegen-request-body-name: body
 
+  /photos:
+    get:
+      tags:
+        - Photos
+      summary: Get all photos from logged in user.
+      description: >
+        use JWT to identify which user id who wants get all their photo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/Photos'
+                  
+  /photos:{id}:
+    get:
+      tags:
+        -Photos
+      summary: Get spesific photo from logged in user.
+      parameters:
+        - name: id
+          in: path
+          description: Photo ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 4
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photos'
 
+  /upload:
+    post:
+      tags:
+      - Upload
+      summary: Upload photo to collection User
+      description: Logged user only
+      operationId: uploadePhoto
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: integer
+                userId:
+                  type: integer
+                fileName:
+                  type: string
+                  format: binary
+                  
+      responses:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
+      
+      
 components:
   requestBodies:
     PetBody:
@@ -263,6 +333,25 @@ components:
         profilephoto:
           type: string
         coverphoto:
+          type: string
+        userid:
+          type: integer
+          format: int64
+        createdat:
+          type: string
+          format: date-time
+        updatedat:
+          type: string
+          format: date-time
+
+    Photos:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        path:
           type: string
         userid:
           type: integer
