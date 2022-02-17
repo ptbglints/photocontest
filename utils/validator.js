@@ -1,3 +1,4 @@
+// https://express-validator.github.io/docs/
 const { check, oneOf, validationResult } = require('express-validator');
 
 const ValidateRegisterUser = [
@@ -36,6 +37,25 @@ const ValidateRegisterUser = [
         .isAlpha('en-US', null),
 ]
 
+const ValidateUpdateProfile = [
+    check('name').optional()
+        .trim()
+        .isLength({ min: 2, max: 254 })
+        .isAlpha('en-US', { ignore: " " }),
+    check('address').optional()
+        .trim()
+        .isLength({ min: 2, max: 254 })
+        .isAlphanumeric('en-US', { ignore: " ." }),
+    check('profilephoto').optional()
+        .trim()
+        .isLength({ min: 2, max: 254 })
+        .isAlphanumeric('en-US'),
+    check('coverphoto').optional()
+        .trim()
+        .isLength({ min: 2, max: 254 })
+        .isAlphanumeric('en-US'),
+]
+
 const ValidatePassword = [
     check('password')
         .trim()
@@ -55,9 +75,7 @@ const ValidatePassword = [
         })
 ]
 
-
 const CheckValidatorResult = async (req, res, next) => {
-    // console.log(req.body)
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -73,6 +91,7 @@ const CheckValidatorResult = async (req, res, next) => {
 
 module.exports = {
     ValidateRegisterUser,
+    ValidateUpdateProfile,
     ValidatePassword,
     CheckValidatorResult
 }

@@ -1,6 +1,6 @@
 const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
-const { authChangeProfile } = require('../../../../middleware/authUpdateProfile')
+const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../utils/validator');
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -20,8 +20,9 @@ const getProfileByUserName = async (req, res, next) => {
         const username = (req.params.username)
         let option = {}
         option.where = { username: username }
-        const result = await Profile.findUnique(option)
-        req.result = result
+        option.select = { profile: true }
+        const result = await User.findUnique(option)
+        req.result = result.profile
         next()
     } catch (err) {
         next(err)
@@ -29,26 +30,13 @@ const getProfileByUserName = async (req, res, next) => {
 }
 
 
-const updateProfileByUserId = async (req, res, next) => {
+const updateProfile = async (req, res, next) => {
     try {
-        const { id, name, address, photoprofile } = req.body
+        const id = req.user.id
+        const { name, address, profilephoto, coverphoto } = req.body
         let option = {}
-        option.where = { userid: parseInt(id) }
-        option.data = { name, address, photoprofile }
-        const result = await Profile.update(option)
-        req.result = result
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
-const updateProfileByUserName = async (req, res, next) => {
-    try {
-        const { username, name, address, photoprofile } = req.body
-        let option = {}
-        option.where = { username: username }
-        option.data = { name, address, photoprofile }
+        option.where = { userid: id }
+        option.data = { name, address, profilephoto, coverphoto }
         const result = await Profile.update(option)
         req.result = result
         next()
@@ -67,15 +55,10 @@ module.exports = routes => {
         getProfileByUserName
     );
 
-    routes.put('/id',
+    routes.put('/',
         verifyJWT,
-        authChangeProfile,
-        updateProfileByUserId
-    );
-
-    routes.put('/username/',
-        verifyJWT,
-        authChangeProfile,
-        updateProfileByUserName
+        ValidateUpdateProfile,
+        CheckValidatorResult,
+        updateProfile
     );
 }

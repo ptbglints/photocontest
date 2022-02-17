@@ -1,6 +1,7 @@
 const { User } = require('../../../../model')
 const { CheckPassword } = require('../../../../utils/bcrypt');
-const { GenerateAccessToken, verifyJWT, GenerateRefreshToken } = require('../../../../middleware/authJwt');
+const { verifyJWT } = require('../../../../middleware/authJwt');
+const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
 const { ERROR } = require('../../../../middleware/errorHandler');
 
 const login = async (req, res, next) => {

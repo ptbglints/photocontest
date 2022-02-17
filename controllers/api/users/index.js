@@ -11,6 +11,22 @@ const getMany = async (req, res, next) => {
     }
 }
 
+const getManyNested = async (req, res, next) => {
+    try {
+        console.log('nested')
+        let option = new Object
+        option.include = {
+            photo: true,
+            album: true
+        }
+        const result = await User.findMany()
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
 const getOne = async (req, res, next) => {
     try {
         // sanitize
@@ -53,7 +69,11 @@ module.exports = routes => {
         getMany
     )
 
-    routes.get('/:id',
+    routes.get('/nested',
+        getManyNested
+    )
+
+    routes.get('/id/:id',
         getOne
     )
 
