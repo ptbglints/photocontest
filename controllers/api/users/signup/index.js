@@ -14,9 +14,12 @@ const signup = async (req, res, next) => {
             username,
             email,
             password: encryptedPassword,
-            profile: {
+            Profile: {
                 create: { name: username || email }
-            }
+            },
+            // Album: {
+            //     create: { title: 'Unnamed_album' }
+            //   },
         }
 
         const result = await User.create(option)
