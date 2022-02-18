@@ -10,10 +10,6 @@ const verifyJWT = function (req, res, next) {
             accessToken = req.cookies.jwtAccess
         }
 
-        if (!accessToken) {
-            throw new Error ('jwt not found')
-        }
-
         //use the jwt.verify method to verify the access token
         //throws an error if the token has expired or has a invalid signature
         // let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
