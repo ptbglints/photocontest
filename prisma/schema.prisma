@@ -76,16 +76,17 @@ model PhotoDetail {
 }
 
 model Album {
-  id           Int      @id @default(autoincrement())
-  title        String   @unique
-  description  String?
-  coverPhotoId Int?
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
-  isPrivate    Boolean? @default(false)
-  photos       Photo[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id
+  title          String
+  description    String?
+  coverPhotoId   Int?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int
+  isPrivate      Boolean  @default(false)
+  isDownloadable Boolean  @default(false)
+  photos         Photo[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Tag {
