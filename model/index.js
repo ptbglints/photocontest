@@ -29,6 +29,7 @@ const prisma = new PrismaClient(globalConfig)
 const User = prisma.user
 const Profile = prisma.profile
 const Photo = prisma.photo
+const Album = prisma.album
 
 // event emitters
 // prisma.$on('query', (e) => {
@@ -50,5 +51,6 @@ module.exports = {
     ROLE: Role,
     User,
     Profile,
-    Photo
+    Photo,
+    Album
 }
