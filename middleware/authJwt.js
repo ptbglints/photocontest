@@ -12,7 +12,12 @@ const verifyJWT = function (req, res, next) {
 
         //use the jwt.verify method to verify the access token
         //throws an error if the token has expired or has a invalid signature
-        let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
+        // let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
+        let decoded = jwt.verify(
+            accessToken,
+            process.env.ACCESS_TOKEN_SECRET,
+            function (err, decoded) { if (err) { throw err } });
+
         decoded.expireIn = decoded.exp - Math.floor(Date.now() / 1000)
         // console.log('jwt_access_token', decoded)
 
