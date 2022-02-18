@@ -20,7 +20,8 @@ servers:
 tags:
   - name: User
   - name: Profile
-  - name: Photos
+  - name: Photo
+  - name: Album
 
 paths:
   /users:
@@ -190,17 +191,17 @@ paths:
   /photos:
     get:
       tags:
-        - Photos
+        - Photo
       summary: Get all photos from database with limit
       description: >
         Get all photos from database with limit
       parameters:
-      - name: limit
-        in: query
-        description: limit
-        required: true
-        schema:
-          type: integer
+        - name: limit
+          in: query
+          description: limit
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
           description: Successful operation
@@ -210,12 +211,12 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: "#/components/schemas/Photos"
+                  $ref: "#/components/schemas/Photo"
 
   /photos/user/{id}:
     get:
       tags:
-        - Photos
+        - Photo
       summary: Get all photos from a specific user
       parameters:
         - name: id
@@ -232,12 +233,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Photos"
+                $ref: "#/components/schemas/Photo"
 
   /photos/{photoId}:
     get:
       tags:
-        - Photos
+        - Photo
       summary: Get a specific photo by photo ID
       parameters:
         - name: photoId
@@ -254,12 +255,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Photos"
+                $ref: "#/components/schemas/Photo"
 
   /photos/upload:
     post:
       tags:
-        - Photos
+        - Photo
       summary: Upload photo to collection User
       description: Logged user only
       operationId: uploadePhoto
@@ -272,22 +273,254 @@ paths:
               properties:
                 title:
                   type: string
-                  example: 'Standing & terbang'
+                  example: "Standing & terbang"
                 description:
                   type: string
-                  example: 'Lagi liburan di Papua New Guinea'
+                  example: "Lagi liburan di Papua New Guinea"
                 user-photo:
                   type: string
                   format: binary
                 tag:
                   type: string
-                  example: 'sport,bunga,ikan,bekasi'
+                  example: "sport,bunga,ikan,bekasi"
 
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
+
+  /albums:
+    post:
+      tags:
+        - Album
+      summary: Create an album
+      description: >
+        Create an album
+      requestBody:
+        description: Create an album
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Swimming in Sabana, Merauke
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example:  Swimming in Sabana, Merauke
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+    get:
+      tags:
+        - Album
+      summary: Get all albums in the database, with skip and take query, ordered by createdAt
+      description: >
+        Get all albums in the database, with skip and take query, ordered by createdAt
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+    put:
+      tags:
+        - Album
+      summary: Update detail of specific album, by album Id
+      description: >
+        Update detail of specific album, by album Id
+      requestBody:
+        description: Update detail of specific album, by album Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAlbumDetail'
+            example:
+              albumId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+              title: Flying in The Dark
+              description: This is how I fly in the Dark
+              coverPhotoId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+              isPrivate: true
+              isDownloadable: true
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/username/search:
+    get:
+      tags:
+        - Album
+      summary: Search all albums whose username contain certain string
+      description: >
+        Search all albums whose username contain certain string
+      parameters:
+        - name: username
+          in: query
+          description: username
+          required: true
+          schema:
+            type: string
+            example: arm
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/username:
+    get:
+      tags:
+        - Album
+      summary: Get all albums from specific Username
+      description: >
+        Get all albums from specific Username
+      parameters:
+        - name: username
+          in: query
+          description: username
+          required: true
+          schema:
+            type: string
+            example: arman
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/title/search:
+    get:
+      tags:
+        - Album
+      summary: Search all albums by albums's name that contain certain string
+      description: >
+        Search all albums by albums's name that contain certain string
+      parameters:
+        - name: string
+          in: query
+          description: string
+          required: true
+          schema:
+            type: string
+            example: Dark
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/{albumId}:
+    get:
+      tags:
+        - Album
+      summary: Get a specific album by album id, include its photos 
+      description: >
+        Get a specific album by album id, include its photos 
+      parameters:
+        - name: albumId
+          in: path
+          description: albumId
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/AlbumNested"
 
 components:
   schemas:
@@ -335,7 +568,7 @@ components:
           type: string
           format: date-time
 
-    Photos:
+    Photo:
       type: object
       properties:
         id:
@@ -355,3 +588,109 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    Album:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AlbumNested:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        user:
+          type: object
+          $ref: "#/components/schemas/User"
+        userId:
+          type: integer
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+        photos:
+          type: object
+          $ref: "#/components/schemas/Photo"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateAlbumDetail:
+      type: object
+      properties:
+        albumId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+
+    SuccessResponseObject:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+
+    SuccessResponseArray:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
