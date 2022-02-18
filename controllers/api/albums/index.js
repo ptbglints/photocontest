@@ -2,28 +2,15 @@ const { Album } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt');
 const { randomUUID } = require('crypto');
 
-/**
-model Album {
-  id           Int      @id @default(autoincrement())
-  title        String   @unique
-  description  String?
-  coverPhotoId Int?
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
-  isPrivate    Boolean? @default(false)
-  photos       Photo[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
- */
-
+// Create an album
 const createOne = async (req, res, next) => {
     try {
-        const id = parseInt(req.user.id)
+        const { title } = req.body
+        const id = req.user.id
         let option = {}
         option.data = {
             id: randomUUID(),
-            title: 'title',
+            title: title,
             user: {
                 connect: { id: id }
             }
@@ -36,6 +23,7 @@ const createOne = async (req, res, next) => {
     }
 }
 
+// Get all albums in the database, with skip and take query, ordered by createdAt
 const getManyWithQuery = async (req, res, next) => {
     try {
         let { skip, take } = req.query
@@ -214,6 +202,7 @@ module.exports = routes => {
     )
 
     routes.put('/',
+        verifyJWT,
         updateSingleAlbumDetailByAlbumId
     )
 
