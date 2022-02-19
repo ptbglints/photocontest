@@ -1,6 +1,7 @@
 require('dotenv').config()
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
+var cors = require('cors');
 const enrouten = require('express-enrouten')
 const path = require('path');
 // const cache = require('./middleware/cache')
