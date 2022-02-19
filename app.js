@@ -12,6 +12,9 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// allow CORS
+app.use(cors());
+
 // app.enable('trust proxy') to know if a reqest is http or https
 // source: https://stackoverflow.com/a/16405622
 app.enable('trust proxy')
