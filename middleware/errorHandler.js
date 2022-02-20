@@ -53,7 +53,7 @@ function clientErrorHandler(err, req, res, next) {
     res.send({ status, code, message })
 }
 
-function errorHandler(err, req, res) {
+function errorHandler(err, req, res,next) {
     res.status(500)
     res.json({ error: err })
 }
