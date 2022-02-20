@@ -2,7 +2,6 @@ const { User } = require('../../../../model')
 const { CheckPassword } = require('../../../../utils/bcrypt');
 const { verifyJWT } = require('../../../../middleware/authJwt');
 const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
-const { ERROR } = require('../../../../middleware/errorHandler');
 
 const login = async (req, res, next) => {
     // console.log(req.body)
@@ -16,7 +15,7 @@ const login = async (req, res, next) => {
         const passwordIsValid = await CheckPassword(password, user.password)
 
         if (!passwordIsValid) {
-            throw new Error(`${ERROR.FORBIDDEN}. Wrong password`)
+            throw new Error(`Forbidden. Wrong password`)
         }
 
         //use the payload to store information about the user such as username, user role, etc.
