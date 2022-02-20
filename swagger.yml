@@ -369,7 +369,7 @@ paths:
               albumId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
               title: Flying in The Dark
               description: This is how I fly in the Dark
-              coverPhotoId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+              coverPhotoId: 7
               isPrivate: true
               isDownloadable: true
         required: true
