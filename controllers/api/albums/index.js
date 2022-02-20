@@ -1,11 +1,15 @@
 const { Album } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt');
 const { randomUUID } = require('crypto');
+const { ValidateInputCreateAlbum, CheckValidatorResult, createAlbumSchema} = require('../../../middleware/validator');
+const { check, body, checkSchema, validationResult, sanitize } = require('express-validator');
+const validator = require('validator');
+const { modifyImagePath, modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath');
 
 // Create an album
 const createOne = async (req, res, next) => {
     try {
-        const { title } = req.body
+        const { title, isPrivate, isDownloadable } = req.body
         const id = req.user.id
         let option = {}
         option.data = {
@@ -13,7 +17,9 @@ const createOne = async (req, res, next) => {
             title: title,
             user: {
                 connect: { id: id }
-            }
+            },
+            isPrivate: SANITIZE.toBoolean(isPrivate),
+            isDownloadable: SANITIZE.toBoolean(isDownloadable)
         }
         const result = await Album.create(option)
         req.result = result
@@ -62,6 +68,11 @@ const searchManyByUsername = async (req, res, next) => {
         option.orderBy = {
             updatedAt: 'asc'
         }
+        option.include = {
+            user: {
+                select: { userName: true }
+            }
+        }
         const result = await Album.findMany(option)
         req.result = result
         next()
@@ -108,7 +119,8 @@ const searchManyByAlbumTitle = async (req, res, next) => {
         option.take = take
         option.where = {
             title: {
-                contains: string
+                contains: string,
+                mode: 'insensitive'
             }
         }
         option.orderBy = {
@@ -152,7 +164,7 @@ const updateSingleAlbumDetailByAlbumId = async (req, res, next) => {
             coverPhotoId,
             isPrivate,
             isDownloadable,
-         } = req.body
+        } = req.body
 
         let option = {}
         option.where = {
@@ -176,35 +188,45 @@ const updateSingleAlbumDetailByAlbumId = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/albums/
+
+    // Create an album
     routes.post('/',
         verifyJWT,
+        ValidateInputCreateAlbum,
+        CheckValidatorResult,
         createOne
     )
 
+    // Get all albums in the database, with skip and take query, ordered by createdAt
     routes.get('/',
         getManyWithQuery
     )
 
+    // Search all albums whose username contain certain string
     routes.get('/username/search',
         searchManyByUsername
     )
 
+    // Get all albums from specific Username
     routes.get('/username/',
         getManyBySpecificUsername
     )
 
+    // Search all albums by albums's name that contain certain string
     routes.get('/title/search',
         searchManyByAlbumTitle
     )
 
+    // Get a specific album by album id, include its photos
     routes.get('/:albumId',
-        getSingleAlbumByAlbumId
+        getSingleAlbumByAlbumId,
+        modifyImagePath2ndLayer
     )
 
+    // Update detail of specific album, by album Id
     routes.put('/',
         verifyJWT,
         updateSingleAlbumDetailByAlbumId
     )
-
 }
 
