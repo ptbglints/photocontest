@@ -19,26 +19,26 @@ enum Role {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String   @unique @db.VarChar(254)
+  userName  String   @unique @db.VarChar(254)
   email     String   @unique @db.VarChar(254)
   password  String   @db.VarChar(254)
-  Role      Role     @default(USER)
-  Profile   Profile?
-  Photo     Photo[]
-  Album     Album[]
-  createdat DateTime @default(now())
-  updatedat DateTime @updatedAt
+  role      Role     @default(USER)
+  profile   Profile?
+  photos    Photo[]
+  albums    Album[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Profile {
-  userid       Int      @id
-  User         User     @relation(fields: [userid], references: [id], onDelete: Cascade)
+  userId       Int      @id
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String?  @db.VarChar(254)
   address      String?
-  profilephoto String?
-  coverphoto   String?
-  createdat    DateTime @default(now())
-  updatedat    DateTime @updatedAt
+  profilePhoto String?
+  coverPhoto   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Photo {
@@ -46,52 +46,53 @@ model Photo {
   title       String?      @db.VarChar(254)
   description String?
   path        String       @unique
-  PhotoDetail PhotoDetail?
-  User        User         @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid      Int
-  Album       Album[]
-  Tag         Tag[]
-  createdat   DateTime     @default(now())
-  updatedat   DateTime     @updatedAt
+  photoDetail PhotoDetail?
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  albums      Album[]
+  tags        Tag[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model PhotoDetail {
-  Photo        Photo    @relation(fields: [photoid], references: [id], onDelete: Cascade)
-  photoid      Int
-  filename     String   @unique
-  originalname String
-  mimetype     String
+  photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  photoId      Int      @unique
+  fileName     String   @unique
+  originalName String
+  mimeType     String
   encoding     String
   size         Int
-  isprivate    Boolean? @default(false)
+  isPrivate    Boolean? @default(false)
   views        Int?     @default(0)
   likes        Int?     @default(0)
   downloaded   Int?     @default(0)
-  starrating   Float?   @default(0)
-  cameramake   String?
-  shutterspeed String?
+  starRating   Float?   @default(0)
+  cameraMake   String?
+  shutterSpeed String?
   aperture     String?
-  focallength  String?
+  focalLength  String?
   iso          String?
 }
 
 model Album {
-  id           Int      @id @default(autoincrement())
-  title        String   @unique
-  description  String?
-  coverphotoid Int?
-  User         User     @relation(fields: [userid], references: [id], onDelete: Cascade)
-  userid       Int
-  isprivate    Boolean? @default(false)
-  Photo        Photo[]
-  createdat    DateTime @default(now())
-  updatedat    DateTime @updatedAt
+  id             String   @id
+  title          String
+  description    String?
+  coverPhotoId   Int?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int
+  isPrivate      Boolean  @default(false)
+  isDownloadable Boolean  @default(false)
+  photos         Photo[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Tag {
-  id    Int     @id @default(autoincrement())
-  name  String  @unique @db.VarChar(64)
-  Photo Photo[]
+  id     Int     @id @default(autoincrement())
+  name   String  @unique @db.VarChar(64)
+  photos Photo[]
 }
 
 // model Contest {

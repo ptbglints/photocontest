@@ -1,6 +1,7 @@
 require('dotenv').config()
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
+var cors = require('cors');
 const enrouten = require('express-enrouten')
 const path = require('path');
 // const cache = require('./middleware/cache')
@@ -11,6 +12,9 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// allow CORS
+app.use(cors());
 
 // app.enable('trust proxy') to know if a reqest is http or https
 // source: https://stackoverflow.com/a/16405622
@@ -29,7 +33,14 @@ const swaggerUi = require('swagger-ui-express')
 const morganBody = require('morgan-body')
 morganBody(app, { logResponseBody: false });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// swagger middleware
+app.use('/api-docs', function(req, res, next){
+    // dynamic swagger url/host
+    swaggerDocument.servers[0].url = `${req.protocol}://${req.headers.host}/api`
+    req.swaggerDoc = swaggerDocument;
+    next();
+}, swaggerUi.serve, swaggerUi.setup());
+
 
 // enrouten di buat untuk membaca folder sebagai route
 // route di sini kita definisikan ke folder api

@@ -6,12 +6,12 @@ const { EncriptPassword } = require('../../../../utils/bcrypt');
 
 const changePassword = async (req, res, next) => {
     try {
-        const { id, password } = req.body
+        const { password } = req.body
+        const id = parseInt(req.user.id)
         const newPassword = req.body.password
-        const whoseId = parseInt(id)
         const newEncryptedPassword = await EncriptPassword(newPassword)
         let option = {}
-        option.where = { id: whoseId }
+        option.where = { id: id }
         option.data = { password: newEncryptedPassword }
         const result = await User.update(option)
         req.result = result
@@ -27,7 +27,7 @@ module.exports = routes => {
         verifyJWT,
         ValidatePassword,
         CheckValidatorResult,
-        authChangePassword,
+        // authChangePassword,
         changePassword
     )
 }

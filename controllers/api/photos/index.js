@@ -57,16 +57,16 @@ const uploadPhotoUser = async (req, res, next) => {
             title,
             description,
             path,
-            User: { connect: { id: userid } },
-            PhotoDetail: {
+            user: { connect: { id: userid } },
+            photoDetail: {
                 connectOrCreate: {
                     where: {
-                        filename: req.file.filename,
+                        fileName: req.file.filename,
                     },
                     create: {
-                        filename: req.file.filename,
-                        originalname: req.file.originalname,
-                        mimetype: req.file.mimetype,
+                        fileName: req.file.filename,
+                        originalName: req.file.originalname,
+                        mimeType: req.file.mimetype,
                         encoding: req.file.encoding,
                         size: req.file.size
                     }
@@ -76,26 +76,26 @@ const uploadPhotoUser = async (req, res, next) => {
 
         // check if album title is specified
         albumtitle && albumtitle.trim() ?
-            option.data.Album = {
+            option.data.albums = {
                 connectOrCreate: {
                     where: {
                         // user: {id: userid},
                         title: albumtitle
                     },
                     create: {
-                        userid: userid,
+                        userId: userid,
                         title: albumtitle
                     }
                 }
-            } : false
+            } : option.data.albums = {}
 
         // check if tags are specified
         tag && tag.trim() ?
-            option.data.Tag = { connectOrCreate: tagArray } : false
+            option.data.tags = { connectOrCreate: tagArray } : false
         option.include = {
-            PhotoDetail: true,
-            Album: true,
-            Tag: true,
+            photoDetail: true,
+            albums: true,
+            tags: true,
         }
 
         // add photo to db
@@ -108,13 +108,32 @@ const uploadPhotoUser = async (req, res, next) => {
 
 }
 
+const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
+    try {
+        const limit = parseInt(req.query.limit)
+        let option = {
+            skip: 0,
+            take: limit
+        }
+        option.include = {
+            photoDetail: true,
+            albums: true
+        }
+        let result = await Photo.findMany(option)
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
 //API to get all photos from a specific user
 const getAllPhotoUser = async (req, res, next) => {
     try {
-        const id = parseInt(req.user.id)
+        const id = parseInt(req.params.id)
         let option = {}
-        option.where = { userid: id }
-        option.include = { tag: true, album: true }
+        option.where = { userId: id }
+        option.include = { tags: true, albums: true }
         let result = await Photo.findMany(option)
         req.result = result
         next()
@@ -126,11 +145,11 @@ const getAllPhotoUser = async (req, res, next) => {
 //API to get a spesific photos from a specific user
 const getOnePhotoUser = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id)
+        const photoId = parseInt(req.params.photoId)
         let option = {}
-        option.where = { id: parseInt(id) }
+        option.where = { id: photoId }
         option.include = {
-            PhotoDetail: true
+            photoDetail: true
         }
         let result = await Photo.findUnique(option)
         req.result = result
@@ -142,13 +161,14 @@ const getOnePhotoUser = async (req, res, next) => {
 
 const updatePhotoDetail = async (req, res) => {
     try {
-        const id = parseInt(req.user.id)
+        const photoId = parseInt(req.params.photoId)
         const { title, description } = req.body
         let option = {}
-        option.where = { id: parseInt(id) }
+        option.where = { id: photoId }
         option.data = { title, description }
         const result = await Photo.update(option)
-        res.json(result)
+        req.result = result
+        next()
     } catch (err) {
         next(err)
     }
@@ -157,12 +177,15 @@ const updatePhotoDetail = async (req, res) => {
 module.exports = routes => {
     // disini sama dengan baseurl/api/photos/
     routes.get('/',
-        verifyJWT,
+        getAllPhotosInDatabaseWithLimit,
+        modifyImagePath
+    )
+
+    routes.get('/user/:id',
         getAllPhotoUser,
         modifyImagePath
     )
-    routes.get('/:id',
-        verifyJWT,
+    routes.get('/:photoId',
         getOnePhotoUser,
         modifyImagePath
     )
@@ -171,7 +194,7 @@ module.exports = routes => {
         uploadSinglePhoto,
         uploadPhotoUser
     )
-    routes.put('/:id',
+    routes.put('/:photoId',
         verifyJWT,
         updatePhotoDetail
     )

@@ -1,116 +1,71 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+const { Role } = require('@prisma/client')
 
+const userName = [
+    'admin',
+    'mod',
+    'judge',
+    'arman',
+    'jhony',
+    'alice',
+    'bob'
+]
+const email = [
+    'admin@ptb1.io',
+    'moderator@ptb1.io',
+    'judge@ptb1.io',
+    'arman@maulana.com',
+    'jhony@kawasaki.com',
+    'alice@prisma.io',
+    'bobby@prisma.io'
+]
+const password = [
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
+    '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O'
+]
+const role = [
+    Role.ADMIN,
+    Role.MODERATOR,
+    Role.JUDGE,
+    Role.USER,
+    Role.USER,
+    Role.USER,
+    Role.USER,
+]
+const name = [
+    'admin',
+    'mod',
+    'judge',
+    'arman',
+    'jhony',
+    'alice',
+    'bobby'
+]
 async function main() {
-    const admin = await prisma.user.upsert({
-        where: { username: 'admin' },
-        update: {},
-        create: {
-            username: 'admin',
-            email: 'admin@ptb1.io',
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            role: 'ADMIN',
-            profile: {
-                create: {
-                    name: 'admin'
+    for (let i = 0; i < userName.length; i++) {
+        const result = await prisma.user.upsert({
+            where: { userName: userName[i] },
+            update: {},
+            create: {
+                userName: userName[i],
+                email: email[i],
+                password: password[i],
+                role: role[i],
+                profile: {
+                    create: {
+                        name: name[i]
+                    }
                 }
-            }
-        },
-    });
-
-    const moderator = await prisma.user.upsert({
-        where: { username: 'moderator' },
-        update: {},
-        create: {
-            username: 'moderator',
-            email: 'moderator@ptb1.io',
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            role: 'MODERATOR',
-            profile: {
-                create: {
-                    name: 'moderator'
-                }
-            }
-        }
-    });
-
-    const judge = await prisma.user.upsert({
-        where: { username: 'judge' },
-        update: {},
-        create: {
-            username: 'judge',
-            email: 'judge@ptb1.io',
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            role: 'JUDGE',
-            profile: {
-                create: {
-                    name: 'judge'
-                }
-            }
-        },
-    });
-
-    const arman = await prisma.user.upsert({
-        where: { username: 'arman' },
-        update: {},
-        create: {
-            username: 'arman',
-            email: 'arman@maulana.com',
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            profile: {
-                create: {
-                    name: 'arman'
-                }
-            }
-        },
-    });
-
-    const jhonyboy = await prisma.user.upsert({
-        where: { username: 'jhonyboy' },
-        update: {},
-        create: {
-            username: 'jhonyboy',
-            email: 'jhony@kawasaki.com',
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            profile: {
-                create: {
-                    name: 'jhonyboy'
-                }
-            }
-        },
-    });
-
-    const alice = await prisma.user.upsert({
-        where: { email: "alice@prisma.io" },
-        update: {},
-        create: {
-            username: 'alice',
-            email: "alice@prisma.io",
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            profile: {
-                create: {
-                    name: 'alice'
-                }
-            }
-        },
-    });
-
-    const bob = await prisma.user.upsert({
-        where: { email: "bob@prisma.io" },
-        update: {},
-        create: {
-            username: 'bobprisma',
-            email: "bob@prisma.io",
-            password: '$2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O',
-            profile: {
-                create: {
-                    name: 'bobprisma'
-                }
-            }
-        },
-    });
-
-    console.log({ admin, moderator, judge, arman, jhonyboy, alice, bob });
+            },
+        });
+        console.log(`Created user: ${result.userName}`, '\tpassword: Pass123?')
+    }
 }
 
 main()

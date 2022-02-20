@@ -99,53 +99,65 @@ All users password are the same: `Pass1123?`
 
 #### Folder structure
 ```
-├── .env
-├── .gitignore
 ├── app.js
 ├── controllers
-│  ├── api
-│  │  └── users
-│  │    ├── index.js
-│  │    ├── login
-│  │    │  └── index.js
-│  │    ├── password
-│  │    │  └── index.js
-│  │    ├── profile
-│  │    │  └── index.js
-│  │    └── signup
-│  │      └── index.js
-│  └── apiv2
-│    ├── profiles
-│    │  └── index.js
-│    └── users
-│      └── index.js
+|  ├── api
+|  |  ├── albums
+|  |  |  └── index.js
+|  |  ├── photos
+|  |  |  └── index.js
+|  |  └── users
+|  |     ├── index.js
+|  |     ├── login
+|  |     |  └── index.js
+|  |     ├── password
+|  |     |  └── index.js
+|  |     ├── profile
+|  |     |  └── index.js
+|  |     └── signup
+|  |        └── index.js
+|  └── apiv2
+|     ├── profiles
+|     |  └── index.js
+|     └── users
+|        └── index.js
 ├── docker-compose.yml
 ├── example.env
+├── index.html
 ├── middleware
-│  ├── authChangePassword.js
-│  ├── authJwt.js
-│  ├── authRole.js
-│  ├── cache.js
-│  ├── errorHandler.js
-│  └── responseSuccess.js
+|  ├── authChangePassword.js
+|  ├── authJwt.js
+|  ├── authRole.js
+|  ├── authUpdateProfile.js
+|  ├── cache.js
+|  ├── errorHandler.js
+|  ├── modifyImagePath.js
+|  ├── responseSuccess.js
+|  └── uploadPhoto.js
 ├── model
-│  └── index.js
+|  └── index.js
+├── new.tree
 ├── nodemon.json
+├── out.txt
 ├── package-lock.json
 ├── package.json
 ├── permission
-│  └── index.js
+|  └── index.js
 ├── prisma
-│  ├── schema.prisma
-│  └── seed.ts
+|  ├── schema.prisma
+|  └── seed.ts
 ├── public
-│  └── README.md
+|  └── README.md
 ├── README.md
 ├── swagger.example.yml
 ├── swagger.yml
-├── thunder-collection_Photo Contest.json
+├── thunder-collection_PhotoContest.json
+├── thunder-collection_User_API.json
+├── thunder-environment_Heroku.json
+├── thunder-environment_Local.json
 └── utils
-  ├── bcrypt.js
-  ├── index.js
-  └── validator.js
+   ├── bcrypt.js
+   ├── index.js
+   ├── jsonwebtoken.js
+   └── validator.js
 ```

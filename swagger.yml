@@ -1,9 +1,9 @@
 openapi: 3.0.1
 info:
   title: Photo Contest
-  description: 'This is Glints PTB1 Final Project.  
-    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)  
-    For this sample, you can use the api key `special-key` to test the authorization filters.'
+  description: "This is Glints PTB1 Final Project.
+    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)
+    For this sample, you can use the api key `special-key` to test the authorization filters."
   termsOfService: http://swagger.io/terms/
   contact:
     email: apiteam@swagger.io
@@ -15,13 +15,12 @@ externalDocs:
   description: "Find more info here"
   url: "https://example.com"
 servers:
-- url: http://localhost:8000/api
-- url: https://ptb-photocontest.herokuapp.com/api
+  - url: http://thisurlwillbedynamicallychanged.io
 tags:
-- name: User
-- name: Profile
-- name: Photos
-- name: Upload
+  - name: User
+  - name: Profile
+  - name: Photo
+  - name: Album
 
 paths:
   /users:
@@ -42,7 +41,7 @@ paths:
       #       type: integer
       #       format: int64
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -50,12 +49,12 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
 
   /users/signup:
     post:
       tags:
-      - User
+        - User
       summary: Create user
       description: This can only be done by the logged in user.
       operationId: createUser
@@ -68,13 +67,13 @@ paths:
               properties:
                 username:
                   type: string
-                  example: 'jokox'
+                  example: "broto"
                 email:
                   type: string
-                  example: 'jkx@mantab.io'
+                  example: "broto@mantab.io"
                 password:
                   type: string
-                  example: 'Pass123?'
+                  example: "Pass123?"
       responses:
         default:
           description: successful operation
@@ -84,7 +83,7 @@ paths:
   /users/login:
     post:
       tags:
-      - User
+        - User
       summary: User login
       # description: This can only be done by the logged in user.
       # operationId: createUser
@@ -97,21 +96,21 @@ paths:
               properties:
                 username:
                   type: string
-                  example: 'arman'
+                  example: "arman"
                 password:
                   type: string
-                  example: 'Pass123?'
+                  example: "Pass123?"
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
 
-  /users/profile/id/{id}:
+  /users/profile/userid/{id}:
     get:
       tags:
         - Profile
-      summary: Gets profile by Id
+      summary: Gets profile by userId
       # description:
       # operationId: getUserById
       parameters:
@@ -124,18 +123,18 @@ paths:
             format: int64
             example: 4
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
-  
-  /users/profile/id/:
+                $ref: "#/components/schemas/Profile"
+
+  /users/profile/:
     put:
       tags:
-      - Profile
-      summary: Update user profile by Id
+        - Profile
+      summary: Update users own profile
       # description: This can only be done by the logged in user.
       # operationId: createUser
       requestBody:
@@ -151,7 +150,7 @@ paths:
                   example: 4
                 name:
                   type: string
-                  example: 'Arman Maulalan'
+                  example: "Arman Maulalan"
                 # address:
                 #   type: string
                 #   example: 'Jl. Pinang Kayu no.30 Bandung'
@@ -163,13 +162,13 @@ paths:
         default:
           description: successful operation
           content: {}
-      x-codegen-request-body-name: body                
+      x-codegen-request-body-name: body
 
   /users/profile/username/{username}:
     get:
       tags:
         - Profile
-      summary: Gets profile by Username
+      summary: Gets specific profile by Username
       # description:
       # operationId: getUserById
       parameters:
@@ -179,57 +178,31 @@ paths:
           required: true
           schema:
             type: string
-            example: 'alice'
+            example: "alice"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
-
-  /users/profile/username/:
-    put:
-      tags:
-      - Profile
-      summary: Update user profile by username
-      # description: This can only be done by the logged in user.
-      # operationId: createUser
-      requestBody:
-        required: false
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: 'arman'
-                name:
-                  type: string
-                  example: 'Arman Bojongsoang'
-                address:
-                  type: string
-                  example: 'Jl. Timor no.28 Soroako'
-                profilephoto:
-                  type: string
-                coverphoto:
-                  type: string
-      responses:
-        default:
-          description: successful operation
-          content: {}
-      x-codegen-request-body-name: body
+                $ref: "#/components/schemas/Profile"
 
   /photos:
     get:
       tags:
-        - Photos
-      summary: Get all photos from logged in user.
+        - Photo
+      summary: Get all photos from database with limit
       description: >
-        use JWT to identify which user id who wants get all their photo
+        Get all photos from database with limit
+      parameters:
+        - name: limit
+          in: query
+          description: limit
+          required: true
+          schema:
+            type: integer
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -237,34 +210,56 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/components/schemas/Photos'
-                  
-  /photos:{id}:
+                  $ref: "#/components/schemas/Photo"
+
+  /photos/user/{id}:
     get:
       tags:
-        -Photos
-      summary: Get spesific photo from logged in user.
+        - Photo
+      summary: Get all photos from a specific user
       parameters:
         - name: id
           in: path
-          description: Photo ID
+          description: User ID
           required: true
           schema:
             type: integer
             format: int64
             example: 4
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Photos'
+                $ref: "#/components/schemas/Photo"
 
-  /upload:
+  /photos/{photoId}:
+    get:
+      tags:
+        - Photo
+      summary: Get a specific photo by photo ID
+      parameters:
+        - name: photoId
+          in: path
+          description: photo ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 4
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+
+  /photos/upload:
     post:
       tags:
-      - Upload
+        - Photo
       summary: Upload photo to collection User
       description: Logged user only
       operationId: uploadePhoto
@@ -275,30 +270,258 @@ paths:
             schema:
               type: object
               properties:
-                orderId:
-                  type: integer
-                userId:
-                  type: integer
-                fileName:
+                title:
+                  type: string
+                  example: "Standing & terbang"
+                description:
+                  type: string
+                  example: "Lagi liburan di Papua New Guinea"
+                user-photo:
                   type: string
                   format: binary
-                  
+                tag:
+                  type: string
+                  example: "sport,bunga,ikan,bekasi"
+
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-      
-      
-components:
-  requestBodies:
-    PetBody:
-      description: A JSON object containing pet information
-      required: true
-      content:
-        application/json:
+
+  /albums:
+    post:
+      tags:
+        - Album
+      summary: Create an album
+      description: >
+        Create an album
+      requestBody:
+        description: Create an album
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Swimming in Sabana, Merauke
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example:  Swimming in Sabana, Merauke
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+    get:
+      tags:
+        - Album
+      summary: Get all albums in the database, with skip and take query, ordered by createdAt
+      description: >
+        Get all albums in the database, with skip and take query, ordered by createdAt
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: true
           schema:
-            $ref: '#/components/schemas/User'
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+    put:
+      tags:
+        - Album
+      summary: Update detail of specific album, by album Id
+      description: >
+        Update detail of specific album, by album Id
+      requestBody:
+        description: Update detail of specific album, by album Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAlbumDetail'
+            example:
+              albumId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+              title: Flying in The Dark
+              description: This is how I fly in the Dark
+              coverPhotoId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+              isPrivate: true
+              isDownloadable: true
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/username/search:
+    get:
+      tags:
+        - Album
+      summary: Search all albums whose username contain certain string
+      description: >
+        Search all albums whose username contain certain string
+      parameters:
+        - name: username
+          in: query
+          description: username
+          required: true
+          schema:
+            type: string
+            example: arm
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/username:
+    get:
+      tags:
+        - Album
+      summary: Get all albums from specific Username
+      description: >
+        Get all albums from specific Username
+      parameters:
+        - name: username
+          in: query
+          description: username
+          required: true
+          schema:
+            type: string
+            example: arman
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/title/search:
+    get:
+      tags:
+        - Album
+      summary: Search all albums by albums's name that contain certain string
+      description: >
+        Search all albums by albums's name that contain certain string
+      parameters:
+        - name: string
+          in: query
+          description: string
+          required: true
+          schema:
+            type: string
+            example: Dark
+        - name: skip
+          in: query
+          description: skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
+  /albums/{albumId}:
+    get:
+      tags:
+        - Album
+      summary: Get a specific album by album id, include its photos 
+      description: >
+        Get a specific album by album id, include its photos 
+      parameters:
+        - name: albumId
+          in: path
+          description: albumId
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/AlbumNested"
+
+components:
   schemas:
     User:
       type: object
@@ -306,7 +529,7 @@ components:
         id:
           type: integer
           format: int64
-        username:
+        userName:
           type: string
         email:
           type: string
@@ -316,10 +539,10 @@ components:
           maxLength: 254
         role:
           type: string
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
 
@@ -330,35 +553,143 @@ components:
           type: string
         addres:
           type: string
-        profilephoto:
+        profilePhoto:
           type: string
-        coverphoto:
+        coverPhoto:
           type: string
-        userid:
+        userId:
           type: integer
           format: int64
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
 
-    Photos:
+    Photo:
       type: object
       properties:
+        id:
+          type: integer
         title:
           type: string
         description:
           type: string
         path:
           type: string
-        userid:
+        userId:
           type: integer
           format: int64
-        createdat:
+        createdAt:
           type: string
           format: date-time
-        updatedat:
+        updatedAt:
           type: string
           format: date-time
+
+    Album:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AlbumNested:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        user:
+          type: object
+          $ref: "#/components/schemas/User"
+        userId:
+          type: integer
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+        photos:
+          type: object
+          $ref: "#/components/schemas/Photo"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateAlbumDetail:
+      type: object
+      properties:
+        albumId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        coverPhotoId:
+          type: string
+        isPrivate:
+          type: boolean
+        isDownloadable:
+          type: boolean
+
+    SuccessResponseObject:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+
+    SuccessResponseArray:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
