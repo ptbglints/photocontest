@@ -34,17 +34,26 @@ function clientErrorHandler(err, req, res, next) {
         message = err.message
     }
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        status = HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
+        status = HTTP_STATUS_CODE.BAD_REQUEST
         code = err.code
         message = err.message
     }
+    // catch error from validator
+    if(Array.isArray(err) && err[0].msg && err[0].param){
+        let validatorErrorList = []
+        for ( let i = 0; i < err.length; i++){         
+            validatorErrorList.push(`${err[i].param} ${err[i].msg}`)
+        }
+        status = HTTP_STATUS_CODE.BAD_REQUEST
+        message = validatorErrorList
+    }
+
 
     res.status(status)
     res.send({ status, code, message })
 }
 
-function errorHandler(err, req, res, next) {
-    console.log('ERROR 3')
+function errorHandler(err, req, res) {
     res.status(500)
     res.json({ error: err })
 }
