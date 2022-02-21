@@ -11,6 +11,9 @@ const login = async (req, res, next) => {
         option.where = {
             OR: [{ userName: username }, { email: username }]
         }
+        option.include = {
+            profile: true
+        }
         const user = await User.findFirst(option) // will throw error if no record found
         const passwordIsValid = await CheckPassword(password, user.password)
 
@@ -21,7 +24,7 @@ const login = async (req, res, next) => {
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
             id: user.id,
-            username: user.username,
+            username: user.userName,
             role: user.role
         }
 
@@ -35,9 +38,11 @@ const login = async (req, res, next) => {
         // user.refreshToken = refreshToken
 
         //send the access token to the client inside a cookie
-        res.cookie("jwtAccess", accessToken, { secure: false, httpOnly: true })
-        res.cookie("jwtRefresh", refreshToken, { secure: false, httpOnly: true })
+        res.cookie("jwtAccess", accessToken, { secure: false, httpOnly: false })
+        res.cookie("jwtRefresh", refreshToken, { secure: false, httpOnly: false })
         req.result = user
+        req.result.token = accessToken
+        req.result.tokenRefresh = refreshToken
         next()
     } catch (err) {
         next(err)
