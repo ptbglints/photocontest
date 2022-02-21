@@ -33,13 +33,18 @@ const swaggerUi = require('swagger-ui-express')
 const morganBody = require('morgan-body')
 morganBody(app, { logResponseBody: false });
 
+// swagger custom JS
+var options = {
+    customJs: '/public/custom.js'
+  };
+ 
 // swagger middleware
 app.use('/api-docs', function(req, res, next){
     // dynamic swagger url/host
     swaggerDocument.servers[0].url = `${req.protocol}://${req.headers.host}/api`
     req.swaggerDoc = swaggerDocument;
     next();
-}, swaggerUi.serve, swaggerUi.setup());
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 
 // enrouten di buat untuk membaca folder sebagai route
