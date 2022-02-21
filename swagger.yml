@@ -51,6 +51,31 @@ paths:
                   type: object
                   $ref: "#/components/schemas/User"
 
+
+    delete:
+      tags:
+        - User
+      summary: Delete a user
+      description: This can be done only by admin (not implemented yet)
+      operationId: deleteUser
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 26
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
   /users/signup:
     post:
       tags:
@@ -100,6 +125,29 @@ paths:
                 password:
                   type: string
                   example: "Pass123?"
+      responses:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
+
+  /users/password:
+    put:
+      tags:
+        - User
+      summary: Change user pasword
+      description: This can only be done by the logged in user.
+      operationId: changeUserPassword
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: "Newpass123?"
       responses:
         default:
           description: successful operation
