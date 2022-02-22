@@ -1,12 +1,15 @@
 const { User } = require('../../../../model')
 const { CheckPassword } = require('../../../../utils/bcrypt');
 const { verifyJWT } = require('../../../../middleware/authJwt');
-const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
+const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken');
+const { ValidateLogin, CheckValidatorResult } = require('../../../../middleware/validator');
+const { body, check, oneOf, checkSchema, validationResult } = require('express-validator');
 
 const login = async (req, res, next) => {
     // console.log(req.body)
     try {
         const { username, password } = req.body
+        console.log(username)
         let option = {}
         option.where = {
             OR: [{ userName: username }, { email: username }]
@@ -52,5 +55,9 @@ const login = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/login
-    routes.post('/', login)
+    routes.post('/',
+        ValidateLogin,
+        CheckValidatorResult,
+        login
+    )
 }

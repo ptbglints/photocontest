@@ -1,26 +1,23 @@
 const { nextTick } = require('process');
 const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
-const { ValidateRegisterUser, CheckValidatorResult } = require('../../../../utils/validator')
+const { ValidateSignup, CheckValidatorResult } = require('../../../../middleware/validator')
 const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
 
 const signup = async (req, res, next) => {
     try {
-        let { username, email, password } = req.body
+        let { userName, email, password } = req.body
 
         const encryptedPassword = await EncriptPassword(password)
 
         let option = {}
         option.data = {
-            userName: username,
+            userName,
             email,
             password: encryptedPassword,
             profile: {
-                create: { name: username || email }
+                create: { name: userName || email }
             },
-            // Album: {
-            //     create: { title: 'Unnamed_album' }
-            //   },
         }
 
         const result = await User.create(option)
@@ -29,7 +26,7 @@ const signup = async (req, res, next) => {
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
             id: result.id,
-            username: result.username,
+            userName: result.userName,
             role: result.role
         }
 
@@ -56,19 +53,8 @@ const signup = async (req, res, next) => {
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/signup
     routes.post('/',
-        ValidateRegisterUser,
+        ValidateSignup,
         CheckValidatorResult,
-
-        // check jwt
-        // if exist, user must logged out first
-        /*
-        function (req, res, next) {
-            if (req.user) {
-                throw new Error('You are currently logged-in. Please logout first.')
-            }
-            next()
-        },
-        */
         signup
     )
 }

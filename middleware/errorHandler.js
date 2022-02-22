@@ -36,12 +36,21 @@ function clientErrorHandler(err, req, res, next) {
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
         code = err.code
-        message = err.message
+        switch (code) {
+            case 'P2000':
+                message = `The provided value for the field ${err.meta.target} is too long.`
+                break;
+            case 'P2002':
+                message = `${err.meta.target} already exist`
+                break;
+            default:
+                message = err.message
+        }
     }
     // catch error from validator
-    if(Array.isArray(err) && err[0].msg && err[0].param){
+    if (Array.isArray(err) && err[0].msg && err[0].param) {
         let validatorErrorList = []
-        for ( let i = 0; i < err.length; i++){         
+        for (let i = 0; i < err.length; i++) {
             validatorErrorList.push(`${err[i].param} ${err[i].msg}`)
         }
         status = HTTP_STATUS_CODE.BAD_REQUEST
@@ -53,7 +62,7 @@ function clientErrorHandler(err, req, res, next) {
     res.send({ status, code, message })
 }
 
-function errorHandler(err, req, res,next) {
+function errorHandler(err, req, res, next) {
     res.status(500)
     res.json({ error: err })
 }

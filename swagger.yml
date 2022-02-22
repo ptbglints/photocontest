@@ -51,7 +51,6 @@ paths:
                   type: object
                   $ref: "#/components/schemas/User"
 
-
     delete:
       tags:
         - User
@@ -113,23 +112,48 @@ paths:
       # description: This can only be done by the logged in user.
       # operationId: createUser
       requestBody:
-        required: true
         content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: "arman"
-                password:
-                  type: string
-                  example: "Pass123?"
+          application/json: # Media type
+            schema: # Request body contents
+              $ref: "#/components/schemas/LoginJSON" # Reference to an object
+            examples: # Child of media type because we use $ref above
+              # Properties of a referenced object
+              username arman:
+                value:
+                  username: arman
+                  password: Pass123?
+              username jhony:
+                value:
+                  username: jhony
+                  password: Pass123?
+              username alice:
+                value:
+                  username: alice
+                  password: Pass123?
+              username bob:
+                value:
+                  username: bob
+                  password: Pass123?
+              email arman:
+                value:
+                  username: arman@maulana.com
+                  password: Pass123?
+              email jhony:
+                value:
+                  username: jhony@kawasaki.com
+                  password: Pass123?
+              email alice:
+                value:
+                  username: alice@prisma.io
+                  password: Pass123?
+              email bob:
+                value:
+                  username: bob@prisma.io
+                  password: Pass123?
       responses:
         default:
           description: successful operation
           content: {}
-      x-codegen-request-body-name: body
 
   /users/password:
     put:
@@ -250,15 +274,181 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
+        200:
           description: Successful operation
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/Photo"
+                # allOf:
+                # $ref: "#/components/schemas/SuccessResponseObject"
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type: object
+                      $ref: "#/components/schemas/Photo"
+                      # $ref: "#/components/schemas/Photo"
+                      additionalProperties:
+                        $ref: "#/components/schemas/PhotoDetail"
+                          
+                        
+                        
+                        # # - 
+                        # # default:
+                        #   type: object
+                        #   $ref: "#/components/schemas/Photo"
+                        #   additionalProperties:
+                        #     type: object
+                        #     $ref: "#/components/schemas/PhotoDetail"
+                        
+                        # items:
+                          
+                      # additionalProperties:
+                      #   properties:
+                      #     $ref: "#/components/schemas/PhotoDetail"
+                        # text:
+                        #   type: string
+                        # $ref: "#/components/schemas/PhotoDetail"
+                      # properties:
+                      # type: "#/components/schemas/Photo"
+                      # $ref: "#/components/schemas/Photo"
+                      # photoDetail:
+                      #   type: object
+                      #   $ref: "#/components/schemas/PhotoDetail"
+                      # oneOf:
+                      #   - $ref: "#/components/schemas/Photo"
+                      #   - properties:
+                      #     $ref: "#/components/schemas/PhotoDetail"
+
+                      # - $ref: "#/components/schemas/PhotoDetail"
+                      # $ref: "#/components/schemas/Photo"
+                    # items:
+                    #   type: object
+                    #   $ref: "#/components/schemas/Photo"
+                    # properties:
+                    #     schema:
+                    #       $ref: "#/components/schemas/PhotoDetail"
+                    # properties:
+
+                    # }
+                    # oneOf:
+                    #   - type: object
+                    #     properties:
+                    #     $ref: "#/components/schemas/Photo"
+                    #     id:
+                    #       type: integer
+                    # - type: object
+                    #   $ref: "#/components/schemas/PhotoDetail"
+
+        # {
+        #   "status": 200,
+        #   "message": "Success",
+        #   "data": [
+        #     {
+        #       "id": 1,
+        #       "title": "My photo title",
+        #       "description": "My photo description",
+        #       "path": "http://localhost:8000/public\\tmp\\0000000019\\ckzradnub0000swhnhup87ccn.png",
+        #       "userId": 19,
+        #       "createdAt": "2022-02-17T17:58:05.959Z",
+        #       "updatedAt": "2022-02-17T17:58:05.962Z",
+        #       "photoDetail": {
+        #         "photoId": 1,
+        #         "fileName": "ckzradnub0000swhnhup87ccn.png",
+        #         "originalName": "logo_tmj.png",
+        #         "mimeType": "image/png",
+        #         "encoding": "7bit",
+        #         "size": 1841581,
+        #         "isPrivate": false,
+        #         "views": 0,
+        #         "likes": 0,
+        #         "downloaded": 0,
+        #         "starRating": 0,
+        #         "cameraMake": null,
+        #         "shutterSpeed": null,
+        #         "aperture": null,
+        #         "focalLength": null,
+        #         "iso": null
+        #       },
+        #       "albums": [
+        #         {
+        #           "id": "1",
+        #           "title": "title",
+        #           "description": "description",
+        #           "coverPhotoId": 2,
+        #           "userId": 19,
+        #           "isPrivate": false,
+        #           "isDownloadable": true,
+        #           "createdAt": "2022-02-17T17:58:05.960Z",
+        #           "updatedAt": "2022-02-20T10:23:29.781Z"
+        #         }
+        #       ]
+        #     },
+        #     {
+        #       "id": 2,
+        #       "title": "My photo title",
+        #       "description": "My photo description",
+        #       "path": "http://localhost:8000/public\\tmp\\0000000019\\ckzragr1o000010hncog8h761.png",
+        #       "userId": 19,
+        #       "createdAt": "2022-02-17T18:00:30.134Z",
+        #       "updatedAt": "2022-02-17T18:00:30.136Z",
+        #       "photoDetail": {
+        #         "photoId": 2,
+        #         "fileName": "ckzragr1o000010hncog8h761.png",
+        #         "originalName": "logo_tmj.png",
+        #         "mimeType": "image/png",
+        #         "encoding": "7bit",
+        #         "size": 1841581,
+        #         "isPrivate": false,
+        #         "views": 0,
+        #         "likes": 0,
+        #         "downloaded": 0,
+        #         "starRating": 0,
+        #         "cameraMake": null,
+        #         "shutterSpeed": null,
+        #         "aperture": null,
+        #         "focalLength": null,
+        #         "iso": null
+        #       },
+        #       "albums": []
+        #     }
+        #   ]
+        # }
+
+        # type: object
+        # properties:
+        #   type: "#/components/schemas/SuccessResponseObject"
+        # schema:
+        # $ref: "#/components/schemas/SuccessResponseObject"
+        # properties:
+        #   value:
+        #     $ref: "#/components/schemas/Photo"
+        # properties:
+        # allOf:
+        # # items:
+        #   properties:
+        #   $ref: ["#/components/schemas/Photo"]
+        #   photoDetail:
+        #     # type: object
+        #     $ref: "#/components/schemas/PhotoDetail"
+        #   albums:
+        #     type: array
+        #     items:
+        #       $ref: "#/components/schemas/Album"
+
+        # Definition of all error statuses
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /photos/user/{id}:
     get:
@@ -360,7 +550,7 @@ paths:
               properties:
                 title:
                   type: string
-                  example:  Swimming in Sabana, Merauke
+                  example: Swimming in Sabana, Merauke
         required: true
       responses:
         "200":
@@ -412,7 +602,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateAlbumDetail'
+              $ref: "#/components/schemas/UpdateAlbumDetail"
             example:
               albumId: f503adb6-3bd4-48a2-9b24-77eb1bae8238
               title: Flying in The Dark
@@ -548,9 +738,9 @@ paths:
     get:
       tags:
         - Album
-      summary: Get a specific album by album id, include its photos 
+      summary: Get a specific album by album id, include its photos
       description: >
-        Get a specific album by album id, include its photos 
+        Get a specific album by album id, include its photos
       parameters:
         - name: albumId
           in: path
@@ -570,7 +760,23 @@ paths:
                 $ref: "#/components/schemas/AlbumNested"
 
 components:
+  # examples:
+  #   ObjectLoginByUserName:
+  #     value:
+  #       username: arman
+  #       password: Pass123?
+  # summary: A sample object
   schemas:
+    LoginJSON: # Schema name
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example: # Object-level example
+        username: arman
+        password: Pass123?
     User:
       type: object
       properties:
@@ -635,6 +841,43 @@ components:
         updatedAt:
           type: string
           format: date-time
+
+    PhotoDetail:
+      type: object
+      properties:
+        photoId:
+          type: string
+        fileName:
+          type: string
+        originalName:
+          type: string
+        mimeType:
+          type: string
+        encoding:
+          type: string
+        size:
+          type: integer
+        isPrivate:
+          type: boolean
+        views:
+          type: integer
+        likes:
+          type: integer
+        downloaded:
+          type: integer
+        starRating:
+          type: integer
+        cameraMake:
+          type: string
+        shutterSpeed:
+          type: string
+        aperture:
+          type: string
+        focalLength:
+          type: number
+          format: float
+        iso:
+          type: integer
 
     Album:
       type: object

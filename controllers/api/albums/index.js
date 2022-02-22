@@ -1,10 +1,8 @@
 const { Album } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt');
 const { randomUUID } = require('crypto');
-const { ValidateInputCreateAlbum, CheckValidatorResult, createAlbumSchema} = require('../../../middleware/validator');
-const { check, body, checkSchema, validationResult, sanitize } = require('express-validator');
-const validator = require('validator');
-const { modifyImagePath, modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath');
+const { ValidateCreateAlbum, CheckValidatorResult, createAlbumSchema } = require('../../../middleware/validator');
+const { modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath');
 
 // Create an album
 const createOne = async (req, res, next) => {
@@ -192,7 +190,7 @@ module.exports = routes => {
     // Create an album
     routes.post('/',
         verifyJWT,
-        ValidateInputCreateAlbum,
+        ValidateCreateAlbum,
         CheckValidatorResult,
         createOne
     )
