@@ -79,7 +79,7 @@ model Album {
   id             String   @id @default(uuid())
   title          String
   description    String?
-  coverPhotoId   Int?
+  coverPhotoPath String?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         Int
   isPrivate      Boolean  @default(false)
