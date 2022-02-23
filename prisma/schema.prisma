@@ -27,7 +27,7 @@ model User {
   photos    Photo[]
   albums    Album[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 }
 
 model Profile {
@@ -38,7 +38,7 @@ model Profile {
   profilePhoto String?
   coverPhoto   String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now())
 }
 
 model Photo {
@@ -52,7 +52,7 @@ model Photo {
   albums      Album[]
   tags        Tag[]
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  updatedAt   DateTime     @default(now())
 }
 
 model PhotoDetail {
@@ -86,7 +86,7 @@ model Album {
   isDownloadable Boolean  @default(false)
   photos         Photo[]
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime @default(now())
 }
 
 model Tag {

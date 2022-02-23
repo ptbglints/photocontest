@@ -81,8 +81,10 @@ const searchManyByUsername = async (req, res, next) => {
 
 // Get all albums from specific Username
 const getManyBySpecificUsername = async (req, res, next) => {
+    console.log('getManyBySpecificUsername')
     try {
         let { username, skip, take } = req.query
+        console.log(username, skip, take)
         skip = parseInt(skip)
         take = parseInt(take)
 
@@ -96,6 +98,11 @@ const getManyBySpecificUsername = async (req, res, next) => {
         }
         option.orderBy = {
             updatedAt: 'asc'
+        }
+        option.include = {
+            user: {
+                select: { userName: true }
+            }
         }
         const result = await Album.findMany(option)
         req.result = result
@@ -206,7 +213,7 @@ module.exports = routes => {
     )
 
     // Get all albums from specific Username
-    routes.get('/username/',
+    routes.get('/username/getone',
         getManyBySpecificUsername
     )
 
