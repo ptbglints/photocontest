@@ -89,7 +89,7 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                userName:
                   type: string
                   example: "broto"
                 email:
