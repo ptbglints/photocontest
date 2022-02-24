@@ -118,37 +118,37 @@ paths:
               $ref: "#/components/schemas/LoginJSON" # Reference to an object
             examples: # Child of media type because we use $ref above
               # Properties of a referenced object
-              username arman:
+              userName arman:
                 value:
-                  username: arman
+                  userName: arman
                   password: Pass123?
-              username jhony:
+              userName jhony:
                 value:
-                  username: jhony
+                  userName: jhony
                   password: Pass123?
-              username alice:
+              userName alice:
                 value:
-                  username: alice
+                  userName: alice
                   password: Pass123?
-              username bob:
+              userName bob:
                 value:
-                  username: bob
+                  userName: bob
                   password: Pass123?
               email arman:
                 value:
-                  username: arman@maulana.com
+                  userName: arman@maulana.com
                   password: Pass123?
               email jhony:
                 value:
-                  username: jhony@kawasaki.com
+                  userName: jhony@kawasaki.com
                   password: Pass123?
               email alice:
                 value:
-                  username: alice@prisma.io
+                  userName: alice@prisma.io
                   password: Pass123?
               email bob:
                 value:
-                  username: bob@prisma.io
+                  userName: bob@prisma.io
                   password: Pass123?
       responses:
         default:

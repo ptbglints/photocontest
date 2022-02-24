@@ -11,15 +11,14 @@ const { modifyImagePath2ndLayer } = require('../../../../middleware/modifyImageP
 // https://github.com/prisma/prisma/issues/5184
 const testing = async (req, res, next) => {
     try {
-        // let { skip, take } = req.query
+        let { skip, take } = req.query
+        skip = parseInt(skip)
+        take = parseInt(take)
 
-        // let option = {}
-        // option.skip = parseInt(skip)
-        // option.take = parseInt(take)
         const result = await prisma.$queryRaw
         `
         SELECT
-        album.id as "albumId",
+        album.id as "albumId", "updatedAt",
         title, description, path, album."userId",
         name, address, "profilePhoto", "coverPhoto"
         FROM "Album" as album
@@ -32,7 +31,8 @@ const testing = async (req, res, next) => {
         INNER JOIN
         (select "Photo".id, path from "Photo") AS photo
         ON album."coverPhotoId" = photo.id
-        ORDER BY album."updatedAt" DESC;
+        ORDER BY album."updatedAt" DESC
+        OFFSET ${skip} LIMIT ${take};
         `
 
         req.result = result
