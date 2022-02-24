@@ -101,5 +101,5 @@ insert into "Album" (id,title,description,"coverPhotoId","userId","isPrivate","i
 ('98d99096-8227-43de-83fd-95d5a5a97555','Zathin','Down-sized tangible database',961,20,false,false,'2016-09-17 21:32:35','2016-09-17 23:44:10'),
 ('722e820c-2d0b-4a89-852d-1c35c9001541','Konklab','Multi-layered disintermediate synergy',971,20,false,false,'2019-11-25 00:01:57','2019-11-25 02:13:32'),
 ('570eb4a9-e849-4fdf-b2bd-e762513f7c56','Alphazap','Fundamental uniform solution',981,20,false,true,'2017-10-23 13:08:45','2017-10-23 15:20:20'),
-('113eac99-5418-409a-8092-feefc6dbbf44','Aerified','Quality-focused dedicated encryption',991,20,true,false,'2019-06-15 05:14:05','2019-06-15 07:25:40'),
+('113eac99-5418-409a-8092-feefc6dbbf44','Aerified','Quality-focused dedicated encryption',991,20,true,false,'2019-06-15 05:14:05','2019-06-15 07:25:40');
 COMMIT WORK;
