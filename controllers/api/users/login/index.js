@@ -8,11 +8,10 @@ const { body, check, oneOf, checkSchema, validationResult } = require('express-v
 const login = async (req, res, next) => {
     // console.log(req.body)
     try {
-        const { username, password } = req.body
-        console.log(username)
+        const { userName, password } = req.body
         let option = {}
         option.where = {
-            OR: [{ userName: username }, { email: username }]
+            OR: [{ userName: userName }, { email: userName }]
         }
         option.include = {
             profile: true
@@ -27,7 +26,7 @@ const login = async (req, res, next) => {
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
             id: user.id,
-            username: user.userName,
+            userName: user.userName,
             role: user.role
         }
 
