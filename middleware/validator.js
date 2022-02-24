@@ -7,7 +7,7 @@ const { body, check, oneOf, checkSchema, validationResult } = require('express-v
  * otherwise the valiation cannot pass
  */
 const usernameChain =
-    body('username')
+    body('userName')
         .trim()
         .exists()
         .withMessage('field not exist')
@@ -39,13 +39,13 @@ const passwordChain =
         })
         .withMessage('minimum 8 characters, 1 lowercase, 1 uppercase, and 1 symbol ')
 const usernameChainLoose =
-    body('username')
+    body('userName')
         .exists()
         .withMessage('field not exist')
         .notEmpty()
         .withMessage('cannot be empty')
 const passwordChainLoose =
-    body('username')
+    body('password')
         .exists()
         .withMessage('field not exist')
         .notEmpty()
