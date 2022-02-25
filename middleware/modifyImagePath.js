@@ -30,7 +30,7 @@ function modifyImagePath2ndLayer(req, res, next) {
     const resultObj = req.result.photos
     // check if the incoming data is array, e.g. from prisma.getMany
     if (Array.isArray(resultObj) && resultObj.length > 0) {
-        let photoPath = resultObj[i].path
+        let photoPath = resultObj[0].path
         if (!photoPath.includes("picsum.photos") || !photoPath.includes("randomuser.me")) {
             for (let i = 0; i < resultObj.length; i++) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
