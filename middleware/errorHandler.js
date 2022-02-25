@@ -19,6 +19,9 @@ function clientErrorHandler(err, req, res, next) {
     let status = err.status || 500
     let code = err.code || 'Unknown'
     let message = err.message || "Internal server error"
+    if (message.toLowerCase().includes('bad request')) {
+        status = HTTP_STATUS_CODE.BAD_REQUEST
+    }
     if (message.toLowerCase().includes('forbidden')) {
         status = HTTP_STATUS_CODE.FORBIDDEN
     }

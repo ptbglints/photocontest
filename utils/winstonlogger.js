@@ -23,7 +23,7 @@ const logLevels = {
 // define the custom settings for each transport (file, console)
 var options = {
     file: {
-        level: 'http',
+        level: process.env.FILE_LOG_LEVEL || 'debug',
         filename: `${appRoot}/tmp/winston.log`,
         handleExceptions: true,
         json: true,
@@ -33,7 +33,7 @@ var options = {
         format: combine(timestamp(), json()),
     },
     console: {
-        level: 'debug',
+        level: process.env.CONSOLE_LOG_LEVEL || 'debug',
         handleExceptions: true,
         json: false,
         colorize: true,
@@ -44,7 +44,7 @@ var options = {
 // instantiate a new Winston Logger with the settings defined above
 const logger = winston.createLogger({
     levels: logLevels.levels,  
-    level: process.env.LOG_LEVEL || 'debug', // global level
+    level: process.env.GLOBAL_LOG_LEVEL || 'debug', // global level
     // format: winston.format.json(),
     // format: winston.format.cli(),
     format: combine(timestamp(), json()),
@@ -58,7 +58,8 @@ const logger = winston.createLogger({
 logger.streamingdarimorgan = {
     write: function (message, encoding) {
         // use the 'info' log level so the output will be picked up by both transports (file and console)
-        logger.info(message.trim());
+        message = message.trim()
+        logger.info(message);
     },
 };
 

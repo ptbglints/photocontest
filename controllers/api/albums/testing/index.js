@@ -9,7 +9,7 @@ const { modifyImagePath2ndLayer } = require('../../../../middleware/modifyImageP
 // Currently, there is no way to join tables together
 // We have to resort to raw queries
 // https://github.com/prisma/prisma/issues/5184
-const galleryAll = async (req, res, next) => {
+const Testing = async (req, res, next) => {
     try {
         let { skip, take } = req.query
         if (!skip) skip = 0
@@ -48,7 +48,7 @@ const galleryAll = async (req, res, next) => {
 }
 
 module.exports = routes => {
-    routes.get('/',
-        galleryAll
+    routes.get('/test',
+        Testing
     )
 }

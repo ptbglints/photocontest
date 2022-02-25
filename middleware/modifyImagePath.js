@@ -48,7 +48,7 @@ function modifyImagePath2ndLayer(req, res, next) {
         }
     }
     //  here the path inside resultObj has been modified
-    req.result = resultObj
+    req.result.photos = resultObj
     next()
 }
 

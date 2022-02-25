@@ -527,6 +527,37 @@ paths:
           content: {}
       x-codegen-request-body-name: body
 
+  /albums/galleryall:
+    get:
+      tags:
+        - Album
+      summary: Get one most updated album from all users, ordered by createdAt
+      description: >
+        Get one most updated album from all users, ordered by createdAt
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
   /albums:
     post:
       tags:
@@ -620,35 +651,22 @@ paths:
                 type: object
                 $ref: "#/components/schemas/Album"
 
-  /albums/username/search:
+  /albums/id/{albumId}:
     get:
       tags:
         - Album
-      summary: Search all albums whose username contain certain string
+      summary: Get a specific album by album id, include its photos
       description: >
-        Search all albums whose username contain certain string
+        Get a specific album by album id, include its photos
       parameters:
-        - name: username
-          in: query
-          description: username
+        - name: albumId
+          in: path
+          description: albumId
           required: true
           schema:
             type: string
-            example: arm
-        - name: skip
-          in: query
-          description: skip
-          required: true
-          schema:
-            type: integer
-            example: 0
-        - name: take
-          in: query
-          description: take
-          required: true
-          schema:
-            type: integer
-            example: 5
+            format: uuid
+            example: 82b097b2-f349-42b3-8e1e-34ee8233b1f0
       responses:
         "200":
           description: Successful operation
@@ -656,9 +674,9 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/Album"
+                $ref: "#/components/schemas/AlbumNested"
 
-  /albums/username:
+  /albums/username/{userName}:
     get:
       tags:
         - Album
@@ -666,8 +684,8 @@ paths:
       description: >
         Get all albums from specific Username
       parameters:
-        - name: username
-          in: query
+        - name: userName
+          in: path
           description: username
           required: true
           schema:
@@ -696,35 +714,22 @@ paths:
                 type: object
                 $ref: "#/components/schemas/Album"
 
-  /albums/title/search:
+
+  /albums/search/username/{string}:
     get:
       tags:
         - Album
-      summary: Search all albums by albums's name that contain certain string
+      summary: Search all albums whose username contain certain string
       description: >
-        Search all albums by albums's name that contain certain string
+        Search all albums whose username contain certain string
       parameters:
         - name: string
-          in: query
-          description: string
+          in: path
+          description: username that containt string
           required: true
           schema:
             type: string
-            example: Dark
-        - name: skip
-          in: query
-          description: skip
-          required: true
-          schema:
-            type: integer
-            example: 0
-        - name: take
-          in: query
-          description: take
-          required: true
-          schema:
-            type: integer
-            example: 5
+            example: arm
       responses:
         "200":
           description: Successful operation
@@ -734,22 +739,21 @@ paths:
                 type: object
                 $ref: "#/components/schemas/Album"
 
-  /albums/{albumId}:
+  /albums/search/title/{string}:
     get:
       tags:
         - Album
-      summary: Get a specific album by album id, include its photos
+      summary: Search all albums by albums's name that contain certain string
       description: >
-        Get a specific album by album id, include its photos
+        Search all albums by albums's name that contain certain string
       parameters:
-        - name: albumId
+        - name: string
           in: path
-          description: albumId
+          description: album title that contain string 
           required: true
           schema:
             type: string
-            format: uuid
-            example: f503adb6-3bd4-48a2-9b24-77eb1bae8238
+            example: Dark
       responses:
         "200":
           description: Successful operation
@@ -757,7 +761,7 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/AlbumNested"
+                $ref: "#/components/schemas/Album"
 
 components:
   # examples:

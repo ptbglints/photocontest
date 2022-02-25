@@ -32,9 +32,17 @@ const getManyWithQuery = async (req, res, next) => {
     try {
         let { skip, take } = req.query
 
+        if (!skip) skip = 0
+        if (!take) take = 100
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 100) take = 100
+
         let option = {}
-        option.skip = parseInt(skip)
-        option.take = parseInt(take)
+        option.skip = skip
+        option.take = take
         option.orderBy = {
             updatedAt: 'asc'
         }
@@ -51,12 +59,17 @@ const getManyWithQuery = async (req, res, next) => {
 
 // Get all albums from specific Username
 const getManyBySpecificUsername = async (req, res, next) => {
-    console.log('getManyBySpecificUsername')
     try {
-        let { username, skip, take } = req.query
-        console.log(username, skip, take)
+        let {skip, take } = req.query
+        const username = req.params.userName
+
+        if (!skip) skip = 0
+        if (!take) take = 100
+
         skip = parseInt(skip)
         take = parseInt(take)
+
+        if (take > 100) take = 100
 
         let option = {}
         option.skip = skip
@@ -150,7 +163,7 @@ module.exports = routes => {
     )
 
     // Get all albums from specific Username
-    routes.get('/username/getone',
+    routes.get('/username/:userName',
         getManyBySpecificUsername
     )
 

@@ -8,14 +8,15 @@ const { modifyImagePath2ndLayer } = require('../../../../middleware/modifyImageP
 // Search all albums whose username contain certain string
 const searchManyByUsername = async (req, res, next) => {
     try {
-        let { username, skip, take } = req.query
+        let { string } = req.params
+
+        if (!string) throw new Error('Bad request. Search string is undefined')
+
         let option = {}
-        option.skip = skip = parseInt(skip)
-        option.take = take = parseInt(take)
         option.where = {
             user: {
                 userName: {
-                    contains: username,
+                    contains: string,
                 }
             }
         }
@@ -38,13 +39,9 @@ const searchManyByUsername = async (req, res, next) => {
 // Search all albums by albums's name that contain certain string
 const searchManyByAlbumTitle = async (req, res, next) => {
     try {
-        let { string, skip, take } = req.query
-        skip = parseInt(skip)
-        take = parseInt(take)
+        let { string } = req.params
 
         let option = {}
-        option.skip = skip
-        option.take = take
         option.where = {
             title: {
                 contains: string,
@@ -66,12 +63,12 @@ module.exports = routes => {
     // disini sama dengan baseurl/api/albums/search/
 
     // Search all albums whose username contain certain string
-    routes.get('/username',
+    routes.get('/username/:string',
         searchManyByUsername
     )
 
     // Search all albums by albums's name that contain certain string
-    routes.get('/title',
+    routes.get('/title/:string',
         searchManyByAlbumTitle
     )
 }
