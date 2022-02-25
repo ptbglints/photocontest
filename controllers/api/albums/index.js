@@ -103,10 +103,20 @@ const getSingleAlbumByAlbumId = async (req, res, next) => {
         option.where = {
             id: albumId
         }
+
         option.include = {
-            photos: true
+            photos: true,
+            user: {
+                select: {
+                    profile: true
+                }
+            }
         }
+
         const result = await Album.findUnique(option)
+        const profile = result.user.profile
+        delete result['user'];
+        result.profile = profile
         req.result = result
         next()
     } catch (err) {
