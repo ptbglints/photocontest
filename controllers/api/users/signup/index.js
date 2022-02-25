@@ -40,8 +40,14 @@ const signup = async (req, res, next) => {
         // user.refreshToken = refreshToken
 
         //send the access token to the client inside a cookie
-        res.cookie("jwtAccess", accessToken, { secure: false, httpOnly: true })
-        res.cookie("jwtRefresh", refreshToken, { secure: false, httpOnly: true })
+        // https://expressjs.com/en/api.html#res.cookie
+        const cookieOption = {
+            httpOnly: false,
+            maxAge: 6 * 3600 * 1000, // 6Hr
+            secure: false
+        }
+        res.cookie(`${userName}_jwtAccess`, accessToken, cookieOption)
+        res.cookie(`${userName}_jwtRefresh`, refreshToken, cookieOption)
         req.result = result
         next()
     } catch (err) {
