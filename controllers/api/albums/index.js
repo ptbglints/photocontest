@@ -49,36 +49,6 @@ const getManyWithQuery = async (req, res, next) => {
     }
 }
 
-// Search all albums whose username contain certain string
-const searchManyByUsername = async (req, res, next) => {
-    try {
-        let { username, skip, take } = req.query
-        let option = {}
-        option.skip = skip = parseInt(skip)
-        option.take = take = parseInt(take)
-        option.where = {
-            user: {
-                userName: {
-                    contains: username,
-                }
-            }
-        }
-        option.orderBy = {
-            updatedAt: 'asc'
-        }
-        option.include = {
-            user: {
-                select: { userName: true }
-            }
-        }
-        const result = await Album.findMany(option)
-        req.result = result
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
 // Get all albums from specific Username
 const getManyBySpecificUsername = async (req, res, next) => {
     console.log('getManyBySpecificUsername')
@@ -111,34 +81,6 @@ const getManyBySpecificUsername = async (req, res, next) => {
         next(err)
     }
 }
-
-// Search all albums by albums's name that contain certain string
-const searchManyByAlbumTitle = async (req, res, next) => {
-    try {
-        let { string, skip, take } = req.query
-        skip = parseInt(skip)
-        take = parseInt(take)
-
-        let option = {}
-        option.skip = skip
-        option.take = take
-        option.where = {
-            title: {
-                contains: string,
-                mode: 'insensitive'
-            }
-        }
-        option.orderBy = {
-            updatedAt: 'asc'
-        }
-        const result = await Album.findMany(option)
-        req.result = result
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
 
 // Get a specific album by album id, include its photos 
 const getSingleAlbumByAlbumId = async (req, res, next) => {
@@ -207,23 +149,14 @@ module.exports = routes => {
         getManyWithQuery
     )
 
-    // Search all albums whose username contain certain string
-    routes.get('/username/search',
-        searchManyByUsername
-    )
-
     // Get all albums from specific Username
     routes.get('/username/getone',
         getManyBySpecificUsername
     )
 
-    // Search all albums by albums's name that contain certain string
-    routes.get('/title/search',
-        searchManyByAlbumTitle
-    )
 
     // Get a specific album by album id, include its photos
-    routes.get('/:albumId',
+    routes.get('/id/:albumId',
         getSingleAlbumByAlbumId,
         modifyImagePath2ndLayer
     )

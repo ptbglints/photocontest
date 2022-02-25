@@ -1,4 +1,5 @@
 require('dotenv').config()
+var winston = require('./utils/winstonlogger');
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
 var cors = require('cors');
@@ -38,7 +39,8 @@ const swaggerUi = require('swagger-ui-express')
 
 // morgan logger
 const morganBody = require('morgan-body')
-morganBody(app, { logResponseBody: false });
+// morganBody(app, { logResponseBody: false });
+morganBody(app, ('combined', { logResponseBody: false, stream: winston.streamingdarimorgan }));
 
 // swagger custom JS
 var options = {
