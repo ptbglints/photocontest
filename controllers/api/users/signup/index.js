@@ -27,7 +27,8 @@ const signup = async (req, res, next) => {
         let payload = {
             id: result.id,
             userName: result.userName,
-            role: result.role
+            role: result.role,
+            email: email
         }
 
         //create the access token

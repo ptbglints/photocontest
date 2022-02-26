@@ -1,6 +1,7 @@
 const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
 const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../middleware/validator');
+const { uploadSinglePhoto } = require('../../../../middleware/uploadPhoto')
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -63,6 +64,7 @@ module.exports = routes => {
 
     routes.put('/',
         verifyJWT,
+        uploadSinglePhoto,
         ValidateUpdateProfile,
         CheckValidatorResult,
         updateProfile

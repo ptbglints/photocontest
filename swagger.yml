@@ -75,6 +75,34 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
 
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Get specific user by id
+      description: >
+        A detailed description of the operation.
+        Use markdown for rich text representation,
+      operationId: getMany
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/User"
+
   /users/signup:
     post:
       tags:
@@ -296,152 +324,6 @@ paths:
                       # $ref: "#/components/schemas/Photo"
                       additionalProperties:
                         $ref: "#/components/schemas/PhotoDetail"
-                          
-                        
-                        
-                        # # - 
-                        # # default:
-                        #   type: object
-                        #   $ref: "#/components/schemas/Photo"
-                        #   additionalProperties:
-                        #     type: object
-                        #     $ref: "#/components/schemas/PhotoDetail"
-                        
-                        # items:
-                          
-                      # additionalProperties:
-                      #   properties:
-                      #     $ref: "#/components/schemas/PhotoDetail"
-                        # text:
-                        #   type: string
-                        # $ref: "#/components/schemas/PhotoDetail"
-                      # properties:
-                      # type: "#/components/schemas/Photo"
-                      # $ref: "#/components/schemas/Photo"
-                      # photoDetail:
-                      #   type: object
-                      #   $ref: "#/components/schemas/PhotoDetail"
-                      # oneOf:
-                      #   - $ref: "#/components/schemas/Photo"
-                      #   - properties:
-                      #     $ref: "#/components/schemas/PhotoDetail"
-
-                      # - $ref: "#/components/schemas/PhotoDetail"
-                      # $ref: "#/components/schemas/Photo"
-                    # items:
-                    #   type: object
-                    #   $ref: "#/components/schemas/Photo"
-                    # properties:
-                    #     schema:
-                    #       $ref: "#/components/schemas/PhotoDetail"
-                    # properties:
-
-                    # }
-                    # oneOf:
-                    #   - type: object
-                    #     properties:
-                    #     $ref: "#/components/schemas/Photo"
-                    #     id:
-                    #       type: integer
-                    # - type: object
-                    #   $ref: "#/components/schemas/PhotoDetail"
-
-        # {
-        #   "status": 200,
-        #   "message": "Success",
-        #   "data": [
-        #     {
-        #       "id": 1,
-        #       "title": "My photo title",
-        #       "description": "My photo description",
-        #       "path": "http://localhost:8000/public\\tmp\\0000000019\\ckzradnub0000swhnhup87ccn.png",
-        #       "userId": 19,
-        #       "createdAt": "2022-02-17T17:58:05.959Z",
-        #       "updatedAt": "2022-02-17T17:58:05.962Z",
-        #       "photoDetail": {
-        #         "photoId": 1,
-        #         "fileName": "ckzradnub0000swhnhup87ccn.png",
-        #         "originalName": "logo_tmj.png",
-        #         "mimeType": "image/png",
-        #         "encoding": "7bit",
-        #         "size": 1841581,
-        #         "isPrivate": false,
-        #         "views": 0,
-        #         "likes": 0,
-        #         "downloaded": 0,
-        #         "starRating": 0,
-        #         "cameraMake": null,
-        #         "shutterSpeed": null,
-        #         "aperture": null,
-        #         "focalLength": null,
-        #         "iso": null
-        #       },
-        #       "albums": [
-        #         {
-        #           "id": "1",
-        #           "title": "title",
-        #           "description": "description",
-        #           "coverPhotoId": 2,
-        #           "userId": 19,
-        #           "isPrivate": false,
-        #           "isDownloadable": true,
-        #           "createdAt": "2022-02-17T17:58:05.960Z",
-        #           "updatedAt": "2022-02-20T10:23:29.781Z"
-        #         }
-        #       ]
-        #     },
-        #     {
-        #       "id": 2,
-        #       "title": "My photo title",
-        #       "description": "My photo description",
-        #       "path": "http://localhost:8000/public\\tmp\\0000000019\\ckzragr1o000010hncog8h761.png",
-        #       "userId": 19,
-        #       "createdAt": "2022-02-17T18:00:30.134Z",
-        #       "updatedAt": "2022-02-17T18:00:30.136Z",
-        #       "photoDetail": {
-        #         "photoId": 2,
-        #         "fileName": "ckzragr1o000010hncog8h761.png",
-        #         "originalName": "logo_tmj.png",
-        #         "mimeType": "image/png",
-        #         "encoding": "7bit",
-        #         "size": 1841581,
-        #         "isPrivate": false,
-        #         "views": 0,
-        #         "likes": 0,
-        #         "downloaded": 0,
-        #         "starRating": 0,
-        #         "cameraMake": null,
-        #         "shutterSpeed": null,
-        #         "aperture": null,
-        #         "focalLength": null,
-        #         "iso": null
-        #       },
-        #       "albums": []
-        #     }
-        #   ]
-        # }
-
-        # type: object
-        # properties:
-        #   type: "#/components/schemas/SuccessResponseObject"
-        # schema:
-        # $ref: "#/components/schemas/SuccessResponseObject"
-        # properties:
-        #   value:
-        #     $ref: "#/components/schemas/Photo"
-        # properties:
-        # allOf:
-        # # items:
-        #   properties:
-        #   $ref: ["#/components/schemas/Photo"]
-        #   photoDetail:
-        #     # type: object
-        #     $ref: "#/components/schemas/PhotoDetail"
-        #   albums:
-        #     type: array
-        #     items:
-        #       $ref: "#/components/schemas/Album"
-
         # Definition of all error statuses
         default:
           description: Unexpected error
@@ -449,6 +331,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      tags:
+        - Photo
+      summary: Update photo detail by photo Id
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "This is a new title"
+                description:
+                  type: string
+                  example: "This should be a very long description"
+                # address:
+                #   type: string
+                #   example: 'Jl. Pinang Kayu no.30 Bandung'
+                # profilephoto:
+                #   type: string
+                # coverphoto:
+                #   type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
 
   /photos/user/{id}:
     get:
@@ -486,6 +400,14 @@ paths:
             type: integer
             format: int64
             example: 4
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+
       responses:
         "200":
           description: Successful operation
