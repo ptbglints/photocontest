@@ -1,6 +1,6 @@
 const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
-const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../utils/validator');
+const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../middleware/validator');
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -39,9 +39,10 @@ const updateProfile = async (req, res, next) => {
         option.data = {
             name,
             address,
-            profilePhoto,
-            coverPhoto
+            // profilePhoto,
+            // coverPhoto
         }
+        console.log(name, address)
         const result = await Profile.update(option)
         req.result = result
         next()

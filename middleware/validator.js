@@ -57,10 +57,12 @@ const passwordChainLoose =
  */
 const nameChain =
     body('name')
-        .optional()
         .trim()
+        .escape()
+        .exists()
+        .withMessage('field not exist')
         .isLength({ min: 3, max: 32 })
-        .withMessage('minimum 5 and maximum 32 characters')
+        .withMessage('minimum 3 and maximum 32 characters')
         .isAlpha('en-US', { ignore: " " })
         .withMessage('only alpha characters are allowed')
 const roleChain =

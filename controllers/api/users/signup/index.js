@@ -46,8 +46,8 @@ const signup = async (req, res, next) => {
             maxAge: 6 * 3600 * 1000, // 6Hr
             secure: false
         }
-        res.cookie(`${userName}_jwtAccess`, accessToken, cookieOption)
-        res.cookie(`${userName}_jwtRefresh`, refreshToken, cookieOption)
+        res.cookie(`jwtAccess`, accessToken, cookieOption)
+        res.cookie(`jwtRefresh`, refreshToken, cookieOption)
         req.result = result
         next()
     } catch (err) {
