@@ -47,17 +47,4 @@
   ├── bcrypt.js
   ├── index.js
   └── validator.js
-
-  select
-"Album"."userId" as albumId,
-"Album"."title" as title,
-"Album"."description" as description,
-"Album"."userId" as userId,
-profile.name
-from "Album"
-INNER JOIN (select * from "Profile") profile2 ON profile2."userId" = "Album"."userId",
-(select "userId",max("updatedAt") as updatedAt from "Album" group by "userId") latestUserAlbum,
-(select * from "Profile") profile
-where "Album"."userId"=latestUserAlbum."userId"
-and "Album"."userId" = profile."userId" 
-and "Album"."updatedAt"=latestUserAlbum.updatedAt;
+  
