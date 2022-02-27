@@ -75,7 +75,7 @@ const addressChain =
         .optional()
         .trim()
         .isLength({ min: 2, max: 254 })
-        .isAlphanumeric('en-US', { ignore: " ." })
+        // .isAlphanumeric('en-US', { ignore: " ,\." })
 const profilePhotoChain =
     check('profilePphoto')
         .optional()

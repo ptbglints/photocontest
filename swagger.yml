@@ -408,14 +408,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/Photo"
 
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Photo"
-
   /photos/upload:
     post:
       tags:
@@ -436,7 +428,7 @@ paths:
                 description:
                   type: string
                   example: "Lagi liburan di Papua New Guinea"
-                user-photo:
+                photo:
                   type: string
                   format: binary
                 tag:

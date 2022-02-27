@@ -61,7 +61,7 @@ const getManyWithQuery = async (req, res, next) => {
 const getManyBySpecificUserId = async (req, res, next) => {
     try {
         let {skip, take } = req.query
-        const userId = parseInt(req.params.userId)
+        const userId = req.params.userId
 
         if (!skip) skip = 0
         if (!take) take = 1000

@@ -7,7 +7,7 @@ const { EncriptPassword } = require('../../../../utils/bcrypt');
 const changePassword = async (req, res, next) => {
     try {
         const { password } = req.body
-        const id = parseInt(req.user.id)
+        const id = req.user.id
         const newPassword = req.body.password
         const newEncryptedPassword = await EncriptPassword(newPassword)
         let option = {}

@@ -4,10 +4,11 @@ const path = require('path');
 const crypto = require('crypto');
 var cuid = require('cuid');
 const { sprintf } = require('sprintf-js');
+const { nextTick } = require('process');
 
 // https://github.com/expressjs/multer#diskstorage
 const storeOnDisk = multer.diskStorage({
-    destination: async function (req, res, file, cb) {
+    destination: async function (req, file, cb) {
         try {
             const userId = req.user.id;
             const basePath = './public/tmp'
@@ -16,14 +17,15 @@ const storeOnDisk = multer.diskStorage({
             // join the path to become ./public/tmp/eccbc87e4b5ce2fe28308fd9f2a7baf3
             let finalPath;
             // check route name to decide the final folder to store
-            if (req.route.path.includes('photo')) finalPath = path.join(basePath, userDir, "photos")
-            if (req.route.path.includes('profile')) finalPath = path.join(basePath, userDir, "profile")
+            if (req.baseUrl.includes('photo')) finalPath = path.join(basePath, userDir, "photos")
+            if (req.baseUrl.includes('profile')) finalPath = path.join(basePath, userDir, "profile")
             await fs.mkdir(finalPath, { recursive: true })
             // if no error, callback will execute to create folder
             cb(null, finalPath);
         } catch (err) {
             // res.status(500).send('Error uploading photo.')
-            throw new Error(err)
+            // throw new Error(err.message)
+            next(err)
         }
     },
     filename: function (req, file, cb) {
@@ -64,7 +66,7 @@ option.limits = fileLimit
 let upload = multer(option);
 
 // file field name from Front-end FORM must match this value!!
-const formFieldName = 'user-photo'
+const formFieldName = 'photo'
 
 let uploadSinglePhoto = upload.single(formFieldName)
 

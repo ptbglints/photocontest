@@ -31,7 +31,7 @@ const getManyNested = async (req, res, next) => {
 const getOne = async (req, res, next) => {
     try {
         // sanitize
-        const id = parseInt(req.params.id)
+        const id = req.params.id
         let option = {}
         option.where = { id: id }
         option.select = {
@@ -54,7 +54,7 @@ const getOne = async (req, res, next) => {
 const delUser = async (req, res, next) => {
     try {
         // sanitize
-        id = parseInt(req.body.id)
+        id = req.body.id
         let option = {}
         option.where = { id: id }
         const result = await User.delete(option)
