@@ -7,18 +7,22 @@ const { sprintf } = require('sprintf-js');
 
 // https://github.com/expressjs/multer#diskstorage
 const storeOnDisk = multer.diskStorage({
-    destination: async function (req, file, cb) {
+    destination: async function (req, res, file, cb) {
         try {
             const userId = req.user.id;
             const basePath = './public/tmp'
             const userDir = sprintf('%010s', userId)
 
             // join the path to become ./public/tmp/eccbc87e4b5ce2fe28308fd9f2a7baf3
-            const finalPath = path.join(basePath, userDir)
+            let finalPath;
+            // check route name to decide the final folder to store
+            if (req.route.path.includes('photo')) finalPath = path.join(basePath, userDir, "photos")
+            if (req.route.path.includes('profile')) finalPath = path.join(basePath, userDir, "profile")
             await fs.mkdir(finalPath, { recursive: true })
             // if no error, callback will execute to create folder
             cb(null, finalPath);
         } catch (err) {
+            // res.status(500).send('Error uploading photo.')
             throw new Error(err)
         }
     },
@@ -49,7 +53,7 @@ function fileFilter(req, file, cb) {
 }
 
 const fileLimit = {
-    fileSize: 2000000 // 2000000 bytes = 2 MB
+    fileSize: 10 * 1024 * 1024 // 10MB
 }
 
 let option = new Object

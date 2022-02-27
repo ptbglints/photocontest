@@ -34,13 +34,14 @@ const getProfileByUserName = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
     try {
         const id = req.user.id
-        const { name, address, profilePhoto, coverPhoto } = req.body
+        const { name, address, profilePhoto, coverPhoto, email } = req.body
         let option = {}
         option.where = { userId: id }
         option.data = {
             name,
             address,
-            // profilePhoto,
+            profilePhoto,
+            email,
             // coverPhoto
         }
         console.log(name, address)
