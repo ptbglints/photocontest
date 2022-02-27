@@ -42,8 +42,8 @@ const uploadPhotoUser = async (req, res, next) => {
         // if photo title not supplied, change the title with original file name
         if (!title) title = req.file.originalname
         // kita ambil format path dari req yang kita buat di multer storage
-        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
         console.log(req.file)
+        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
         // get the userid from Jwt
         const userid = req.user.id
 

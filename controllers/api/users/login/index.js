@@ -25,7 +25,7 @@ const login = async (req, res, next) => {
 
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
-            id: user.id,
+            id: user.id.toString(),
             userName: user.userName,
             email: user.email,
             role: user.role

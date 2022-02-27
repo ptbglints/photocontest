@@ -25,7 +25,7 @@ const signup = async (req, res, next) => {
         // create jwt token
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
-            id: result.id,
+            id: result.id.toString(),
             userName: result.userName,
             role: result.role,
             email: email
