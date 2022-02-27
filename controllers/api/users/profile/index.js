@@ -41,13 +41,17 @@ const getProfileByUserName = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
     try {
         const id = req.user.id
-        const { name, address, coverPhoto, email } = req.body
+        const { name, address, email } = req.body
         let option = {}
         option.where = { userId: id }
+        let profilePhotoPath;
+        if (req.file) {
+            profilePhotoPath = req.file.path
+        }
         option.data = {
             name,
             address,
-            profilePhoto: req.file.path,
+            profilePhoto: profilePhotoPath,
             email,
             // coverPhoto
         }
