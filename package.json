@@ -9,7 +9,8 @@
     "scripts": {
         "dev": "nodemon app",
         "start": "node app",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "db@reset": "psql -f ./prisma/User.sql postgres://unxrvxzkoobucf:ec08cc62444d7728cedf6282fd2c4cb297e2ab6fa7fbed18deddd7c91f8a2cbf@ec2-52-71-217-158.compute-1.amazonaws.com:5432/d6u4iub4i1rb24"
     },
     "repository": {
         "type": "git",
@@ -26,7 +27,7 @@
         "@types/node": "^17.0.17",
         "kill-port": "^1.6.1",
         "nodemon": "^2.0.15",
-        "prisma": "^3.9.2",
+        "prisma": "^3.10.0",
         "ts-node": "^10.5.0",
         "typescript": "^4.5.5"
     },
@@ -40,7 +41,8 @@
         "esModuleInterop": true
     },
     "dependencies": {
-        "@prisma/client": "^3.9.1",
+        "@prisma/client": "^3.10.0",
+        "app-root-path": "^3.0.0",
         "bcryptjs": "^2.4.3",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
@@ -55,6 +57,7 @@
         "sprintf-js": "^1.1.2",
         "swagger-jsdoc": "^6.1.0",
         "swagger-ui-express": "^4.3.0",
+        "winston": "^3.6.0",
         "yamljs": "^0.3.0"
     }
 }

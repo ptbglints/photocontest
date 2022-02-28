@@ -1,23 +1,34 @@
 // https://express-validator.github.io/docs/
 const { body, check, oneOf, checkSchema, validationResult } = require('express-validator');
 
-const ValidateRegisterUser = [
-    check('username')
+/**
+ * MANDATORY FIELDS
+ * This fields must exist in the request
+ * otherwise the valiation cannot pass
+ */
+const usernameChain =
+    body('userName')
+        .trim()
+        .exists()
+        .withMessage('field not exist')
+        .notEmpty()
+        .withMessage('cannot be empty')
+        .isLength({ min: 3, max: 32 })
+        .withMessage('minimum 5 and maximum 32 characters')
+        .isAlphanumeric()
+        .withMessage('only alphanumeric are allowed')
+const emailChain =
+    body('email')
         .trim()
         .isLength({ min: 5, max: 32 })
-        .isAlphanumeric(),
-    check('name').optional()
-        .trim()
-        .isLength({ min: 5, max: 32 })
-        .isAlpha('en-US', { ignore: " " }),
-    check('email')
-        .trim()
-        .isLength({ min: 5, max: 32 })
+        .withMessage('minimum 5 and maximum 32 characters')
         .isEmail()
+        .withMessage('format is not valid')
         .normalizeEmail({
             all_lowercase: true
-        }),
-    check('password')
+        })
+const passwordChain =
+    body('password')
         .trim()
         .isStrongPassword({
             minLength: 8,
@@ -25,39 +36,59 @@ const ValidateRegisterUser = [
             minUppercase: 1,
             minNumbers: 1,
             minSymbols: 1,
-            returnScore: false,
-            pointsPerUnique: 1,
-            pointsPerRepeat: 0.5,
-            pointsForContainingLower: 10,
-            pointsForContainingUpper: 10,
-            pointsForContainingNumber: 10,
-            pointsForContainingSymbol: 10
-        }),
-    check('role').optional()
-        .isAlpha('en-US', null),
-]
-
-const ValidateUpdateProfile = [
-    check('name').optional()
+        })
+        .withMessage('minimum 8 characters, 1 lowercase, 1 uppercase, and 1 symbol ')
+const usernameChainLoose =
+    body('userName')
+        .exists()
+        .withMessage('field not exist')
+        .notEmpty()
+        .withMessage('cannot be empty')
+const passwordChainLoose =
+    body('password')
+        .exists()
+        .withMessage('field not exist')
+        .notEmpty()
+        .withMessage('cannot be empty')
+/**
+ * OPTIONAL FIELDS
+ * If these fields do not exist in the request
+ * validation will still be passed
+ */
+const nameChain =
+    body('name')
+        .trim()
+        .escape()
+        .exists()
+        .withMessage('field not exist')
+        .isLength({ min: 3, max: 32 })
+        .withMessage('minimum 3 and maximum 32 characters')
+        .isAlpha('en-US', { ignore: " " })
+        .withMessage('only alpha characters are allowed')
+const roleChain =
+    body('role')
+        .optional()
+        .isAlpha('en-US', null)
+        .withMessage('only alpha characters are allowed')
+const addressChain =
+    check('address')
+        .optional()
         .trim()
         .isLength({ min: 2, max: 254 })
-        .isAlpha('en-US', { ignore: " " }),
-    check('address').optional()
+        // .isAlphanumeric('en-US', { ignore: " ,\." })
+const profilePhotoChain =
+    check('profilePphoto')
+        .optional()
         .trim()
         .isLength({ min: 2, max: 254 })
-        .isAlphanumeric('en-US', { ignore: " ." }),
-    check('profilephoto').optional()
+        .isAlphanumeric('en-US')
+const coverPhotoChain =
+    check('coverPhoto')
+        .optional()
         .trim()
         .isLength({ min: 2, max: 254 })
-        .isAlphanumeric('en-US'),
-    check('coverphoto').optional()
-        .trim()
-        .isLength({ min: 2, max: 254 })
-        .isAlphanumeric('en-US'),
-]
-
-const ValidateInputCreateAlbum = [
-    // console.log('check create album');
+        .isAlphanumeric('en-US')
+const titleChain =
     check('title')
         .trim()
         .escape()
@@ -67,11 +98,38 @@ const ValidateInputCreateAlbum = [
         .matches(/^[A-Za-z0-9 .,'!&?]+$/)
         .withMessage('only alphanumeric are allowed')
 
+
+/**
+ * VALIDATION MIDDLEWARES
+ * These will passed to app.use(...) or router.use(...)
+ */
+const ValidateLogin = [
+    usernameChainLoose,
+    passwordChainLoose
+]
+const ValidateSignup = [
+    usernameChain,
+    nameChain,
+    emailChain,
+    passwordChain
+]
+const ValidateUpdateProfile = [
+    nameChain,
+    addressChain,
+    profilePhotoChain,
+    coverPhotoChain
+]
+const ValidateCreateAlbum = [
+    titleChain
 ]
 
-
+/**
+ * Validation check result routine
+ * This shall be put after the validation middlewares
+ * to check whether there is/are validation errors or not
+ * If error exist, it will throw error with with typeof Array
+ */
 const CheckValidatorResult = (async (req, res, next) => {
-
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -83,7 +141,14 @@ const CheckValidatorResult = (async (req, res, next) => {
     }
 })
 
+/**
+ * EXPORTED middlewares
+ * self-explanatory
+ */
 module.exports = {
-    ValidateInputCreateAlbum,
+    ValidateSignup,
+    ValidateLogin,
+    ValidateUpdateProfile,
+    ValidateCreateAlbum,
     CheckValidatorResult
 }

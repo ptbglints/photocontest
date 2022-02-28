@@ -1,5 +1,5 @@
 {
-    "ext": "js, mjs, coffee, litcoffee, json, yaml, yml",
+    "ext": "js, mjs, coffee, litcoffee, json, yaml, yml, .env",
     "ignore": [
         "test/*",
         "docs/*"

@@ -1,10 +1,8 @@
 const { Album } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt');
 const { randomUUID } = require('crypto');
-const { ValidateInputCreateAlbum, CheckValidatorResult, createAlbumSchema} = require('../../../middleware/validator');
-const { check, body, checkSchema, validationResult, sanitize } = require('express-validator');
-const validator = require('validator');
-const { modifyImagePath, modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath');
+const { ValidateCreateAlbum, CheckValidatorResult, createAlbumSchema } = require('../../../middleware/validator');
+const { modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath');
 
 // Create an album
 const createOne = async (req, res, next) => {
@@ -34,9 +32,17 @@ const getManyWithQuery = async (req, res, next) => {
     try {
         let { skip, take } = req.query
 
+        if (!skip) skip = 0
+        if (!take) take = 100
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 100) take = 100
+
         let option = {}
-        option.skip = parseInt(skip)
-        option.take = parseInt(take)
+        option.skip = skip
+        option.take = take
         option.orderBy = {
             updatedAt: 'asc'
         }
@@ -51,18 +57,26 @@ const getManyWithQuery = async (req, res, next) => {
     }
 }
 
-// Search all albums whose username contain certain string
-const searchManyByUsername = async (req, res, next) => {
+// Get all albums from specific userId
+const getManyBySpecificUserId = async (req, res, next) => {
     try {
-        let { username, skip, take } = req.query
+        let {skip, take } = req.query
+        const userId = req.params.userId
+
+        if (!skip) skip = 0
+        if (!take) take = 1000
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 1000) take = 1000
+
         let option = {}
-        option.skip = skip = parseInt(skip)
-        option.take = take = parseInt(take)
+        option.skip = skip
+        option.take = take
         option.where = {
             user: {
-                userName: {
-                    contains: username,
-                }
+                id: userId
             }
         }
         option.orderBy = {
@@ -84,9 +98,16 @@ const searchManyByUsername = async (req, res, next) => {
 // Get all albums from specific Username
 const getManyBySpecificUsername = async (req, res, next) => {
     try {
-        let { username, skip, take } = req.query
+        let {skip, take } = req.query
+        const username = req.params.userName
+
+        if (!skip) skip = 0
+        if (!take) take = 1000
+
         skip = parseInt(skip)
         take = parseInt(take)
+
+        if (take > 1000) take = 1000
 
         let option = {}
         option.skip = skip
@@ -99,33 +120,11 @@ const getManyBySpecificUsername = async (req, res, next) => {
         option.orderBy = {
             updatedAt: 'asc'
         }
-        const result = await Album.findMany(option)
-        req.result = result
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
-// Search all albums by albums's name that contain certain string
-const searchManyByAlbumTitle = async (req, res, next) => {
-    try {
-        let { string, skip, take } = req.query
-        skip = parseInt(skip)
-        take = parseInt(take)
-
-        let option = {}
-        option.skip = skip
-        option.take = take
-        option.where = {
-            title: {
-                contains: string,
-                mode: 'insensitive'
+        option.include = {
+            user: {
+                select: { userName: true }
             }
         }
-        option.orderBy = {
-            updatedAt: 'asc'
-        }
         const result = await Album.findMany(option)
         req.result = result
         next()
@@ -133,7 +132,6 @@ const searchManyByAlbumTitle = async (req, res, next) => {
         next(err)
     }
 }
-
 
 // Get a specific album by album id, include its photos 
 const getSingleAlbumByAlbumId = async (req, res, next) => {
@@ -143,10 +141,20 @@ const getSingleAlbumByAlbumId = async (req, res, next) => {
         option.where = {
             id: albumId
         }
+
         option.include = {
-            photos: true
+            photos: true,
+            user: {
+                select: {
+                    profile: true
+                }
+            }
         }
+
         const result = await Album.findUnique(option)
+        const profile = result.user.profile
+        delete result['user'];
+        result.profile = profile
         req.result = result
         next()
     } catch (err) {
@@ -192,7 +200,7 @@ module.exports = routes => {
     // Create an album
     routes.post('/',
         verifyJWT,
-        ValidateInputCreateAlbum,
+        ValidateCreateAlbum,
         CheckValidatorResult,
         createOne
     )
@@ -202,23 +210,20 @@ module.exports = routes => {
         getManyWithQuery
     )
 
-    // Search all albums whose username contain certain string
-    routes.get('/username/search',
-        searchManyByUsername
+    // Get all albums from specific userId
+    routes.get('/userid/:userId',
+        getManyBySpecificUserId
     )
 
+
     // Get all albums from specific Username
-    routes.get('/username/',
+    routes.get('/username/:userName',
         getManyBySpecificUsername
     )
 
-    // Search all albums by albums's name that contain certain string
-    routes.get('/title/search',
-        searchManyByAlbumTitle
-    )
 
     // Get a specific album by album id, include its photos
-    routes.get('/:albumId',
+    routes.get('/id/:albumId',
         getSingleAlbumByAlbumId,
         modifyImagePath2ndLayer
     )

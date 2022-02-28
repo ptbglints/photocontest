@@ -18,7 +18,7 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   userName  String   @unique @db.VarChar(254)
   email     String   @unique @db.VarChar(254)
   password  String   @db.VarChar(254)
@@ -27,37 +27,37 @@ model User {
   photos    Photo[]
   albums    Album[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
 }
 
 model Profile {
-  userId       Int      @id
+  userId       String   @id
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String?  @db.VarChar(254)
   address      String?
   profilePhoto String?
   coverPhoto   String?
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now())
 }
 
 model Photo {
-  id          Int          @id @default(autoincrement())
+  id          String       @id @default(uuid())
   title       String?      @db.VarChar(254)
   description String?
   path        String       @unique
   photoDetail PhotoDetail?
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String
   albums      Album[]
   tags        Tag[]
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  updatedAt   DateTime     @default(now())
 }
 
 model PhotoDetail {
   photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  photoId      Int      @unique
+  photoId      String   @unique
   fileName     String   @unique
   originalName String
   mimeType     String
@@ -79,20 +79,22 @@ model Album {
   id             String   @id @default(uuid())
   title          String
   description    String?
-  coverPhotoId   Int?
+  coverPhotoId   String?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int
+  userId         String
   isPrivate      Boolean  @default(false)
   isDownloadable Boolean  @default(false)
   photos         Photo[]
+  tags           Tag[]
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime @default(now())
 }
 
 model Tag {
-  id     Int     @id @default(autoincrement())
+  id     String  @id @default(uuid())
   name   String  @unique @db.VarChar(64)
   photos Photo[]
+  albums Album[]
 }
 
 // model Contest {

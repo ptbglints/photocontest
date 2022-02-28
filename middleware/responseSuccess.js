@@ -3,7 +3,7 @@ function responseSuccess(req,res, next) {
         const response = {
             status: res.statusCode,
             message: 'Success',
-            data: req.result,
+            result: req.result,
         }
         return res.json(response)
     }

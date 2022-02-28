@@ -42,10 +42,10 @@ const uploadPhotoUser = async (req, res, next) => {
         // if photo title not supplied, change the title with original file name
         if (!title) title = req.file.originalname
         // kita ambil format path dari req yang kita buat di multer storage
-        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
         console.log(req.file)
+        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
         // get the userid from Jwt
-        const userid = parseInt(req.user.id)
+        const userid = req.user.id
 
         // proces tags
         const tagFieldInDb = 'name' // must match field name 'name' in Tag table
@@ -130,7 +130,7 @@ const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
 //API to get all photos from a specific user
 const getAllPhotoUser = async (req, res, next) => {
     try {
-        const id = parseInt(req.params.id)
+        const id = req.params.id
         let option = {}
         option.where = { userId: id }
         option.include = { tags: true, albums: true }
@@ -145,7 +145,7 @@ const getAllPhotoUser = async (req, res, next) => {
 //API to get a spesific photos from a specific user
 const getOnePhotoUser = async (req, res, next) => {
     try {
-        const photoId = parseInt(req.params.photoId)
+        const photoId = req.params.photoId
         let option = {}
         option.where = { id: photoId }
         option.include = {
@@ -161,7 +161,7 @@ const getOnePhotoUser = async (req, res, next) => {
 
 const updatePhotoDetail = async (req, res) => {
     try {
-        const photoId = parseInt(req.params.photoId)
+        const photoId = req.params.photoId
         const { title, description } = req.body
         let option = {}
         option.where = { id: photoId }

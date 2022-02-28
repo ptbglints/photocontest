@@ -1,28 +1,33 @@
 const { User } = require('../../../../model')
 const { CheckPassword } = require('../../../../utils/bcrypt');
 const { verifyJWT } = require('../../../../middleware/authJwt');
-const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
-const { ERROR } = require('../../../../middleware/errorHandler');
+const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken');
+const { ValidateLogin, CheckValidatorResult } = require('../../../../middleware/validator');
+const { body, check, oneOf, checkSchema, validationResult } = require('express-validator');
 
 const login = async (req, res, next) => {
     // console.log(req.body)
     try {
-        const { username, password } = req.body
+        const { userName, password } = req.body
         let option = {}
         option.where = {
-            OR: [{ userName: username }, { email: username }]
+            OR: [{ userName: userName }, { email: userName }]
+        }
+        option.include = {
+            profile: true
         }
         const user = await User.findFirst(option) // will throw error if no record found
         const passwordIsValid = await CheckPassword(password, user.password)
 
         if (!passwordIsValid) {
-            throw new Error(`${ERROR.FORBIDDEN}. Wrong password`)
+            throw new Error(`Forbidden. Wrong password`)
         }
 
         //use the payload to store information about the user such as username, user role, etc.
         let payload = {
-            id: user.id,
-            username: user.username,
+            id: user.id.toString(),
+            userName: user.userName,
+            email: user.email,
             role: user.role
         }
 
@@ -36,9 +41,17 @@ const login = async (req, res, next) => {
         // user.refreshToken = refreshToken
 
         //send the access token to the client inside a cookie
-        res.cookie("jwtAccess", accessToken, { secure: false, httpOnly: true })
-        res.cookie("jwtRefresh", refreshToken, { secure: false, httpOnly: true })
+        // https://expressjs.com/en/api.html#res.cookie
+        const cookieOption = {
+            httpOnly: false,
+            maxAge: 6 * 3600 * 1000, // 6Hr
+            secure: false
+        }
+        res.cookie(`jwtAccess`, accessToken, cookieOption)
+        res.cookie(`jwtRefresh`, refreshToken, cookieOption)
         req.result = user
+        req.result.token = accessToken
+        req.result.tokenRefresh = refreshToken
         next()
     } catch (err) {
         next(err)
@@ -48,5 +61,9 @@ const login = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/login
-    routes.post('/', login)
+    routes.post('/',
+        ValidateLogin,
+        CheckValidatorResult,
+        login
+    )
 }

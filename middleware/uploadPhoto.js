@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 var cuid = require('cuid');
 const { sprintf } = require('sprintf-js');
+const { nextTick } = require('process');
 
 // https://github.com/expressjs/multer#diskstorage
 const storeOnDisk = multer.diskStorage({
@@ -14,12 +15,17 @@ const storeOnDisk = multer.diskStorage({
             const userDir = sprintf('%010s', userId)
 
             // join the path to become ./public/tmp/eccbc87e4b5ce2fe28308fd9f2a7baf3
-            const finalPath = path.join(basePath, userDir)
+            let finalPath;
+            // check route name to decide the final folder to store
+            if (req.baseUrl.includes('photo')) finalPath = path.join(basePath, userDir, "photos")
+            if (req.baseUrl.includes('profile')) finalPath = path.join(basePath, userDir, "profile")
             await fs.mkdir(finalPath, { recursive: true })
             // if no error, callback will execute to create folder
             cb(null, finalPath);
         } catch (err) {
-            throw new Error(err)
+            // res.status(500).send('Error uploading photo.')
+            // throw new Error(err.message)
+            next(err)
         }
     },
     filename: function (req, file, cb) {
@@ -49,7 +55,7 @@ function fileFilter(req, file, cb) {
 }
 
 const fileLimit = {
-    fileSize: 2000000 // 2000000 bytes = 2 MB
+    fileSize: 10 * 1024 * 1024 // 10MB
 }
 
 let option = new Object
@@ -60,7 +66,7 @@ option.limits = fileLimit
 let upload = multer(option);
 
 // file field name from Front-end FORM must match this value!!
-const formFieldName = 'user-photo'
+const formFieldName = 'photo'
 
 let uploadSinglePhoto = upload.single(formFieldName)
 

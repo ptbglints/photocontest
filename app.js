@@ -1,4 +1,5 @@
 require('dotenv').config()
+var winston = require('./utils/winstonlogger');
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
 var cors = require('cors');
@@ -7,6 +8,7 @@ const path = require('path');
 // const cache = require('./middleware/cache')
 const { responseSuccess } = require('./middleware/responseSuccess')
 const { logErrors, clientErrorHandler, errorHandler } = require('./middleware/errorHandler')
+const { handle404 } = require('./middleware/handler404')
 const app = express()
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
@@ -14,7 +16,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // allow CORS
-app.use(cors());
+const cors_option = {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+}
+app.use(cors(cors_option));
 
 // app.enable('trust proxy') to know if a reqest is http or https
 // source: https://stackoverflow.com/a/16405622
@@ -31,7 +39,13 @@ const swaggerUi = require('swagger-ui-express')
 
 // morgan logger
 const morganBody = require('morgan-body')
-morganBody(app, { logResponseBody: false });
+// morganBody(app, { logResponseBody: false });
+morganBody(app, ('combined', { logResponseBody: false, stream: winston.streamingdarimorgan }));
+
+// swagger custom JS
+var options = {
+    customJs: '/public/custom.js'
+};
 
 // swagger middleware
 app.use('/api-docs', function(req, res, next){
@@ -39,7 +53,7 @@ app.use('/api-docs', function(req, res, next){
     swaggerDocument.servers[0].url = `${req.protocol}://${req.headers.host}/api`
     req.swaggerDoc = swaggerDocument;
     next();
-}, swaggerUi.serve, swaggerUi.setup());
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 
 // enrouten di buat untuk membaca folder sebagai route
@@ -56,6 +70,8 @@ app.use(responseSuccess)
 app.use(logErrors)
 app.use(clientErrorHandler)
 app.use(errorHandler)
+// error 404 handler
+app.use(handle404)
 
 
 var server = app.listen(NODE_PORT, () => {
