@@ -30,9 +30,20 @@ function clientErrorHandler(err, req, res, next) {
     }
     if (err.name === 'TokenExpiredError') {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
-        message = err.message
+        message = 'Token expired. Please re-login.'
     }
     if (err.name === 'JsonWebTokenError') {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
+        if (err.message.match(/jwt/i)) {
+            const regex = /jwt/i;
+            message = err.message.replace(regex, 'Token')      
+        } else if (err.message.match(/invalid signature/i)) { 
+            message = concat(err.message, 'Token ')
+        } else {
+            message = err.message
+        }
+    }
+    if (err.name === 'NotBeforeError') {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
         message = err.message
     }
