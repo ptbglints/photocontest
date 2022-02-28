@@ -109,7 +109,6 @@ const ValidateLogin = [
 ]
 const ValidateSignup = [
     usernameChain,
-    nameChain,
     emailChain,
     passwordChain
 ]
