@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const verifyJWT = function (req, res, next) {
+const verifyJWT = function async (req, res, next) {
     try {
         let accessToken
         if (req.headers['authorization']) {
@@ -13,17 +13,20 @@ const verifyJWT = function (req, res, next) {
         //use the jwt.verify method to verify the access token
         //throws an error if the token has expired or has a invalid signature
         // let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-        let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-        decoded.expireIn = decoded.exp - Math.floor(Date.now() / 1000)
-        // console.log('jwt_access_token', decoded)
+        let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+            if (err) {
+                throw new Error (err)
+            } else {
+                decoded.expireIn = decoded.exp - Math.floor(Date.now() / 1000)
+                
+                // attach jwt info to req.user
+                req.user = decoded
 
-        // attach jwt info to req.user
-        req.user = decoded
-
-        next()
+                next()
+            }
+        })
     }
     catch (err) {
-        //if an error occured return request unauthorized error
         next(err)
     }
 }
