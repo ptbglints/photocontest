@@ -1,5 +1,5 @@
 require('dotenv').config()
-var winston = require('./utils/winstonlogger');
+const winston = require('./utils/winstonlogger');
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
 var cors = require('cors');

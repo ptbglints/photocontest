@@ -1,5 +1,6 @@
 const { Prisma } = require('@prisma/client')
 const jwt = require("jsonwebtoken");
+const winston = require('../utils/winstonlogger');
 
 const HTTP_STATUS_CODE = {
     OK: 200,
@@ -11,39 +12,44 @@ const HTTP_STATUS_CODE = {
 }
 
 function logErrors(err, req, res, next) {
-    console.error(err)
+    winston.error('logErrors', err)
     next(err)
 }
 
 function clientErrorHandler(err, req, res, next) {
+    winston.error('clientErrorHandler')
+    let name = err.name || 'ErrorWithoutName'
     let status = err.status || 500
-    let code = err.code || 'Unknown'
-    let message = err.message || "Internal server error"
-    if (message.toLowerCase().includes('bad request')) {
+    let code = err.code || 'ErrorWithoutCode'
+    let message = err.message || "ErrorWithoutMessage"
+    if (message.match(/bad request/i)) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
     }
-    if (message.toLowerCase().includes('forbidden')) {
-        status = HTTP_STATUS_CODE.FORBIDDEN
+    if (message.match(/wrong/i)) {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
     }
-    if (message.toLowerCase().includes("found")) {
+    if (message.match(/forbid/i)) {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
+    }
+    if (message.match(/found/i)) {
         status = HTTP_STATUS_CODE.NOT_FOUND
     }
-    if (err.name === 'TokenExpiredError') {
+    if (name.match(/TokenExpired/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
         message = 'Token expired. Please re-login.'
     }
-    if (err.name === 'JsonWebTokenError') {
+    if (name.match(/'TokenError'/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
         if (err.message.match(/jwt/i)) {
             const regex = /jwt/i;
-            message = err.message.replace(regex, 'Token')      
-        } else if (err.message.match(/invalid signature/i)) { 
+            message = err.message.replace(regex, 'Token')
+        } else if (err.message.match(/invalid signature/i)) {
             message = concat(err.message, 'Token ')
         } else {
             message = err.message
         }
     }
-    if (err.name === 'NotBeforeError') {
+    if (name === 'NotBeforeError') {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
         message = err.message
     }
@@ -56,6 +62,9 @@ function clientErrorHandler(err, req, res, next) {
                 break;
             case 'P2002':
                 message = `${err.meta.target} already exist`
+                break;
+            case 'P2025':
+                message = `${err.meta.cause}` // e.g. "Record to delete does not exist."
                 break;
             default:
                 message = err.message
@@ -73,10 +82,11 @@ function clientErrorHandler(err, req, res, next) {
 
 
     res.status(status)
-    res.send({ status, code, message })
+    res.send({ status, name, code, message })
 }
 
 function errorHandler(err, req, res, next) {
+    winston.error(errorHandler)
     res.status(500)
     res.json({ error: err })
 }

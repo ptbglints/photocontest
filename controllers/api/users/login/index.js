@@ -1,12 +1,11 @@
 const { User } = require('../../../../model')
 const { CheckPassword } = require('../../../../utils/bcrypt');
 const { verifyJWT } = require('../../../../middleware/authJwt');
-const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken');
+const { GenerateTokens } = require('../../../../utils/jsonwebtoken');
 const { ValidateLogin, CheckValidatorResult } = require('../../../../middleware/validator');
 const { body, check, oneOf, checkSchema, validationResult } = require('express-validator');
 
 const login = async (req, res, next) => {
-    // console.log(req.body)
     try {
         const { userName, password } = req.body
         let option = {}
@@ -16,31 +15,23 @@ const login = async (req, res, next) => {
         option.include = {
             profile: true
         }
-        const user = await User.findFirst(option) // will throw error if no record found
+
+        // check userName/email and password combination
+        const user = await User.findFirst(option)
+        if (user === null) throw new Error(`Wrong username or password`)
+
         const passwordIsValid = await CheckPassword(password, user.password)
+        if (!passwordIsValid) throw new Error(`Wrong username or password`)
 
-        if (!passwordIsValid) {
-            throw new Error(`Forbidden. Wrong password`)
-        }
+        // continue if no error
+        
+        // attach user detail to respond
+        req.result = user
 
-        //use the payload to store information about the user such as username, user role, etc.
-        let payload = {
-            id: user.id.toString(),
-            userName: user.userName,
-            email: user.email,
-            role: user.role
-        }
+        // Generate access & refresh token
+        const { accessToken, refreshToken } = GenerateTokens(user)
 
-        //create the access token
-        const accessToken = GenerateAccessToken(payload)
-
-        //create the refresh token with the longer lifespan
-        const refreshToken = GenerateRefreshToken(payload)
-
-        // store the refresh token in the user array
-        // user.refreshToken = refreshToken
-
-        //send the access token to the client inside a cookie
+        // send tokens using using cookies
         // https://expressjs.com/en/api.html#res.cookie
         const cookieOption = {
             httpOnly: false,
@@ -49,9 +40,11 @@ const login = async (req, res, next) => {
         }
         res.cookie(`jwtAccess`, accessToken, cookieOption)
         res.cookie(`jwtRefresh`, refreshToken, cookieOption)
-        req.result = user
+
+        // attach tokens to respond
         req.result.token = accessToken
         req.result.tokenRefresh = refreshToken
+
         next()
     } catch (err) {
         next(err)

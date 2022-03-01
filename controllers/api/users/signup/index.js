@@ -1,8 +1,7 @@
-const { nextTick } = require('process');
 const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
 const { ValidateSignup, CheckValidatorResult } = require('../../../../middleware/validator')
-const { GenerateAccessToken, GenerateRefreshToken } = require('../../../../utils/jsonwebtoken')
+const { GenerateTokens } = require('../../../../utils/jsonwebtoken')
 
 const signup = async (req, res, next) => {
     try {
@@ -19,28 +18,21 @@ const signup = async (req, res, next) => {
                 create: { name: userName || email }
             },
         }
-
-        const result = await User.create(option)
-
-        // create jwt token
-        //use the payload to store information about the user such as username, user role, etc.
-        let payload = {
-            id: result.id.toString(),
-            userName: result.userName,
-            role: result.role,
-            email: email
+        option.include = {
+            profile: true
         }
 
-        //create the access token
-        const accessToken = GenerateAccessToken(payload)
+        // create user
+        const createdUser = await User.create(option)
 
-        //create the refresh token with the longer lifespan
-        const refreshToken = GenerateRefreshToken(payload)
+        // attach user detail to respond
+        req.result = createdUser
 
-        // store the refresh token in the user array
-        // user.refreshToken = refreshToken
+        // continue if no error
+        // Generate access & refresh token
+        const { accessToken, refreshToken } = GenerateTokens(createdUser)
 
-        //send the access token to the client inside a cookie
+        // send tokens using using cookies
         // https://expressjs.com/en/api.html#res.cookie
         const cookieOption = {
             httpOnly: false,
@@ -49,7 +41,11 @@ const signup = async (req, res, next) => {
         }
         res.cookie(`jwtAccess`, accessToken, cookieOption)
         res.cookie(`jwtRefresh`, refreshToken, cookieOption)
-        req.result = result
+
+        // attach tokens to respond
+        req.result.token = accessToken
+        req.result.tokenRefresh = refreshToken
+
         next()
     } catch (err) {
         next(err)
