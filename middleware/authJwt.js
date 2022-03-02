@@ -1,75 +1,37 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('../utils/jsonwebtoken');
 
-const verifyJWT = function async (req, res, next) {
+const verifyJWT = function async(req, res, next) {
     try {
-        let accessToken
-        if (req.headers['authorization']) {
-            const authHeader = req.headers['authorization']
-            accessToken = authHeader && authHeader.split(' ')[1]
-        } else {
-            accessToken = req.cookies.jwtAccess
-        }
-
-        //use the jwt.verify method to verify the access token
-        //throws an error if the token has expired or has a invalid signature
-        // let decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-            if (err) {
-                next(err)
-            } else {
-                decoded.expireIn = decoded.exp - Math.floor(Date.now() / 1000)
-                
-                // attach jwt info to req.user
-                req.user = decoded
-
-                next()
+        const accessToken = (function () {
+            // check if token is in header
+            if (req.headers['authorization']) {
+                const authHeader = req.headers['authorization']
+                return authHeader && authHeader.split(' ')[1]
             }
-        })
+            // check if token is in query
+            if (req.query && req.query.token) {
+                return req.query.token;
+            }
+            // check if token is in cookie
+            if (req.cookies && req.cookies.jwtAccess) {
+                return req.cookies.jwtAccess
+            }
+        })();
+
+        // verify JWT
+        const decoded = jwt.verifyToken('ACCESS', accessToken)
+
+        // attach decoded token to request as object 'user'
+        req.user = decoded;
+
+        next()
+
     }
     catch (err) {
         next(err)
     }
 }
 
-const refreshJWT = function (req, res) {
-
-    let accessToken = req.cookies.jwtAccess
-    let refreshToken = req.cookies.jwtRefresh
-
-    if (!accessToken || !refreshToken) {
-        return res.status(403).send('jwt not found')
-    }
-
-    let decoded
-    try {
-        decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-    }
-    catch (err) {
-        console.log(err)
-        let message = err.message || "Error occurred."
-        res.status(401).json({
-            message: message
-        });
-    }
-
-    let tokenLife
-    let containLetter
-    //create the access token with the shorter lifespan
-    tokenLife = process.env.ACCESS_TOKEN_EXPIRE
-    containLetter = isNaN(Number(tokenLife))
-    if (!containLetter) tokenLife = parseInt(tokenLife)
-
-    let newToken = jwt.sign(decoded, tokenLife,
-        {
-            algorithm: "HS256",
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRE
-        })
-
-    res.cookie("jwt", newToken, { secure: false, httpOnly: true })
-    res.send()
-}
-
 module.exports = {
-    verifyJWT,
-    refreshJWT
+    verifyJWT
 }
