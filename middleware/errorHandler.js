@@ -11,6 +11,19 @@ const HTTP_STATUS_CODE = {
     INTERNAL_SERVER_ERROR: 500
 }
 
+// multer errors
+// see: https://github.com/expressjs/multer/blob/master/lib/multer-error.js
+var multerErrorMessages = {
+    LIMIT_PART_COUNT: 'Too many parts',
+    LIMIT_FILE_SIZE: 'File too large',
+    LIMIT_FILE_COUNT: 'Too many files',
+    LIMIT_FIELD_KEY: 'Field name too long',
+    LIMIT_FIELD_VALUE: 'Field value too long',
+    LIMIT_FIELD_COUNT: 'Too many fields',
+    LIMIT_UNEXPECTED_FILE: 'Unexpected field',
+    MISSING_FIELD_NAME: 'Field name missing'
+  }
+
 function logErrors(err, req, res, next) {
     winston.error('logErrors', err)
     next(err)
@@ -49,9 +62,11 @@ function clientErrorHandler(err, req, res, next) {
             message = err.message
         }
     }
-    if (name === 'NotBeforeError') {
+    if (name.match(/NotBeforeError/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
-        message = err.message
+    }
+    if (code.match(/multer/i)) {
+        status = HTTP_STATUS_CODE.BAD_REQUEST
     }
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
