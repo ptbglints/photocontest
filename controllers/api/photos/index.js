@@ -41,6 +41,7 @@ const uploadPhotoUser = async (req, res, next) => {
 
         // if photo title not supplied, change the title with original file name
         if (!title) title = req.file.originalname
+        if (!description) description = `No photo description.`
         // kita ambil format path dari req yang kita buat di multer storage
         console.log(req.file)
         let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
