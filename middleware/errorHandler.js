@@ -25,7 +25,7 @@ var multerErrorMessages = {
   }
 
 function logErrors(err, req, res, next) {
-    winston.error('logErrors', err)
+    winston.error(err)
     next(err)
 }
 
@@ -65,7 +65,7 @@ function clientErrorHandler(err, req, res, next) {
     if (name.match(/NotBeforeError/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
     }
-    if (code.match(/multer/i)) {
+    if (name.match(/multer/i)) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
     }
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
