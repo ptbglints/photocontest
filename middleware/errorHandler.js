@@ -38,13 +38,13 @@ function clientErrorHandler(err, req, res, next) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
         message = 'Token expired. Please re-login.'
     }
-    if (name.match(/'TokenError'/i)) {
+    if (name.match(/TokenError/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
-        if (err.message.match(/jwt/i)) {
-            const regex = /jwt/i;
-            message = err.message.replace(regex, 'Token')
-        } else if (err.message.match(/invalid signature/i)) {
-            message = concat(err.message, 'Token ')
+        const regex = /jwt/i;
+        if (message.match(regex)) {            
+            message = message.replace(regex, 'Token')
+        } else if (message.match(/invalid signature/i)) {
+            message = message.concat('Token ')
         } else {
             message = err.message
         }
@@ -85,8 +85,8 @@ function clientErrorHandler(err, req, res, next) {
     res.send({ status, name, code, message })
 }
 
-function errorHandler(err, req, res, next) {
-    winston.error(errorHandler)
+function lastErrorHandler(err, req, res, next) {
+    winston.error(lastErrorHandler, err)
     res.status(500)
     res.json({ error: err })
 }
@@ -95,5 +95,5 @@ module.exports = {
     HTTP_STATUS_CODE,
     logErrors,
     clientErrorHandler,
-    errorHandler
+    lastErrorHandler
 }

@@ -7,7 +7,7 @@ const enrouten = require('express-enrouten')
 const path = require('path');
 // const cache = require('./middleware/cache')
 const { responseSuccess } = require('./middleware/responseSuccess')
-const { logErrors, clientErrorHandler, errorHandler } = require('./middleware/errorHandler')
+const { logErrors, clientErrorHandler, lastErrorHandler } = require('./middleware/errorHandler')
 const { handle404 } = require('./middleware/handler404')
 const app = express()
 const cookieParser = require('cookie-parser')
@@ -69,7 +69,7 @@ app.use(responseSuccess)
 // catch errors
 app.use(logErrors)
 app.use(clientErrorHandler)
-app.use(errorHandler)
+app.use(lastErrorHandler)
 // error 404 handler
 app.use(handle404)
 
