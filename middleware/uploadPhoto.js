@@ -24,20 +24,24 @@ const storeOnDisk = multer.diskStorage({
             cb(null, finalPath);
         } catch (err) {
             // res.status(500).send('Error uploading photo.')
-            // throw new Error(err.message)
-            next(err)
+            throw new Error(err)
         }
     },
     filename: function (req, file, cb) {
-        // get file extension
-        let extension = ''; // set default extension (if any)
-        if (file.originalname.split(".").length > 1) // checking if there is an extension or not.
-            extension = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length);
+        try {
+            // get file extension
+            let extension = ''; // set default extension (if any)
+            if (file.originalname.split(".").length > 1) // checking if there is an extension or not.
+                extension = file.originalname.substring(file.originalname.lastIndexOf('.'), file.originalname.length);
 
-        // change stored file name to random hash string
-        const finalFileName = cuid() + extension;
-        // create file name
-        cb(null, finalFileName)
+            // change stored file name to random hash string
+            const finalFileName = cuid() + extension;
+            // create file name
+            cb(null, finalFileName)
+        } catch (err) {
+            throw new Error(err)
+        }
+
     }
 })
 
