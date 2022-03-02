@@ -1,23 +1,14 @@
 const jwt = require("jsonwebtoken");
 
-const parseTokenConfig = () => {
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
-    const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET
-    let accesTokenExpire = process.env.ACCESS_TOKEN_EXPIRE
-    let refreshTokenExpire = process.env.REFRESH_TOKEN_EXPIRE
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET
+let accesTokenExpire = process.env.ACCESS_TOKEN_EXPIRE
+let refreshTokenExpire = process.env.REFRESH_TOKEN_EXPIRE
 
-    // if token expire does not contain any letter n, h etc.
-    // then convert to integer
-    if (!isNaN(Number(accesTokenExpire))) accesTokenExpire = parseInt(accesTokenExpire)
-    if (!isNaN(Number(refreshTokenExpire))) refreshTokenExpire = parseInt(refreshTokenExpire)
-
-    return {
-        accessTokenSecret,
-        refreshTokenSecret,
-        accesTokenExpire,
-        refreshTokenExpire
-    }
-}
+// if token expire does not contain any letter n, h etc.
+// then convert to integer
+if (!isNaN(Number(accesTokenExpire))) accesTokenExpire = parseInt(accesTokenExpire)
+if (!isNaN(Number(refreshTokenExpire))) refreshTokenExpire = parseInt(refreshTokenExpire)
 
 // function to generate accessToken and refreshToken
 const GenerateTokens = (userObj) => {
@@ -27,14 +18,6 @@ const GenerateTokens = (userObj) => {
         email: userObj.email,
         role: userObj.role
     }
-
-    // parse token config from .env
-    const {
-        accessTokenSecret,
-        refreshTokenSecret,
-        accesTokenExpire,
-        refreshTokenExpire
-    } = parseTokenConfig()
 
     const accessToken = jwt.sign(tokenObj, accessTokenSecret, {
         algorithm: "HS256",
@@ -49,6 +32,15 @@ const GenerateTokens = (userObj) => {
     return { accessToken, refreshToken }
 }
 
+const verifyToken = (str, token) => {
+    const secret = str.match(/access/i) ? accessTokenSecret : refreshTokenSecret
+    return jwt.verify(token, secret, function (err, decoded) {
+        if (err) throw err
+        return decoded
+    })
+}
+
 module.exports = {
-    GenerateTokens
+    GenerateTokens,
+    verifyToken,
 } 
