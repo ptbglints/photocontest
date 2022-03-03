@@ -118,12 +118,12 @@ const uploadPhotoUser = async (req, res, next) => {
                             likes: likes || getRandomIntInclusive(15, 100),
                             downloaded: downloaded || getRandomIntInclusive(0, 50),
                             starRating: starRating || getRandomIntInclusive(0, 10),
-                            cameraMake: file.exif.cameraMake,
-                            cameraModel: file.exif.cameraModel,
-                            shutterSpeed: file.exif.shutterSpeed,
-                            aperture: file.exif.aperture,
-                            focalLength: file.exif.focalLength,
-                            iso: file.exif.iso,
+                            cameraMake,
+                            cameraModel,
+                            shutterSpeed,
+                            aperture,
+                            focalLength,
+                            iso,
 
 
                         }
