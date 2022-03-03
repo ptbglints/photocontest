@@ -1,7 +1,8 @@
 const { Photo, User, prisma } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
-const { uploadSinglePhoto } = require('../../../middleware/uploadPhoto')
+const uploadPhoto = require('../../../middleware/uploadPhoto')
 const { modifyImagePath } = require('../../../middleware/modifyImagePath')
+const { generateSlug, totalUniqueSlugs } = require("random-word-slugs");
 
 // helper function
 /* Parse string tags and convert to object to feed to prisma */
@@ -32,81 +33,135 @@ function parseTagsToArray(commaSeparatedString, tagFieldStr) {
     */
 }
 
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+}
+
+const randomSlugsOption = {
+    format: "sentence",
+    partsOfSpeech: ["adjective", "noun", "adjective"],
+    categories: {
+      adjective: ["color", "appearance"],
+      noun: ["animals"],
+    },
+  };
 
 //API to upload a photo (or many photos) to a collection/galery User
 const uploadPhotoUser = async (req, res, next) => {
-
+    var results = []
     try {
-        let { title, description, albumtitle, tag } = req.body
 
-        // if photo title not supplied, change the title with original file name
-        if (!title) title = req.file.originalname
-        if (!description) description = `No photo description.`
-        // kita ambil format path dari req yang kita buat di multer storage
-        console.log(req.file)
-        let path = req.file.path // di sini kita sudah dapat fullpath string dari file yang diupload
-        // get the userid from Jwt
-        const userid = req.user.id
+        for (let i = 0; i < req.files.length; i++) {
 
-        // proces tags
-        const tagFieldInDb = 'name' // must match field name 'name' in Tag table
-        let tagArray;
-        if (tag) tagArray = parseTagsToArray(tag, tagFieldInDb)
+            let { title, description, isPrivate, views, likes, downloaded,
+                starRating, tag, albumtitle } = req.body
 
-        let option = {}
-        option.data = {
-            title,
-            description,
-            path,
-            user: { connect: { id: userid } },
-            photoDetail: {
-                connectOrCreate: {
-                    where: {
-                        fileName: req.file.filename,
-                    },
-                    create: {
-                        fileName: req.file.filename,
-                        originalName: req.file.originalname,
-                        mimeType: req.file.mimetype,
-                        encoding: req.file.encoding,
-                        size: req.file.size
+            const file = req.files[i]
+
+            // mock-up values
+            if (!isPrivate) isPrivate = Math.random() < 0.5;
+            if (!views) views = getRandomIntInclusive(50, 1000);
+            if (!likes) likes = getRandomIntInclusive(15, 100);
+            if (!downloaded) downloaded = getRandomIntInclusive(0, 50);
+            if (!starRating) starRating = getRandomIntInclusive(0, 10);
+
+            // handle title
+            let photoTitle;
+            if (title && Array.isArray(title)) {
+                if (title[i].length < 5) photoTitle = generateSlug(3, { format: "title" })
+                else photoTitle = title[i]
+            } else photoTitle = generateSlug(3, { format: "title" })
+
+            // handle description
+            let photoDesc;
+            if (description && Array.isArray(description)) {
+                if (description[i].length < 5) photoDesc = generateSlug(15, { format: "sentence" })
+                else photoDesc = description[i]
+            } else photoDesc = generateSlug(15, { format: "sentence" })
+
+            let path = file.path // di sini kita sudah dapat fullpath string dari file yang diupload
+            // get the userid from Jwt
+            const userid = req.user.id
+
+            let option = {}
+            option.data = {
+                title: photoTitle,
+                description: photoDesc,
+                path,
+                user: { connect: { id: userid } },
+                photoDetail: {
+                    connectOrCreate: {
+                        where: {
+                            fileName: file.filename,
+                        },
+                        create: {
+                            fileName: file.filename,
+                            originalName: file.originalname,
+                            mimeType: file.mimetype,
+                            encoding: file.encoding,
+                            size: file.size,
+                            isPrivate: isPrivate || Math.random() < 0.5,
+                            views: views || getRandomIntInclusive(50, 1000),
+                            likes: likes || getRandomIntInclusive(15, 100),
+                            downloaded: downloaded || getRandomIntInclusive(0, 50),
+                            starRating: starRating || getRandomIntInclusive(0, 10),
+                            cameraMake: file.exif.cameraMake,
+                            cameraModel: file.exif.cameraModel,
+                            shutterSpeed: file.exif.shutterSpeed,
+                            aperture: file.exif.aperture,
+                            focalLength: file.exif.focalLength,
+                            iso: file.exif.iso,
+
+
+                        }
                     }
                 }
             }
-        }
 
-        // check if album title is specified
-        albumtitle && albumtitle.trim() ?
-            option.data.albums = {
-                connectOrCreate: {
-                    where: {
-                        // user: {id: userid},
-                        title: albumtitle
-                    },
-                    create: {
-                        userId: userid,
-                        title: albumtitle
+            // check if album title is specified
+            albumtitle && albumtitle.trim() ?
+                option.data.albums = {
+                    connectOrCreate: {
+                        where: {
+                            // user: {id: userid},
+                            title: albumtitle
+                        },
+                        create: {
+                            userId: userid,
+                            title: albumtitle
+                        }
                     }
-                }
-            } : option.data.albums = {}
+                } : option.data.albums = {}
 
-        // check if tags are specified
-        tag && tag.trim() ?
-            option.data.tags = { connectOrCreate: tagArray } : false
-        option.include = {
-            photoDetail: true,
-            albums: true,
-            tags: true,
+            // handle tags
+            const tagFieldInDb = 'name' // must match field name 'name' in Tag table
+            let tagArray;
+            if (tag && Array.isArray(tag)) {
+                console.log('tag', tag[i], i)
+                tagArray = parseTagsToArray(tag[i], tagFieldInDb)
+                option.data.tags = { connectOrCreate: tagArray }
+            }
+            // tag && tag.trim() ?
+            //     option.data.tags = { connectOrCreate: tagArray } : false
+            option.include = {
+                photoDetail: true,
+                albums: true,
+                tags: true,
+            }
+
+            // add photo to db
+            const result = await Photo.create(option)
+            results.push(result)
+
         }
 
-        // add photo to db
-        const result = await Photo.create(option)
-        req.result = result
+        req.result = results
         next()
     } catch (err) {
         next(err)
     }
-
 }
 
 const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
@@ -192,7 +247,8 @@ module.exports = routes => {
     )
     routes.post('/upload/',
         verifyJWT,
-        uploadSinglePhoto,
+        uploadPhoto.uploadMultiplePhotos,
+        uploadPhoto.resizeImagesFromDisk,
         uploadPhotoUser
     )
     routes.put('/:photoId',
