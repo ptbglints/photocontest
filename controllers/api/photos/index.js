@@ -43,10 +43,10 @@ const randomSlugsOption = {
     format: "sentence",
     partsOfSpeech: ["adjective", "noun", "adjective"],
     categories: {
-      adjective: ["color", "appearance"],
-      noun: ["animals"],
+        adjective: ["color", "appearance"],
+        noun: ["animals"],
     },
-  };
+};
 
 //API to upload a photo (or many photos) to a collection/galery User
 const uploadPhotoUser = async (req, res, next) => {
@@ -66,6 +66,17 @@ const uploadPhotoUser = async (req, res, next) => {
             if (!likes) likes = getRandomIntInclusive(15, 100);
             if (!downloaded) downloaded = getRandomIntInclusive(0, 50);
             if (!starRating) starRating = getRandomIntInclusive(0, 10);
+
+            // handle exif
+            let cameraMake, cameraModel, shutterSpeed,
+                aperture, focalLength, iso;
+
+            file.exif ? cameraMake = file.exif.cameraMake : null
+            file.exif ? cameraModel = file.exif.cameraModel : null
+            file.exif ? shutterSpeed = file.exif.shutterSpeed : null
+            file.exif ? aperture = file.exif.aperture : null
+            file.exif ? focalLength = file.exif.focalLength : null
+            file.exif ? iso = file.exif.iso : null
 
             // handle title
             let photoTitle;
