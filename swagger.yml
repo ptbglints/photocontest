@@ -416,25 +416,47 @@ paths:
       summary: Upload photo to collection User
       description: Logged user only
       operationId: uploadePhoto
+      # requestBody:
+      #   required: true
+      #   content:
+      #     multipart/form-data:
+      #       schema:
+      #         type: object
+      #         properties:
+      #           title:
+      #             type: string
+      #             example: "Standing & terbang"
+      #           description:
+      #             type: string
+      #             example: "Lagi liburan di Papua New Guinea"
+      #           photo:
+      #             type: string
+      #             format: binary
+      #           tag:
+      #             type: string
+      #             example: "sport,bunga,ikan,bekasi"
+
       requestBody:
-        required: true
         content:
           multipart/form-data:
             schema:
               type: object
               properties:
-                title:
-                  type: string
-                  example: "Standing & terbang"
-                description:
-                  type: string
-                  example: "Lagi liburan di Papua New Guinea"
                 photo:
-                  type: string
-                  format: binary
-                tag:
-                  type: string
-                  example: "sport,bunga,ikan,bekasi"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  oneOf:
+                    - minItems: 1
+                      maxItems: 1
+                    - minItems: 3
+                      maxItems: 3
+                # addresses:
+                #   # default Content-Type for arrays is based on the `inner` type (object shown, so `application/json` in this example)
+                #   type: array
+                #   items:
+                #     type: "#/components/schemas/Photo"
 
       responses:
         default:
@@ -629,7 +651,6 @@ paths:
                 type: object
                 $ref: "#/components/schemas/Album"
 
-
   /albums/search/username/{string}:
     get:
       tags:
@@ -664,7 +685,7 @@ paths:
       parameters:
         - name: string
           in: path
-          description: album title that contain string 
+          description: album title that contain string
           required: true
           schema:
             type: string
