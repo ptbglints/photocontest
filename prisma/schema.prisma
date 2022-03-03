@@ -23,8 +23,7 @@ model User {
   email     String   @unique @db.VarChar(254)
   password  String   @db.VarChar(254)
   role      Role     @default(USER)
-  profile   Profile  @relation(fields: [profileId], references: [userId], onDelete: Cascade)
-  profileId String   @unique
+  profile   Profile?
   photos    Photo[]
   albums    Album[]
   createdAt DateTime @default(now())
@@ -33,7 +32,7 @@ model User {
 
 model Profile {
   userId       String   @id @default(uuid())
-  user         User?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String?  @db.VarChar(254)
   address      String?
   profilePhoto String?
@@ -43,23 +42,22 @@ model Profile {
 }
 
 model Photo {
-  id            String      @id @default(uuid())
-  title         String?     @db.VarChar(254)
-  description   String?
-  path          String      @unique
-  photoDetail   PhotoDetail @relation(fields: [photoDetailId], references: [photoId], onDelete: Cascade)
-  photoDetailId String      @unique
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  albums        Album[]
-  tags          Tag[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
+  id          String       @id @default(uuid())
+  title       String?      @db.VarChar(254)
+  description String?
+  path        String       @unique
+  photoDetail PhotoDetail?
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  albums      Album[]
+  tags        Tag[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
 
 }
 
 model PhotoDetail {
-  photo        Photo?
+  photo        Photo   @relation(fields: [photoId], references: [id], onDelete: Cascade)
   photoId      String  @id @default(uuid())
   fileName     String  @unique
   originalName String
