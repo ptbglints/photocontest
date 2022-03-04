@@ -51,6 +51,21 @@ const passwordChainLoose =
         .withMessage('field not exist')
         .notEmpty()
         .withMessage('cannot be empty')
+const titleChain =
+    check('title')
+        .trim()
+        .escape()
+        .exists()
+        .isLength({ min: 3, max: 32 })
+        .withMessage("must be between 3 and 32 characters")
+        .matches(/^[A-Za-z0-9 .,'!&?]+$/)
+        .withMessage('only alphanumeric are allowed');
+const descriptionChain =
+    check('description')
+        .exists()
+        .withMessage('field not exist')
+        .trim()
+        .isLength({ min: 0, max: 254 })
 /**
  * OPTIONAL FIELDS
  * If these fields do not exist in the request
@@ -89,15 +104,6 @@ const coverPhotoChain =
         .trim()
         .isLength({ min: 2, max: 254 })
         .isAlphanumeric('en-US')
-const titleChain =
-    check('title')
-        .trim()
-        .escape()
-        .exists()
-        .isLength({ min: 3, max: 32 })
-        .withMessage("must be between 3 and 32 characters")
-        .matches(/^[A-Za-z0-9 .,'!&?]+$/)
-        .withMessage('only alphanumeric are allowed')
 
 
 /**
@@ -120,7 +126,8 @@ const ValidateUpdateProfile = [
     coverPhotoChain
 ]
 const ValidateCreateAlbum = [
-    titleChain
+    titleChain,
+    descriptionChain
 ]
 
 /**
