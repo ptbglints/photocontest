@@ -54,8 +54,6 @@ async function main() {
 
 const sendMail = () => main().catch(console.error);
 
-sendMail();
-
 exports.module = {
     sendMail
 }
