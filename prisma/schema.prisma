@@ -18,16 +18,18 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  userName  String   @unique @db.VarChar(254)
-  email     String   @unique @db.VarChar(254)
-  password  String   @db.VarChar(254)
-  role      Role     @default(USER)
-  profile   Profile?
-  photos    Photo[]
-  albums    Album[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  userName    String   @unique @db.VarChar(254)
+  email       String   @unique @db.VarChar(254)
+  password    String   @db.VarChar(254)
+  role        Role     @default(USER)
+  isActive    Boolean  @default(false)
+  profile     Profile?
+  photos      Photo[]
+  albums      Album[]
+  lastLoginAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 }
 
 model Profile {
