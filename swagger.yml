@@ -921,7 +921,41 @@ components:
         isDownloadable:
           type: boolean
 
-  requestBodies:
+    SuccessResponseObject:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: object
+
+    SuccessResponseArray:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
+
     LoginJSON: # Schema name
       type: object
       properties:
@@ -932,15 +966,7 @@ components:
       example: # Object-level example
         username: arman
         password: Pass123?
+
+  # requestBodies:
   
-  responses:
-      NotFound:
-        description: Entity not found.
-      IllegalInput:
-        description: Illegal input for operation.
-      GeneralError:
-        description: General Error
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Album'
+  # responses:
