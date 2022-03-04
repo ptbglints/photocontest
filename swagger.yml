@@ -219,9 +219,8 @@ paths:
           description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
-            example: 4
+            type: string
+            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
       responses:
         "200":
           description: Successful operation
@@ -613,6 +612,44 @@ paths:
                 type: object
                 $ref: "#/components/schemas/AlbumNested"
 
+  /albums/userid/{userId}:
+    get:
+      tags:
+        - Album
+      summary: Get all albums from specific Username
+      description: >
+        Get all albums from specific Username
+      parameters:
+        - name: userId
+          in: path
+          description: userId
+          required: true
+          schema:
+            type: string
+            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
+
   /albums/username/{userName}:
     get:
       tags:
@@ -700,23 +737,17 @@ paths:
                 $ref: "#/components/schemas/Album"
 
 components:
-  # examples:
-  #   ObjectLoginByUserName:
-  #     value:
-  #       username: arman
-  #       password: Pass123?
-  # summary: A sample object
-  schemas:
-    LoginJSON: # Schema name
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-      example: # Object-level example
+  examples:
+    ObjectLoginByUserName:
+      value:
         username: arman
         password: Pass123?
+    skip:
+      value: 0
+    take:
+      value: 100
+
+  schemas:
     User:
       type: object
       properties:
@@ -890,37 +921,26 @@ components:
         isDownloadable:
           type: boolean
 
-    SuccessResponseObject:
+  requestBodies:
+    LoginJSON: # Schema name
       type: object
       properties:
-        status:
-          type: integer
-          format: int32
-        message:
+        username:
           type: string
-        data:
-          type: object
-
-    SuccessResponseArray:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: int32
-        message:
+        password:
           type: string
-        data:
-          type: array
-          items:
-            type: object
-
-    ErrorResponse:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: int32
-        code:
-          type: string
-        message:
-          type: string
+      example: # Object-level example
+        username: arman
+        password: Pass123?
+  
+  responses:
+      NotFound:
+        description: Entity not found.
+      IllegalInput:
+        description: Illegal input for operation.
+      GeneralError:
+        description: General Error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Album'
