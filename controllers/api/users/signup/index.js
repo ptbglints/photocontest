@@ -2,6 +2,7 @@ const { ROLE, User, CreateData } = require('../../../../model')
 const { EncriptPassword } = require('../../../../utils/bcrypt');
 const { ValidateSignup, CheckValidatorResult } = require('../../../../middleware/validator')
 const { GenerateTokens } = require('../../../../utils/jsonwebtoken')
+const mailer = require('../../../../middleware/mailer')
 
 const signup = async (req, res, next) => {
     try {
@@ -58,6 +59,8 @@ module.exports = routes => {
     routes.post('/',
         ValidateSignup,
         CheckValidatorResult,
-        signup
+        signup,
+        mailer.sendConfirmMail
+
     )
 }
