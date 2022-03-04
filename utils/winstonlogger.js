@@ -63,6 +63,7 @@ const logger = winston.createLogger({
     levels: logLevels.levels,
     level: process.env.GLOBAL_LOG_LEVEL || 'debug', // global level
     handleExceptions: true,
+    exitOnError: false,
     // format: winston.format.json(),
     // format: winston.format.cli(),
     // format: combine(timestamp(), cli(), errors({ stack: true })),
