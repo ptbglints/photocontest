@@ -1,5 +1,6 @@
 require('dotenv').config()
 const winston = require('./utils/winstonlogger');
+const redis = require('./utils/redis')
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
 var cors = require('cors');
@@ -48,7 +49,7 @@ var options = {
 };
 
 // swagger middleware
-app.use('/api-docs', function(req, res, next){
+app.use('/api-docs', function (req, res, next) {
     // dynamic swagger url/host
     swaggerDocument.servers[0].url = `${req.protocol}://${req.headers.host}/api`
     req.swaggerDoc = swaggerDocument;

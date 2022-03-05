@@ -4,30 +4,31 @@ const { ValidateSignup, CheckValidatorResult } = require('../../../../middleware
 const jwt = require('../../../../utils/jsonwebtoken')
 const mailer = require('../../../../middleware/mailer')
 
+
+// helper functions
+// Generate random avatar. see https://avatars.dicebear.com/docs/http-api
+function GetAvatar(str) {
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+    }
+    const sprites = [
+        'male', 'female', 'human', 'identicon', 'initials',
+        'bottts', 'avataaars', 'jdenticon', 'gridy', 'micah'
+    ]
+    const sprite = sprites[getRandomIntInclusive(0, sprites.length - 1)]
+    return `https://avatars.dicebear.com/api/${sprite}/${str}.svg`
+}
+
 const signup = async (req, res, next) => {
     try {
         let { userName, email, password } = req.body
 
         const encryptedPassword = await EncriptPassword(password)
 
-        // generate custom avatar
-        // see https://avatars.dicebear.com/docs/http-api
-
-        const sprites = [
-            'male', 'female', 'human', 'identicon', 'initials',
-            'bottts', 'avataaars', 'jdenticon', 'gridy', 'micah'
-        ]
-
-        function getRandomIntInclusive(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
-        }
-
-        const sprite = sprites[getRandomIntInclusive(0, sprites.length-1)]
-        const profilePhotoUrl = `https://avatars.dicebear.com/api/${sprite}/${userName || email}.svg`
-
-        const coverPhotoUrl = 'https://picsum.photos/seed/picsum/800/300'
+        const profilePhotoUrl = GetAvatar(userName || email)
+        const coverPhotoUrl = GetCoverPhoto()
 
         let option = {}
         option.data = {

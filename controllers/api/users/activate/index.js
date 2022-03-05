@@ -32,7 +32,7 @@ const activate = async (req, res, next) => {
         }
         // respond if no error
         message = 'Your account has been activated. Please re-login.'
-        res.send(message)
+        res.json({message})
     } catch (err) {
         next(err)
     }

@@ -23,6 +23,9 @@ const login = async (req, res, next) => {
         const passwordIsValid = await CheckPassword(password, user.password)
         if (!passwordIsValid) throw new Error(`Wrong username or password`)
 
+        // check if user has been activated / has verified his/her email address.
+        if (!user.isActive) throw new Error ('Pending account. Please verify your email.')
+
         // continue if no error
         // update lastLoginAt field
         user = await User.update({
@@ -71,6 +74,8 @@ const login = async (req, res, next) => {
 
         next()
     } catch (err) {
+        if (err.message.match(/wrong/i)) err.status = 401
+        if (err.message.match(/pending/i)) err.status = 401
         next(err)
     }
 }

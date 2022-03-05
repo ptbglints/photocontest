@@ -27,7 +27,7 @@ async function sendConfirmMail(req, res, next) {
                 text: "Hello world?", // plain text body
                 html: `<b>Hello ${req.result.userName}, to confirm your email and activate your account, 
                     please click link below:</b><br><br>
-                    <a href="https://ptb0.herokuapp.com/api/users/activate/${req.result.token}">Confirm your email</a>`, // html body
+                    <a href="${req.protocol}://${req.headers.host}/api/users/activate?token=${req.result.tokenActivation}">Confirm your email</a>`, // html body
             }
 
             transporterSMTP.verify(function (error, success) {
