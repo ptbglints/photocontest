@@ -57,7 +57,7 @@ function clientErrorHandler(err, req, res, next) {
         if (message.match(regex)) {            
             message = message.replace(regex, 'Token')
         } else if (message.match(/invalid signature/i)) {
-            message = message.concat('Token ')
+            message = 'Token '.concat(message)
         } else {
             message = err.message
         }

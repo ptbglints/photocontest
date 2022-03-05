@@ -19,7 +19,7 @@ const verifyJWT = function async(req, res, next) {
         })();
 
         // verify JWT
-        const decoded = jwt.verifyToken('ACCESS', accessToken)
+        const decoded = jwt.verifyAccessToken(accessToken)
 
         // attach decoded token to request as object 'user'
         req.user = decoded;
