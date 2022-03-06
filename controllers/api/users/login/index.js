@@ -34,6 +34,9 @@ const login = async (req, res, next) => {
             },
             data: {
                 lastLoginAt: new Date(Date.now())
+            },
+            include: {
+                profile: true
             }
         })
 
