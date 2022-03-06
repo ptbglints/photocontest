@@ -5,7 +5,7 @@ function modifyImagePath(req, res, next) {
         // console.log('is Array')        
         for (let i = 0; i < resultObj.length; i++) {
             let photoPath = resultObj[i].path
-            if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
+            if (!photoPath.match(/http/i)) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
                 photoPath = modifiedPath
             }
@@ -16,7 +16,7 @@ function modifyImagePath(req, res, next) {
     else if (Object.keys(resultObj).length > 0) {
         // console.log('resultObj must be an Object')
         let photoPath = resultObj.path
-        if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
+        if (!photoPath.match(/http/i)) {
             const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
             photoPath = modifiedPath
         }
@@ -31,7 +31,7 @@ function modifyImagePath2ndLayer(req, res, next) {
     // check if the incoming data is array, e.g. from prisma.getMany
     if (Array.isArray(resultObj) && resultObj.length > 0) {
         let photoPath = resultObj[0].path
-        if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
+        if (!photoPath.match(/http/i)) {
             for (let i = 0; i < resultObj.length; i++) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
                 photoPath = modifiedPath
@@ -42,7 +42,7 @@ function modifyImagePath2ndLayer(req, res, next) {
     // Check for empty object
     else if (Object.keys(resultObj).length > 0) {
         let photoPath = resultObj.path
-        if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
+        if (!photoPath.match(/http/i)) {
             const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
             photoPath = modifiedPath
         }
