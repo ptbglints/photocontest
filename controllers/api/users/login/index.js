@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
         if (!passwordIsValid) throw new Error(`Wrong username or password`)
 
         // check if user has been activated / has verified his/her email address.
-        if (!user.isActive) throw new Error ('Pending account. Please verify your email.')
+        // if (!user.isActive) throw new Error ('Pending account. Please verify your email.')
 
         // continue if no error
         // update lastLoginAt field
