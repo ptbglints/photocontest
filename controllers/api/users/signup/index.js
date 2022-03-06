@@ -23,7 +23,7 @@ function GetAvatar(str) {
 
 // Get the same random image every time based on a seed
 // see https://picsum.photos/
-function GetCoverPhoto(str) {return `https://picsum.photos/${str}/picsum/800/450`} 
+function GetCoverPhoto(str) {return `https://picsum.photos/seed/${str}/800/450`} 
 
 const signup = async (req, res, next) => {
     try {
