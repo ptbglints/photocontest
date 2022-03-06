@@ -5,6 +5,7 @@ const client = redis.createClient({
     socket: {
         port: process.env.REDIS_PORT,
         host: process.env.REDIS_HOST,
+        reconnectStrategy: retries => Math.min(retries * 50, 500)
     }
 });
 
@@ -21,9 +22,9 @@ const client = redis.createClient({
     client.on("error", function () {
         console.log("Redis error.");
     });
-    client.on("reconnecting", function () {
-        console.log("Redis reconnecting.");
-    });
+    // client.on("reconnecting", function () {
+    //     console.log("Redis reconnecting.");
+    // });
 
     await client.connect();
 
@@ -36,6 +37,4 @@ const client = redis.createClient({
     console.log(time)
 })();
 
-module.exports = {
-    client
-}
+module.exports = client

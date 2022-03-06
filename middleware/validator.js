@@ -26,7 +26,8 @@ const emailChain =
         .isEmail()
         .withMessage('format is not valid')
         .normalizeEmail({
-            all_lowercase: true
+            all_lowercase: true,
+            gmail_remove_dots: false,
         })
 const passwordChain =
     body('password')

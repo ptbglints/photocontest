@@ -21,6 +21,10 @@ function GetAvatar(str) {
     return `https://avatars.dicebear.com/api/${sprite}/${str}.svg`
 }
 
+// Get the same random image every time based on a seed
+// see https://picsum.photos/
+function GetCoverPhoto(str) {return `https://picsum.photos/${str}/picsum/800/450`} 
+
 const signup = async (req, res, next) => {
     try {
         let { userName, email, password } = req.body
@@ -28,7 +32,7 @@ const signup = async (req, res, next) => {
         const encryptedPassword = await EncriptPassword(password)
 
         const profilePhotoUrl = GetAvatar(userName || email)
-        const coverPhotoUrl = GetCoverPhoto()
+        const coverPhotoUrl = GetCoverPhoto(userName || email)
 
         let option = {}
         option.data = {
