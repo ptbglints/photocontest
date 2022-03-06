@@ -2,6 +2,7 @@ const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
 const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../middleware/validator');
 const { uploadSinglePhoto } = require('../../../../middleware/uploadPhoto')
+const { modifyImagePath, modifyImagePath2ndLayer, modifyProfilePhotoPath, modifyProfilePhotoPath2ndLayer } = require('../../../../middleware/modifyImagePath');
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -9,12 +10,6 @@ const getProfileByUserId = async (req, res, next) => {
         let option = {}
         option.where = { userId: userId }
         const result = await Profile.findUnique(option)
-
-        let photoPath = result.profilePhoto
-        if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
-            const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-            result.profilePhoto = modifiedPath
-        }
 
         req.result = result
         next()
@@ -67,11 +62,14 @@ const updateProfile = async (req, res, next) => {
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/profile
     routes.get('/userid/:id',
-        getProfileByUserId
+        getProfileByUserId,
+        modifyProfilePhotoPath
+
     );
 
     routes.get('/username/:userName',
-        getProfileByUserName
+        getProfileByUserName,
+        modifyProfilePhotoPath
     );
 
     routes.put('/',
@@ -79,6 +77,7 @@ module.exports = routes => {
         uploadSinglePhoto,
         ValidateUpdateProfile,
         CheckValidatorResult,
-        updateProfile
+        updateProfile,
+        modifyProfilePhotoPath
     );
 }
