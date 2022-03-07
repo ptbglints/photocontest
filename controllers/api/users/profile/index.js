@@ -4,6 +4,16 @@ const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../mid
 const { uploadSinglePhoto } = require('../../../../middleware/uploadPhoto')
 const { modifyImagePath, modifyImagePath2ndLayer, modifyProfilePhotoPath, modifyProfilePhotoPath2ndLayer } = require('../../../../middleware/modifyImagePath');
 
+const getMany = async (req, res, next) => {
+    try {
+        const result = await Profile.findMany()
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
 const getProfileByUserId = async (req, res, next) => {
     try {
         const userId = req.params.id
@@ -61,6 +71,11 @@ const updateProfile = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/profile
+    routes.get('/',
+        getMany,
+        modifyProfilePhotoPath
+    );
+
     routes.get('/userid/:id',
         getProfileByUserId,
         modifyProfilePhotoPath
