@@ -32,14 +32,21 @@ paths:
         A detailed description of the operation.
         Use markdown for rich text representation,
       operationId: getMany
-      # parameters:
-      #   - name: id
-      #     in: path
-      #     description: User ID
-      #     required: true
-      #     schema:
-      #       type: integer
-      #       format: int64
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
       responses:
         "200":
           description: Successful operation
@@ -75,7 +82,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
 
-  /users/{id}:
+  /users/id/{id}:
     get:
       tags:
         - User
@@ -90,8 +97,8 @@ paths:
           description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            example: 02252e26-64ff-45c2-9aa0-14ca5d7a0e70
       responses:
         "200":
           description: Successful operation
