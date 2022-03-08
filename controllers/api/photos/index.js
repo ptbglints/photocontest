@@ -178,6 +178,10 @@ const uploadPhotoUser = async (req, res, next) => {
 const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
     try {
         const limit = parseInt(req.query.limit)
+
+        limit ? limit : 100;
+        limit <= 100 ? limit : 100;
+
         let option = {
             skip: 0,
             take: limit

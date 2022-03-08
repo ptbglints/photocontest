@@ -17,8 +17,7 @@ const swaggerDocument = json.mySwaggerJson
 var optionsSwagger = {
     // customJs: '/public/custom.js',
     customCss: `
-    .topbar-wrapper img {content:url(https://img.icons8.com/doodle/2x/-freelancefirm.png); width:50px; height:auto;}
-    .swagger-ui .topbar { background-color: #000000; border-bottom: 20px solid #5dc6d1; }
+    .swagger-ui .topbar { border-bottom: 20px solid #5dc6d1; }
     `,
     customSiteTitle: "Yo!Photo 👻",
     explorer: false,

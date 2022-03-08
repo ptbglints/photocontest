@@ -25,6 +25,9 @@ const getSingleAlbumByAlbumId = async (req, res, next) => {
         }
 
         const result = await Album.findUnique(option)
+
+        if (!result) throw new Error ('No Album found.')
+
         const profile = result.user.profile
         delete result['user'];
         result.profile = profile

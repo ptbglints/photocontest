@@ -338,13 +338,16 @@ exports.mySwaggerJson = {
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": "integer",
-                    "format": "int64",
-                    "example": 4
+                    "type": "string",
+                    "example": '947fbd10-aa2d-4a80-b609-c26ac36397a1'
                   },
                   "name": {
                     "type": "string",
                     "example": "Arman Maulalan"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Jl. Kimia IV No. 165"
                   }
                 }
               }
@@ -392,7 +395,7 @@ exports.mySwaggerJson = {
         }
       }
     },
-    "/users/profile/username/{username}": {
+    "/users/profile/username/{userName}": {
       "get": {
         "tags": [
           "Profile"
@@ -400,7 +403,7 @@ exports.mySwaggerJson = {
         "summary": "Gets specific profile by Username",
         "parameters": [
           {
-            "name": "username",
+            "name": "userName",
             "in": "path",
             "description": "User name",
             "required": true,
@@ -438,7 +441,7 @@ exports.mySwaggerJson = {
             "required": true,
             "schema": {
               "type": "integer",
-              "example": 500
+              "example": 100
             }
           }
         ],
@@ -537,9 +540,8 @@ exports.mySwaggerJson = {
             "description": "User ID",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64",
-              "example": 4
+              "type": "string",
+              "example": '02252e26-64ff-45c2-9aa0-14ca5d7a0e70'
             }
           }
         ],
@@ -570,9 +572,8 @@ exports.mySwaggerJson = {
             "description": "photo ID",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64",
-              "example": 4
+              "type": "string",
+              "example": '0099b5e3-b13d-4975-aaa3-956859c76226'
             }
           }
         ],
@@ -1346,7 +1347,7 @@ exports.mySwaggerJson = {
       "LoginJSON": {
         "type": "object",
         "properties": {
-          "username": {
+          "userName": {
             "type": "string"
           },
           "password": {
@@ -1354,7 +1355,7 @@ exports.mySwaggerJson = {
           }
         },
         "example": {
-          "username": "arman",
+          "userName": "arman",
           "password": "Pass123?"
         }
       }
