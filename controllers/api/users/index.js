@@ -63,10 +63,10 @@ const getOne = async (req, res, next) => {
 }
 
 
-const delUser = async (req, res, next) => {
+const delUserById = async (req, res, next) => {
     try {
         // sanitize
-        id = req.body.id
+        id = req.params.id
         let option = {}
         option.where = { id: id }
         const result = await User.delete(option)
@@ -92,9 +92,9 @@ module.exports = routes => {
         getOne
     )
 
-    routes.delete('/',
+    routes.delete('/id/:id',
         verifyJWT,
-        delUser
+        delUserById
     )
 }
 

@@ -56,6 +56,9 @@ function clientErrorHandler(err, req, res, next) {
         const regex = /jwt/i;
         if (message.match(regex)) {            
             message = message.replace(regex, 'Token')
+            if (message.match(/must be provided/i)) { 
+                message = message.concat('. Please login first')
+            }
         } else if (message.match(/invalid signature/i)) {
             message = 'Token '.concat(message)
         } else {

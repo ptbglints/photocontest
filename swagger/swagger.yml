@@ -1,21 +1,21 @@
 openapi: 3.0.1
 info:
-  title: Photo Contest
-  description: "This is Glints PTB1 Final Project.
-    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)
-    For this sample, you can use the api key `special-key` to test the authorization filters."
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Yo!Photo 👻
+  # description: "This is API for Yo!Photo app project."
+  # termsOfService: http://swagger.io/terms/
+  # contact:
+  #   email: dev@yophoto.io
+  # license:
+  #   name: Apache 2.0
+  #   url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
-externalDocs:
-  description: "Find more info here"
-  url: "https://example.com"
+# externalDocs:
+#   description: "Find more info here"
+#   url: "https://example.com"
 servers:
-  - url: http://thisurlwillbedynamicallychanged.io
+  - url: http://localhost:8000/api
+  - url: http://localhost:8000/api/v1
+  - url: http://localhost:8000/api/v2
 tags:
   - name: User
   - name: Profile
@@ -28,9 +28,9 @@ paths:
       tags:
         - User
       summary: Get all user
-      description: >
-        A detailed description of the operation.
-        Use markdown for rich text representation,
+      # description: >
+      #   A detailed description of the operation.
+      #   Use markdown for rich text representation,
       operationId: getMany
       parameters:
         - name: skip
@@ -58,39 +58,15 @@ paths:
                   type: object
                   $ref: "#/components/schemas/User"
 
-    delete:
-      tags:
-        - User
-      summary: Delete a user
-      description: This can be done only by admin (not implemented yet)
-      operationId: deleteUser
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  example: 26
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-
   /users/id/{id}:
     get:
       tags:
         - User
       summary: Get specific user by id
-      description: >
-        A detailed description of the operation.
-        Use markdown for rich text representation,
-      operationId: getMany
+      # description: >
+      #   A detailed description of the operation.
+      #   Use markdown for rich text representation,
+      operationId: getUserById
       parameters:
         - name: id
           in: path
@@ -110,12 +86,33 @@ paths:
                   type: object
                   $ref: "#/components/schemas/User"
 
+    delete:
+      tags:
+        - User
+      summary: Delete sepecific user by id
+      # description: This can be done only by admin (not implemented yet)
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
   /users/signup:
     post:
       tags:
         - User
       summary: Create user
-      description: This can only be done by the logged in user.
+      # description: This can only be done by the logged in user.
       operationId: createUser
       requestBody:
         required: true
@@ -195,7 +192,7 @@ paths:
       tags:
         - User
       summary: Change user pasword
-      description: This can only be done by the logged in user.
+      # description: This can only be done by the logged in user.
       operationId: changeUserPassword
       requestBody:
         required: true
@@ -213,30 +210,34 @@ paths:
           content: {}
       x-codegen-request-body-name: body
 
-  /users/profile/userid/{id}:
+  /users/profile/:
     get:
       tags:
         - Profile
-      summary: Gets profile by userId
-      # description:
-      # operationId: getUserById
+      summary: Get all profiles
+      # description: This can only be done by the logged in user.
+      # operationId: createUser
       parameters:
-        - name: id
-          in: path
-          description: User ID
-          required: true
+        - name: skip
+          in: query
+          description: skip
+          required: false
           schema:
-            type: string
-            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Profile"
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
 
-  /users/profile/:
     put:
       tags:
         - Profile
@@ -270,6 +271,29 @@ paths:
           content: {}
       x-codegen-request-body-name: body
 
+  /users/profile/userid/{id}:
+    get:
+      tags:
+        - Profile
+      summary: Gets profile by userId
+      # description:
+      # operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
   /users/profile/username/{username}:
     get:
       tags:
@@ -298,8 +322,8 @@ paths:
       tags:
         - Photo
       summary: Get all photos from database with limit
-      description: >
-        Get all photos from database with limit
+      # description: >
+      #   Get all photos from database with limit
       parameters:
         - name: limit
           in: query
@@ -475,8 +499,8 @@ paths:
       tags:
         - Album
       summary: Get one most updated album from all users, ordered by createdAt
-      description: >
-        Get one most updated album from all users, ordered by createdAt
+      # description: >
+      #   Get one most updated album from all users, ordered by createdAt
       parameters:
         - name: skip
           in: query
@@ -506,8 +530,8 @@ paths:
       tags:
         - Album
       summary: Create an album
-      description: >
-        Create an album
+      # description: >
+      #   Create an album
       requestBody:
         description: Create an album
         content:
@@ -569,8 +593,8 @@ paths:
       tags:
         - Album
       summary: Update detail of specific album, by album Id
-      description: >
-        Update detail of specific album, by album Id
+      # description: >
+      #   Update detail of specific album, by album Id
       requestBody:
         description: Update detail of specific album, by album Id
         content:
@@ -599,8 +623,8 @@ paths:
       tags:
         - Album
       summary: Get a specific album by album id, include its photos
-      description: >
-        Get a specific album by album id, include its photos
+      # description: >
+      #   Get a specific album by album id, include its photos
       parameters:
         - name: albumId
           in: path
@@ -624,8 +648,8 @@ paths:
       tags:
         - Album
       summary: Get all albums from specific Username
-      description: >
-        Get all albums from specific Username
+      # description: >
+      #   Get all albums from specific Username
       parameters:
         - name: userId
           in: path
@@ -662,8 +686,8 @@ paths:
       tags:
         - Album
       summary: Get all albums from specific Username
-      description: >
-        Get all albums from specific Username
+      # description: >
+      #   Get all albums from specific Username
       parameters:
         - name: userName
           in: path
@@ -700,8 +724,8 @@ paths:
       tags:
         - Album
       summary: Search all albums whose username contain certain string
-      description: >
-        Search all albums whose username contain certain string
+      # description: >
+      #   Search all albums whose username contain certain string
       parameters:
         - name: string
           in: path
@@ -724,8 +748,8 @@ paths:
       tags:
         - Album
       summary: Search all albums by albums's name that contain certain string
-      description: >
-        Search all albums by albums's name that contain certain string
+      # description: >
+      #   Search all albums by albums's name that contain certain string
       parameters:
         - name: string
           in: path
@@ -759,24 +783,35 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
+          example: 947fbd10-aa2d-4a80-b609-c26ac36397a1
         userName:
           type: string
+          example: arman
         email:
           type: string
+          example: arman@maulana.com
         password:
           type: string
-          minLength: 8
-          maxLength: 254
+          example: $2a$10$TS.BNhA5sBBqu2l5Vx4Z/.AZOdVCbyUAfZzI3bo3RrjQL455eyWZ.
         role:
           type: string
+          example: USER
+        isActive:
+          type: boolean
+          example: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          example: 2022-03-06T23:16:15.850Z
         createdAt:
           type: string
           format: date-time
+          example: 2022-03-03T19:38:30.610Z
         updatedAt:
           type: string
           format: date-time
+          example: 2022-03-03T19:38:30.611Z
 
     Profile:
       type: object
