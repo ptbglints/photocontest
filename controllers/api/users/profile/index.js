@@ -6,7 +6,19 @@ const { modifyImagePath, modifyImagePath2ndLayer, modifyProfilePhotoPath, modify
 
 const getMany = async (req, res, next) => {
     try {
-        const result = await Profile.findMany()
+        let { skip, take } = req.query
+        if (!skip) skip = 0
+        if (!take) take = 100
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 100) take = 100
+        let option = {}
+        option.skip = skip
+        option.take = take
+
+        const result = await Profile.findMany(option)
         req.result = result
         next()
     } catch (err) {
