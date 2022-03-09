@@ -77,19 +77,19 @@ const signup = async (req, res, next) => {
         // send tokens using using cookies
         // https://expressjs.com/en/api.html#res.cookie
         const cookieOptionAccess = {
-            httpOnly: false,
-            maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRE),
-            secure: false
+            // httpOnly: false,
+            // maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRE),
+            // secure: false
         }
         const cookieOptionRefresh = {
-            httpOnly: false,
-            maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRE),
-            secure: false
+            // httpOnly: false,
+            // maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRE),
+            // secure: false
         }
         const cookieOptionActivation = {
-            httpOnly: false,
-            maxAge: parseInt(process.env.ACTIVATION_TOKEN_EXPIRE),
-            secure: false
+            // httpOnly: false,
+            // maxAge: parseInt(process.env.ACTIVATION_TOKEN_EXPIRE),
+            // secure: false
         }
         res.cookie(`jwtAccess`, accessToken, cookieOptionAccess)
         res.cookie(`jwtRefresh`, refreshToken, cookieOptionRefresh)
