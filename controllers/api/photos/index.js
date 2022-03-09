@@ -191,6 +191,12 @@ const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
             albums: true,
             tags: true
         }
+
+        option.orderBy = [
+            {
+              updatedAt: 'desc',
+            }
+          ]
         let result = await Photo.findMany(option)
         req.result = result
         next()
