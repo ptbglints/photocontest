@@ -63,8 +63,8 @@ const updateProfile = async (req, res, next) => {
         let option = {}
         option.where = { userId: id }
         let profilePhotoPath;
-        if (req.file) {
-            profilePhotoPath = req.file.path
+        if (req.files && req.files[0]) {
+            profilePhotoPath = req.files[0].path
         }
         option.data = {
             name,

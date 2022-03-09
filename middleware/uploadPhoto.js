@@ -149,7 +149,7 @@ const resizeImagesFromDisk = async (req, res, next) => {
                     })
             })
         );
-        // console.log(req.files)
+        console.log(req.files)
         next();
     } catch (err) {
         if (req.files)

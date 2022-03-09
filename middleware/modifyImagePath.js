@@ -1,14 +1,15 @@
 function modifyImagePath(req, res, next) {
     try {
         const resultObj = req.result
+        const objKey = 'path' 
         // check if the incoming data is array, e.g. from prisma.getMany
         if (Array.isArray(resultObj) && resultObj.length > 0) {
             // console.log('is Array')        
             for (let i = 0; i < resultObj.length; i++) {
-                let photoPath = resultObj[i].path
+                let photoPath = resultObj[i][objKey]
                 if (photoPath !== null && !photoPath.match(/http/i)) {
                     const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                    photoPath = modifiedPath
+                    resultObj[i][objKey] = modifiedPath
                 }
             }
         }
@@ -16,10 +17,10 @@ function modifyImagePath(req, res, next) {
         // Check for empty object
         else if (Object.keys(resultObj).length > 0) {
             // console.log('resultObj must be an Object')
-            let photoPath = resultObj.path
+            let photoPath = resultObj[objKey]
             if (photoPath !== null && !photoPath.match(/http/i)) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                photoPath = modifiedPath
+                resultObj[objKey] = modifiedPath
             }
         }
         //  here the path inside resultObj has been modified
@@ -37,11 +38,11 @@ function modifyImagePath2ndLayer(req, res, next) {
         const resultObj = req.result.photos
         // check if the incoming data is array, e.g. from prisma.getMany
         if (Array.isArray(resultObj) && resultObj.length > 0) {
-            let photoPath = resultObj[0].path
-            if (photoPath !== null && !photoPath.match(/http/i)) {
-                for (let i = 0; i < resultObj.length; i++) {
+            for (let i = 0; i < resultObj.length; i++) {
+                let photoPath = resultObj[i].path
+                if (photoPath !== null && !photoPath.match(/http/i)) {
                     const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                    photoPath = modifiedPath
+                    resultObj[i].path = modifiedPath
                 }
             }
         }
@@ -51,7 +52,7 @@ function modifyImagePath2ndLayer(req, res, next) {
             let photoPath = resultObj.path
             if (photoPath !== null && !photoPath.match(/http/i)) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                photoPath = modifiedPath
+                resultObj.path = modifiedPath
             }
         }
         //  here the path inside resultObj has been modified
@@ -67,26 +68,26 @@ function modifyImagePath2ndLayer(req, res, next) {
 function modifyProfilePhotoPath(req, res, next) {
     try {
         const resultObj = req.result
+        const objKey = 'profilePhoto' 
         // check if the incoming data is array, e.g. from prisma.getMany
         if (Array.isArray(resultObj) && resultObj.length > 0) {
-            // console.log('is Array')        
+            // console.log('is Array')                   
             for (let i = 0; i < resultObj.length; i++) {
-                let photoPath = resultObj[i].profilePhoto
-                // console.log(photoPath)
+                let photoPath = resultObj[i][objKey]
                 if (photoPath !== null && !photoPath.match(/http/i)) {
                     const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                    photoPath = modifiedPath
+                    resultObj[i][objKey]= modifiedPath
                 }
             }
         }
         // If not an array, then it must be an object.
         // Check for empty object
         else if (Object.keys(resultObj).length > 0) {
-            // console.log('resultObj must be an Object')
-            let photoPath = resultObj.profilePhoto
+            console.log('resultObj must be an Object')
+            let photoPath = resultObj[objKey]
             if (photoPath !== null && !photoPath.match(/http/i)) {
                 const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-                photoPath = modifiedPath
+                resultObj[objKey] = modifiedPath
             }
         }
         //  here the path inside resultObj has been modified
