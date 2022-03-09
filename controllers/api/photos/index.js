@@ -188,7 +188,8 @@ const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
         }
         option.include = {
             photoDetail: true,
-            albums: true
+            albums: true,
+            tags: true
         }
         let result = await Photo.findMany(option)
         req.result = result
@@ -220,7 +221,9 @@ const getOnePhotoUser = async (req, res, next) => {
         let option = {}
         option.where = { id: photoId }
         option.include = {
-            photoDetail: true
+            photoDetail: true,
+            albums: true,
+            tags: true
         }
         let result = await Photo.findUnique(option)
         req.result = result
@@ -230,13 +233,25 @@ const getOnePhotoUser = async (req, res, next) => {
     }
 }
 
-const updatePhotoDetail = async (req, res) => {
+const updatePhotoDetail = async (req, res, next) => {
     try {
-        const photoId = req.params.photoId
-        const { title, description } = req.body
+        const { id, title, description, tag } = req.body
         let option = {}
-        option.where = { id: photoId }
+        option.where = { id: id }
         option.data = { title, description }
+
+        // handle tags
+        const tagFieldInDb = 'name' // must match field name 'name' in Tag table
+        let tagArray;
+        if (tag) {
+            // console.log('tag', tag[i], i)
+            tagArray = parseTagsToArray(tag, tagFieldInDb)
+            console.log(tagArray)
+            option.data.tags = { connectOrCreate: tagArray }
+        }
+
+        option.include = { tags: true }
+        
         const result = await Photo.update(option)
         req.result = result
         next()
@@ -266,7 +281,7 @@ module.exports = routes => {
         uploadPhoto.resizeImagesFromDisk,
         uploadPhotoUser
     )
-    routes.put('/:photoId',
+    routes.put('/',
         verifyJWT,
         updatePhotoDetail
     )

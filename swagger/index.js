@@ -3,14 +3,15 @@ const router = express.Router()
 const appRoot = require('app-root-path');
 const YAML = require('yamljs');
 const swaggerUi = require('swagger-ui-express')
-const swaggerJsdoc = require('swagger-jsdoc');
+// const swaggerJsdoc = require('swagger-jsdoc');
 
-const swaggerDocYAML = YAML.load(`${appRoot}/swagger/swagger.yml`);
-const json = require('../swagger/json')
+const swaggerDocument = YAML.load(`${appRoot}/swagger/swagger.yml`);
+// const json = require('../swagger/json')
 // console.log(json.myJson)
-// const swaggerDocJSON = swaggerJsdoc(json.myJson);
+// const swaggerDocJSON = swaggerJsdoc(swaggerDocYAML);
+// console.log(swaggerDocJSON)
 
-const swaggerDocument = json.mySwaggerJson
+// const swaggerDocument = json.mySwaggerJson
 // console.log('swaggerDocument', swaggerDocument)
 
 // swagger custom JS
@@ -25,8 +26,9 @@ var optionsSwagger = {
         url: "/api-docs/swagger.json",
         tryItOutEnabled: true,
         requestSnippetsEnabled: true,
+        defaultModelsExpandDepth: 1,
         syntaxHighlight: {
-            theme: 'arta' // "agate"*, "arta", "monokai", "nord", "obsidian", "tomorrow-night"
+            theme: 'arta' // "agate", "arta", "monokai", "nord", "obsidian", "tomorrow-night"
         }
     }
 };
