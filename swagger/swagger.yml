@@ -446,9 +446,8 @@ paths:
           description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
-            example: 4
+            type: string
+            format: uuid
       responses:
         "200":
           description: Successful operation

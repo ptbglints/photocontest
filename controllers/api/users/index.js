@@ -1,5 +1,7 @@
 const { User, Profile } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
+const pathModificator = require('../../../../photocontest/middleware/modifyImagePath');
+
 
 const getMany = async (req, res, next) => {
     try {
@@ -86,7 +88,8 @@ module.exports = routes => {
     )
 
     routes.get('/nested',
-        getManyNested
+        getManyNested,
+        pathModificator.modifyProfilePhotoPath2ndLayer
     )
 
     routes.get('/id/:id',
