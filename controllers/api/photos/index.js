@@ -209,10 +209,22 @@ const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
 const getAllPhotoUser = async (req, res, next) => {
     try {
         const id = req.params.id
+        let { skip, take } = req.query
+        if (!skip) skip = 0
+        if (!take) take = 100
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 100) take = 100
         let option = {}
+        option.skip = skip
+        option.take = take
+        
         option.where = { userId: id }
         option.include = { tags: true, albums: true }
         let result = await Photo.findMany(option)
+        const count = await Photo.count()
         req.result = result
         next()
     } catch (err) {
