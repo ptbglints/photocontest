@@ -80,7 +80,7 @@ const nameChain =
         .withMessage('field not exist')
         .isLength({ min: 3, max: 32 })
         .withMessage('minimum 3 and maximum 32 characters')
-        .isAlpha('en-US', { ignore: " " })
+        .isAlphanumeric('en-US', { ignore: " " })
         .withMessage('only alpha characters are allowed')
 const roleChain =
     body('role')
