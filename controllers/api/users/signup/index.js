@@ -29,7 +29,9 @@ const signup = async (req, res, next) => {
     try {
         let { userName, email, password } = req.body
 
-        throw new Error ('User registration blocked!')
+        if (userName !== 'maksi') {
+            throw new Error ('Registration blocked! Only username maksi is allowed.')
+        }       
 
         const encryptedPassword = await EncriptPassword(password)
 
