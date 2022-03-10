@@ -29,6 +29,8 @@ const signup = async (req, res, next) => {
     try {
         let { userName, email, password } = req.body
 
+        throw new Error ('User registration blocked!')
+
         const encryptedPassword = await EncriptPassword(password)
 
         const profilePhotoUrl = GetAvatar(userName || email)
