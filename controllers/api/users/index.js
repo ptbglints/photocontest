@@ -1,6 +1,6 @@
 const { User, Profile } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
-const pathModificator = require('../../../../photocontest/middleware/modifyImagePath');
+const pathModificator = require('../../../middleware/modifyImagePath');
 
 
 const getMany = async (req, res, next) => {
