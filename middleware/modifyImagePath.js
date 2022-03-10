@@ -86,7 +86,7 @@ function modifyProfilePhotoPath(req, res, next) {
         // Check for empty object
         else if (Object.keys(resultObj).length > 0) {
             console.log('resultObj must be an Object')
-            if (resultObj[i][objKey]) {
+            if (resultObj[objKey]) {
                 let photoPath = resultObj[objKey]
                 if (photoPath !== null && !photoPath.match(/http/i)) {
                     const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
