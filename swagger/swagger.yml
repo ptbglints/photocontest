@@ -50,6 +50,48 @@ paths:
                 # $ref: "#/components/schemas/User"
                 $ref: "#/components/schemas/GetAllUsers200"
 
+  /users/delete/id/{id}:
+    delete:
+      tags:
+        - User
+      summary: Delete sepecific user either by id
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          description: userId, userName or email
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/delete/username/{userName}:
+    delete:
+      tags:
+        - User
+      summary: Delete sepecific user by userName
+      operationId: deleteUserByUserName
+      parameters:
+        - name: userName
+          in: path
+          description: userId, userName or email
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
   /users/nested:
     get:
       tags:
@@ -139,25 +181,6 @@ paths:
                   type: object
                   $ref: "#/components/schemas/UserProfileAlbum"
 
-    delete:
-      tags:
-        - User
-      summary: Delete sepecific user by id
-      operationId: deleteUser
-      parameters:
-        - name: id
-          in: path
-          description: User ID
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
   /users/signup:
     post:
       tags:
@@ -1055,10 +1078,10 @@ components:
     LoginJSON:
       type: object
       properties:
-        username:
+        userName:
           type: string
         password:
           type: string
       example:
-        username: arman
+        userName: maksi
         password: Pass123?

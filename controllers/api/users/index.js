@@ -79,21 +79,6 @@ const getOneById = async (req, res, next) => {
 }
 
 
-const delUserById = async (req, res, next) => {
-    try {
-        // sanitize
-        id = req.params.id
-        let option = {}
-        option.where = { id: id }
-        const result = await User.delete(option)
-        req.result = result
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
-
-
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/
     routes.get('/',
@@ -106,11 +91,6 @@ module.exports = routes => {
 
     routes.get('/id/:id',
         getOneById
-    )
-
-    routes.delete('/id/:id',
-        verifyJWT,
-        delUserById
     )
 }
 
