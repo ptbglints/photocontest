@@ -81,14 +81,14 @@ const uploadPhotoUser = async (req, res, next) => {
             // handle title
             let photoTitle;
             if (title && Array.isArray(title)) {
-                if (title[i].length < 5) photoTitle = generateSlug(3, { format: "title" })
+                if (title[i].length < 2) photoTitle = generateSlug(2, { format: "title" })
                 else photoTitle = title[i]
             } else photoTitle = generateSlug(3, { format: "title" })
 
             // handle description
             let photoDesc;
             if (description && Array.isArray(description)) {
-                if (description[i].length < 5) photoDesc = generateSlug(15, { format: "sentence" })
+                if (description[i].length < 2) photoDesc = generateSlug(3, { format: "sentence" })
                 else photoDesc = description[i]
             } else photoDesc = generateSlug(15, { format: "sentence" })
 
