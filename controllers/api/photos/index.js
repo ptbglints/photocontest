@@ -83,14 +83,34 @@ const uploadPhotoUser = async (req, res, next) => {
             if (title && Array.isArray(title)) {
                 if (title[i].length < 2) photoTitle = generateSlug(2, { format: "title" })
                 else photoTitle = title[i]
-            } else photoTitle = generateSlug(3, { format: "title" })
+            } else if (title) {
+                if (title.length < 2) {
+                    photoTitle = generateSlug(2, { format: "title" })
+                } else {
+                    photoTitle = title
+                }
+            } else {
+                photoTitle = generateSlug(2, { format: "title" })
+            }
+
 
             // handle description
             let photoDesc;
             if (description && Array.isArray(description)) {
-                if (description[i].length < 2) photoDesc = generateSlug(3, { format: "sentence" })
-                else photoDesc = description[i]
-            } else photoDesc = generateSlug(15, { format: "sentence" })
+                if (description[i].length < 2) {
+                    photoDesc = generateSlug(3, { format: "sentence" })
+                } else {
+                    photoDesc = description[i]
+                }
+            } else if (description) {
+                if (description.length < 2) {
+                    photoDesc = generateSlug(15, { format: "sentence" })
+                } else {
+                    photoDesc = description
+                }
+            } else {
+                photoDesc = generateSlug(15, { format: "sentence" })
+            }
 
             let path = file.path // di sini kita sudah dapat fullpath string dari file yang diupload
             // get the userid from Jwt
@@ -220,7 +240,7 @@ const getAllPhotoUser = async (req, res, next) => {
         let option = {}
         option.skip = skip
         option.take = take
-        
+
         option.where = { userId: id }
         option.include = { tags: true, albums: true }
         let result = await Photo.findMany(option)
