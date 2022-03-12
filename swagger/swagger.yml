@@ -376,7 +376,7 @@ paths:
           required: true
           schema:
             type: integer
-            example: 500
+            example: 50
       responses:
         "200":
           description: Successful operation
