@@ -2,7 +2,8 @@
     "ext": "js, mjs, coffee, litcoffee, json, yaml, yml, .env",
     "ignore": [
         "test/*",
-        "docs/*"
+        "docs/*",
+        "tmp/*"
     ],
     "delay": 2000,
     "events": {

@@ -14,18 +14,20 @@ const usernameChain =
         .notEmpty()
         .withMessage('cannot be empty')
         .isLength({ min: 3, max: 32 })
-        .withMessage('minimum 5 and maximum 32 characters')
+        .withMessage('minimum 3 and maximum 32 characters')
         .isAlphanumeric()
         .withMessage('only alphanumeric are allowed')
 const emailChain =
     body('email')
-        .trim()
+        .exists()
+        .withMessage('field not exist')
         .isLength({ min: 5, max: 32 })
         .withMessage('minimum 5 and maximum 32 characters')
         .isEmail()
         .withMessage('format is not valid')
         .normalizeEmail({
-            all_lowercase: true
+            all_lowercase: true,
+            gmail_remove_dots: false,
         })
 const passwordChain =
     body('password')
@@ -50,6 +52,21 @@ const passwordChainLoose =
         .withMessage('field not exist')
         .notEmpty()
         .withMessage('cannot be empty')
+const titleChain =
+    check('title')
+        .trim()
+        .escape()
+        .exists()
+        .isLength({ min: 3, max: 32 })
+        .withMessage("must be between 3 and 32 characters")
+        .matches(/^[A-Za-z0-9 .,'!&?]+$/)
+        .withMessage('only alphanumeric are allowed');
+const descriptionChain =
+    check('description')
+        .exists()
+        .withMessage('field not exist')
+        .trim()
+        .isLength({ min: 0, max: 254 })
 /**
  * OPTIONAL FIELDS
  * If these fields do not exist in the request
@@ -63,7 +80,7 @@ const nameChain =
         .withMessage('field not exist')
         .isLength({ min: 3, max: 32 })
         .withMessage('minimum 3 and maximum 32 characters')
-        .isAlpha('en-US', { ignore: " " })
+        .isAlphanumeric('en-US', { ignore: " " })
         .withMessage('only alpha characters are allowed')
 const roleChain =
     body('role')
@@ -75,7 +92,7 @@ const addressChain =
         .optional()
         .trim()
         .isLength({ min: 2, max: 254 })
-        // .isAlphanumeric('en-US', { ignore: " ,\." })
+// .isAlphanumeric('en-US', { ignore: " ,\." })
 const profilePhotoChain =
     check('profilePphoto')
         .optional()
@@ -88,15 +105,6 @@ const coverPhotoChain =
         .trim()
         .isLength({ min: 2, max: 254 })
         .isAlphanumeric('en-US')
-const titleChain =
-    check('title')
-        .trim()
-        .escape()
-        .exists()
-        .isLength({ min: 3, max: 32 })
-        .withMessage("must be between 3 and 32 characters")
-        .matches(/^[A-Za-z0-9 .,'!&?]+$/)
-        .withMessage('only alphanumeric are allowed')
 
 
 /**
@@ -109,7 +117,6 @@ const ValidateLogin = [
 ]
 const ValidateSignup = [
     usernameChain,
-    nameChain,
     emailChain,
     passwordChain
 ]
@@ -120,7 +127,8 @@ const ValidateUpdateProfile = [
     coverPhotoChain
 ]
 const ValidateCreateAlbum = [
-    titleChain
+    titleChain,
+    descriptionChain
 ]
 
 /**

@@ -4,6 +4,7 @@ node_modules
 .cheatsheet
 public/*
 tmp
+thunder-tests/thunderActivity.db
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/

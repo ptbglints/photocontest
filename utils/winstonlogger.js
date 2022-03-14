@@ -1,6 +1,8 @@
 var appRoot = require('app-root-path');
 var winston = require('winston');
-const { combine, timestamp, json, cli } = winston.format;
+// const { combine, timestamp, json, cli, errors } = winston.format;
+const { combine, timestamp, prettyPrint, colorize,
+    errors, json, cli, simple, align, printf } = winston.format;
 
 const logLevels = {
     levels: {
@@ -13,10 +15,10 @@ const logLevels = {
         silly: 6
     },
     colors: {
-        foo: 'blue',
-        bar: 'green',
-        baz: 'yellow',
-        foobar: 'red'
+        http: 'blue',
+        info: 'green',
+        warn: 'yellow',
+        error: 'red'
     }
 };
 
@@ -26,6 +28,7 @@ var options = {
         level: process.env.FILE_LOG_LEVEL || 'debug',
         filename: `${appRoot}/tmp/winston.log`,
         handleExceptions: true,
+        handleRejections: true,
         json: true,
         maxsize: 1 * 1024 * 1024, // 1MB
         maxFiles: 1,
@@ -33,21 +36,38 @@ var options = {
         format: combine(timestamp(), json()),
     },
     console: {
-        level: process.env.CONSOLE_LOG_LEVEL || 'debug',
+        levels: logLevels.levels,
+        level: process.env.CONSOLE_LOG_LEVEL || 'debug',        
         handleExceptions: true,
+        handleRejections: true,
         json: false,
-        colorize: true,
-        format: cli(),
-    },
+        format: combine(
+            colorize(),
+            printf((info) => {
+                const level = info.level
+                const name = info.name || ''
+                const code = info.code || ''
+                const message = info.message || ''
+                const stack = info.stack || ''
+                if (stack) return `${level} ${name} ${code} ${message} ${stack} `
+                return `${level} ${name} ${code} ${message}`
+               }),           
+        )
+    }
 };
+
+winston.addColors(logLevels.colors);
 
 // instantiate a new Winston Logger with the settings defined above
 const logger = winston.createLogger({
-    levels: logLevels.levels,  
+    levels: logLevels.levels,
     level: process.env.GLOBAL_LOG_LEVEL || 'debug', // global level
+    handleExceptions: true,
+    exitOnError: false,
     // format: winston.format.json(),
     // format: winston.format.cli(),
-    format: combine(timestamp(), json()),
+    // format: combine(timestamp(), cli(), errors({ stack: true })),
+    format: errors({ stack: true }),
     transports: [
         new winston.transports.File(options.file),
         new winston.transports.Console(options.console),
@@ -59,7 +79,7 @@ logger.streamingdarimorgan = {
     write: function (message, encoding) {
         // use the 'info' log level so the output will be picked up by both transports (file and console)
         message = message.trim()
-        logger.info(message);
+        logger.http(message);
     },
 };
 

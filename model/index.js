@@ -9,7 +9,7 @@ const globalConfig = {
         },
       },
     errorFormat: 'minimal',
-    rejectOnNotFound: true,
+    rejectOnNotFound: false,
     log: [
         // { level: 'query', emit: 'event' },
         // { level: 'warn', emit: 'event' },

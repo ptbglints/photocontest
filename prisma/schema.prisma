@@ -18,20 +18,22 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  userName  String   @unique @db.VarChar(254)
-  email     String   @unique @db.VarChar(254)
-  password  String   @db.VarChar(254)
-  role      Role     @default(USER)
-  profile   Profile?
-  photos    Photo[]
-  albums    Album[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  userName    String   @unique @db.VarChar(254)
+  email       String   @unique @db.VarChar(254)
+  password    String   @db.VarChar(254)
+  role        Role     @default(USER)
+  isActive    Boolean  @default(false)
+  profile     Profile?
+  photos      Photo[]
+  albums      Album[]
+  lastLoginAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 }
 
 model Profile {
-  userId       String   @id
+  userId       String   @id @default(uuid())
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String?  @db.VarChar(254)
   address      String?
@@ -53,26 +55,28 @@ model Photo {
   tags        Tag[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now())
+
 }
 
 model PhotoDetail {
-  photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  photoId      String   @unique
-  fileName     String   @unique
+  photo        Photo   @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  photoId      String  @id @default(uuid())
+  fileName     String  @unique
   originalName String
   mimeType     String
   encoding     String
   size         Int
-  isPrivate    Boolean? @default(false)
-  views        Int?     @default(0)
-  likes        Int?     @default(0)
-  downloaded   Int?     @default(0)
-  starRating   Float?   @default(0)
+  isPrivate    Boolean @default(false)
+  views        Int?    @default(0)
+  likes        Int?    @default(0)
+  downloaded   Int?    @default(0)
+  starRating   Float?  @default(0)
   cameraMake   String?
+  cameraModel  String?
   shutterSpeed String?
   aperture     String?
   focalLength  String?
-  iso          String?
+  iso          Int?
 }
 
 model Album {

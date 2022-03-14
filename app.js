@@ -1,5 +1,6 @@
 require('dotenv').config()
-var winston = require('./utils/winstonlogger');
+const winston = require('./utils/winstonlogger');
+const redis = require('./utils/redis')
 const NODE_PORT = process.env.PORT || process.env.NODE_PORT || 8000
 const express = require('express')
 var cors = require('cors');
@@ -7,10 +8,17 @@ const enrouten = require('express-enrouten')
 const path = require('path');
 // const cache = require('./middleware/cache')
 const { responseSuccess } = require('./middleware/responseSuccess')
-const { logErrors, clientErrorHandler, errorHandler } = require('./middleware/errorHandler')
+const { logErrors, clientErrorHandler, lastErrorHandler } = require('./middleware/errorHandler')
 const { handle404 } = require('./middleware/handler404')
 const app = express()
 const cookieParser = require('cookie-parser')
+const { mySwagger, mySwaggerGet } = require('./swagger')
+
+// morgan logger
+const morganBody = require('morgan-body')
+// morganBody(app, { logResponseBody: false });
+morganBody(app, ('combined', { logResponseBody: false, stream: winston.streamingdarimorgan }));
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -28,33 +36,13 @@ app.use(cors(cors_option));
 // source: https://stackoverflow.com/a/16405622
 app.enable('trust proxy')
 
+/* swagger will be our home page */
+app.use(mySwagger)
+app.use(mySwaggerGet)
+// const mySwaggerGet = router.get("/api-docs/swagger.json", (req, res) => res.json(swaggerDocument));
+
 // NEW: kita buka folder public di route public
 app.use('/public', express.static('public'))
-
-
-
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yml');
-const swaggerUi = require('swagger-ui-express')
-
-// morgan logger
-const morganBody = require('morgan-body')
-// morganBody(app, { logResponseBody: false });
-morganBody(app, ('combined', { logResponseBody: false, stream: winston.streamingdarimorgan }));
-
-// swagger custom JS
-var options = {
-    customJs: '/public/custom.js'
-};
-
-// swagger middleware
-app.use('/api-docs', function(req, res, next){
-    // dynamic swagger url/host
-    swaggerDocument.servers[0].url = `${req.protocol}://${req.headers.host}/api`
-    req.swaggerDoc = swaggerDocument;
-    next();
-}, swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-
 
 // enrouten di buat untuk membaca folder sebagai route
 // route di sini kita definisikan ke folder api
@@ -69,12 +57,12 @@ app.use(responseSuccess)
 // catch errors
 app.use(logErrors)
 app.use(clientErrorHandler)
-app.use(errorHandler)
+app.use(lastErrorHandler)
 // error 404 handler
 app.use(handle404)
 
 
-var server = app.listen(NODE_PORT, () => {
+app.listen(NODE_PORT, () => {
     console.log(`ENV = ${process.env.NODE_ENV}`)
     console.log(`🚀 Server started on http://localhost:${NODE_PORT}\n`);
 });

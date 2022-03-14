@@ -13,12 +13,12 @@ const galleryAll = async (req, res, next) => {
     try {
         let { skip, take } = req.query
         if (!skip) skip = 0
-        if (!take) take = 1000
+        if (!take) take = 100
 
         skip = parseInt(skip)
         take = parseInt(take)
 
-        if (take > 1000) take = 1000
+        if (take > 100) take = 100
 
         const result = await prisma.$queryRaw
         `

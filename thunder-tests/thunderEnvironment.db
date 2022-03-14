@@ -1,0 +1,2 @@
+{"default":false,"data":[{"name":"host","value":"https://ptb-photocontest.herokuapp.com"}],"sortNum":20000,"name":"Heroku","created":"2022-03-01T15:42:32.164Z","modified":"2022-03-01T15:42:32.277Z","_id":"a2d83310-b042-4bd7-90b5-0b4fc66c1ecd"}
+{"default":true,"data":[{"name":"host","value":"http://localhost:8000"}],"sortNum":10000,"name":"Local","created":"2022-03-01T15:42:26.229Z","modified":"2022-03-01T15:42:26.327Z","_id":"e826083c-4fe0-456d-8ca8-3fc860529d5e"}

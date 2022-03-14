@@ -1,7 +1,30 @@
 const { ROLE, User, Profile } = require('../../../../model')
 const { verifyJWT } = require('../../../../middleware/authJwt')
 const { ValidateUpdateProfile, CheckValidatorResult } = require('../../../../middleware/validator');
-const { uploadSinglePhoto } = require('../../../../middleware/uploadPhoto')
+const { resizeImagesFromDisk, uploadSinglePhoto, uploadMultiplePhotos } = require('../../../../middleware/uploadPhoto')
+const { modifyImagePath, modifyImagePath2ndLayer, modifyProfilePhotoPath, modifyProfilePhotoPath2ndLayer } = require('../../../../middleware/modifyImagePath');
+
+const getMany = async (req, res, next) => {
+    try {
+        let { skip, take } = req.query
+        if (!skip) skip = 0
+        if (!take) take = 100
+
+        skip = parseInt(skip)
+        take = parseInt(take)
+
+        if (take > 100) take = 100
+        let option = {}
+        option.skip = skip
+        option.take = take
+
+        const result = await Profile.findMany(option)
+        req.result = result
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
 
 const getProfileByUserId = async (req, res, next) => {
     try {
@@ -9,12 +32,6 @@ const getProfileByUserId = async (req, res, next) => {
         let option = {}
         option.where = { userId: userId }
         const result = await Profile.findUnique(option)
-
-        let photoPath = result.profilePhoto
-        if (!photoPath.match(/picsum.photos/i) && !photoPath.match(/randomuser.me/i)) {
-            const modifiedPath = `${req.protocol}://${req.headers.host}/${photoPath}`
-            result.profilePhoto = modifiedPath
-        }
 
         req.result = result
         next()
@@ -28,8 +45,9 @@ const getProfileByUserName = async (req, res, next) => {
         const userName = (req.params.userName)
         let option = {}
         option.where = { userName: userName }
-        option.select = { profile: true }
+        option.include = { profile: true }
         const result = await User.findUnique(option)
+        if (!result) throw new Error ('Profile not found')
         req.result = result.profile
         next()
     } catch (err) {
@@ -45,8 +63,8 @@ const updateProfile = async (req, res, next) => {
         let option = {}
         option.where = { userId: id }
         let profilePhotoPath;
-        if (req.file) {
-            profilePhotoPath = req.file.path
+        if (req.files && req.files[0]) {
+            profilePhotoPath = req.files[0].path
         }
         option.data = {
             name,
@@ -66,19 +84,30 @@ const updateProfile = async (req, res, next) => {
 
 module.exports = routes => {
     // disini sama dengan baseurl/api/users/profile
+    routes.get('/',
+        getMany,
+        modifyProfilePhotoPath
+    );
+
     routes.get('/userid/:id',
-        getProfileByUserId
+        getProfileByUserId,
+        modifyProfilePhotoPath
+
     );
 
     routes.get('/username/:userName',
-        getProfileByUserName
+        getProfileByUserName,
+        modifyProfilePhotoPath
     );
 
     routes.put('/',
         verifyJWT,
-        uploadSinglePhoto,
+        // uploadSinglePhoto,
+        uploadMultiplePhotos,        
+        resizeImagesFromDisk,
         ValidateUpdateProfile,
         CheckValidatorResult,
-        updateProfile
+        updateProfile,
+        modifyProfilePhotoPath
     );
 }

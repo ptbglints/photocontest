@@ -1,5 +1,6 @@
 const { Prisma } = require('@prisma/client')
 const jwt = require("jsonwebtoken");
+const winston = require('../utils/winstonlogger');
 
 const HTTP_STATUS_CODE = {
     OK: 200,
@@ -10,31 +11,65 @@ const HTTP_STATUS_CODE = {
     INTERNAL_SERVER_ERROR: 500
 }
 
+// multer errors
+// see: https://github.com/expressjs/multer/blob/master/lib/multer-error.js
+var multerErrorMessages = {
+    LIMIT_PART_COUNT: 'Too many parts',
+    LIMIT_FILE_SIZE: 'File too large',
+    LIMIT_FILE_COUNT: 'Too many files',
+    LIMIT_FIELD_KEY: 'Field name too long',
+    LIMIT_FIELD_VALUE: 'Field value too long',
+    LIMIT_FIELD_COUNT: 'Too many fields',
+    LIMIT_UNEXPECTED_FILE: 'Unexpected field',
+    MISSING_FIELD_NAME: 'Field name missing'
+  }
+
 function logErrors(err, req, res, next) {
-    console.error(err)
+    winston.error(err)
     next(err)
 }
 
 function clientErrorHandler(err, req, res, next) {
+    winston.error('clientErrorHandler')
+    let name = err.name || 'ErrorWithoutName'
     let status = err.status || 500
-    let code = err.code || 'Unknown'
-    let message = err.message || "Internal server error"
-    if (message.toLowerCase().includes('bad request')) {
+    let code = err.code || 'ErrorWithoutCode'
+    let message = err.message || "ErrorWithoutMessage"
+    if (message.match(/bad request/i)) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
     }
-    if (message.toLowerCase().includes('forbidden')) {
-        status = HTTP_STATUS_CODE.FORBIDDEN
+    if (message.match(/wrong/i)) {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
     }
-    if (message.toLowerCase().includes("found")) {
+    if (message.match(/forbid/i)) {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
+    }
+    if (message.match(/found/i)) {
         status = HTTP_STATUS_CODE.NOT_FOUND
     }
-    if (err.name === 'TokenExpiredError') {
+    if (name.match(/TokenExpired/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
-        message = err.message
+        message = 'Token expired. Please re-login.'
     }
-    if (err.name === 'JsonWebTokenError') {
+    if (name.match(/TokenError/i)) {
         status = HTTP_STATUS_CODE.UNAUTHORIZED
-        message = err.message
+        const regex = /jwt/i;
+        if (message.match(regex)) {            
+            message = message.replace(regex, 'Token')
+            if (message.match(/must be provided/i)) { 
+                message = message.concat('. Please login first')
+            }
+        } else if (message.match(/invalid signature/i)) {
+            message = 'Token '.concat(message)
+        } else {
+            message = err.message
+        }
+    }
+    if (name.match(/NotBeforeError/i)) {
+        status = HTTP_STATUS_CODE.UNAUTHORIZED
+    }
+    if (name.match(/multer/i)) {
+        status = HTTP_STATUS_CODE.BAD_REQUEST
     }
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
         status = HTTP_STATUS_CODE.BAD_REQUEST
@@ -45,6 +80,9 @@ function clientErrorHandler(err, req, res, next) {
                 break;
             case 'P2002':
                 message = `${err.meta.target} already exist`
+                break;
+            case 'P2025':
+                message = `${err.meta.cause}` // e.g. "Record to delete does not exist."
                 break;
             default:
                 message = err.message
@@ -62,10 +100,11 @@ function clientErrorHandler(err, req, res, next) {
 
 
     res.status(status)
-    res.send({ status, code, message })
+    res.send({ status, name, code, message })
 }
 
-function errorHandler(err, req, res, next) {
+function lastErrorHandler(err, req, res, next) {
+    winston.error(lastErrorHandler, err)
     res.status(500)
     res.json({ error: err })
 }
@@ -74,5 +113,5 @@ module.exports = {
     HTTP_STATUS_CODE,
     logErrors,
     clientErrorHandler,
-    errorHandler
+    lastErrorHandler
 }

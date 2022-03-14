@@ -1,27 +1,16 @@
 openapi: 3.0.1
 info:
-  title: Photo Contest
-  description: "This is Glints PTB1 Final Project.
-    Github project at [https://github.com/ptbglints/photocontest](https://github.com/ptbglints/photocontest)
-    For this sample, you can use the api key `special-key` to test the authorization filters."
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Yo!Photo 👻
   version: 1.0.0
-externalDocs:
-  description: "Find more info here"
-  url: "https://example.com"
 servers:
-  - url: http://thisurlwillbedynamicallychanged.io
+  - url: http://localhost:8000/api
+  - url: http://localhost:8000/api/v1
+  - url: http://localhost:8000/api/v2
 tags:
   - name: User
   - name: Profile
   - name: Photo
   - name: Album
-
 paths:
   /users:
     get:
@@ -29,44 +18,51 @@ paths:
         - User
       summary: Get all user
       description: >
-        A detailed description of the operation.
-        Use markdown for rich text representation,
+        <img src="https://www.prisma.io/docs/static/8cbb3ea8b5fc961b73cd2e583313f3a9/a6d36/offset-skip-take.png" alt="drawing" width="400"/>
+
       operationId: getMany
-      # parameters:
-      #   - name: id
-      #     in: path
-      #     description: User ID
-      #     required: true
-      #     schema:
-      #       type: integer
-      #       format: int64
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 50
+            minimum: 0
+            maximum: 100
       responses:
         "200":
-          description: Successful operation
+          description: Return an array of user objects
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/User"
+                # items:
+                # type: object
+                # $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/GetAllUsers200"
 
+  /users/delete/id/{id}:
     delete:
       tags:
         - User
-      summary: Delete a user
-      description: This can be done only by admin (not implemented yet)
-      operationId: deleteUser
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                  example: 26
+      summary: Delete sepecific user either by id
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          description: userId, userName or email
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Successful operation
@@ -75,23 +71,80 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
 
-  /users/{id}:
+  /users/delete/username/{userName}:
+    delete:
+      tags:
+        - User
+      summary: Delete sepecific user by userName
+      operationId: deleteUserByUserName
+      parameters:
+        - name: userName
+          in: path
+          description: userId, userName or email
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/nested:
+    get:
+      tags:
+        - User
+      summary: Get all user include profile, album, photos and tags
+      description: >
+        <img src="https://www.prisma.io/docs/static/8cbb3ea8b5fc961b73cd2e583313f3a9/a6d36/offset-skip-take.png" alt="drawing" width="400"/>
+
+      operationId: getManyNested
+      parameters:
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 50
+            minimum: 0
+            maximum: 100
+      responses:
+        "200":
+          description: Return an array of user objects
+          content:
+            application/json:
+              schema:
+                type: array
+                # items:
+                # type: object
+                # $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/GetAllUsers200"
+
+  /users/id/{id}:
     get:
       tags:
         - User
       summary: Get specific user by id
-      description: >
-        A detailed description of the operation.
-        Use markdown for rich text representation,
-      operationId: getMany
+      operationId: getUserById
       parameters:
         - name: id
           in: path
           description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
+            format: uuid
+            example: 02252e26-64ff-45c2-9aa0-14ca5d7a0e70
       responses:
         "200":
           description: Successful operation
@@ -101,14 +154,38 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserProfileAlbum"
+
+  /users/username/{userName}:
+    get:
+      tags:
+        - User
+      summary: Get specific user by username
+      operationId: getUserByName
+      parameters:
+        - name: userName
+          in: path
+          description: userName
+          required: true
+          schema:
+            type: string
+            example: arman
+      responses:
+        "200":
+          description: Return a user object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/UserProfileAlbum"
 
   /users/signup:
     post:
       tags:
         - User
       summary: Create user
-      description: This can only be done by the logged in user.
       operationId: createUser
       requestBody:
         required: true
@@ -119,33 +196,29 @@ paths:
               properties:
                 userName:
                   type: string
-                  example: "broto"
+                  example: broto
                 email:
                   type: string
-                  example: "broto@mantab.io"
+                  example: broto@mantab.io
                 password:
                   type: string
-                  example: "Pass123?"
+                  example: Pass123?
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-
   /users/login:
     post:
       tags:
         - User
       summary: User login
-      # description: This can only be done by the logged in user.
-      # operationId: createUser
       requestBody:
         content:
-          application/json: # Media type
-            schema: # Request body contents
-              $ref: "#/components/schemas/LoginJSON" # Reference to an object
-            examples: # Child of media type because we use $ref above
-              # Properties of a referenced object
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginJSON"
+            examples:
               userName arman:
                 value:
                   userName: arman
@@ -182,13 +255,11 @@ paths:
         default:
           description: successful operation
           content: {}
-
   /users/password:
     put:
       tags:
         - User
       summary: Change user pasword
-      description: This can only be done by the logged in user.
       operationId: changeUserPassword
       requestBody:
         required: true
@@ -199,44 +270,41 @@ paths:
               properties:
                 password:
                   type: string
-                  example: "Newpass123?"
+                  example: Newpass123?
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-
-  /users/profile/userid/{id}:
+  /users/profile/:
     get:
       tags:
         - Profile
-      summary: Gets profile by userId
-      # description:
-      # operationId: getUserById
+      summary: Get all profiles
       parameters:
-        - name: id
-          in: path
-          description: User ID
-          required: true
+        - name: skip
+          in: query
+          description: skip
+          required: false
           schema:
             type: integer
-            format: int64
-            example: 4
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Profile"
-
-  /users/profile/:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
     put:
       tags:
         - Profile
       summary: Update users own profile
-      # description: This can only be done by the logged in user.
-      # operationId: createUser
       requestBody:
         required: false
         content:
@@ -250,35 +318,25 @@ paths:
                   example: 4
                 name:
                   type: string
-                  example: "Arman Maulalan"
-                # address:
-                #   type: string
-                #   example: 'Jl. Pinang Kayu no.30 Bandung'
-                # profilephoto:
-                #   type: string
-                # coverphoto:
-                #   type: string
+                  example: Arman Maulalan
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-
-  /users/profile/username/{username}:
+  /users/profile/userid/{id}:
     get:
       tags:
         - Profile
-      summary: Gets specific profile by Username
-      # description:
-      # operationId: getUserById
+      summary: Gets profile by userId
       parameters:
-        - name: username
+        - name: id
           in: path
-          description: User name
+          description: User ID
           required: true
           schema:
             type: string
-            example: "alice"
+            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
       responses:
         "200":
           description: Successful operation
@@ -286,14 +344,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Profile"
-
+  /users/profile/username/{username}:
+    get:
+      tags:
+        - Profile
+      summary: Gets specific profile by Username
+      parameters:
+        - name: username
+          in: path
+          description: User name
+          required: true
+          schema:
+            type: string
+            example: alice
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
   /photos:
     get:
       tags:
         - Photo
       summary: Get all photos from database with limit
-      description: >
-        Get all photos from database with limit
       parameters:
         - name: limit
           in: query
@@ -303,13 +378,11 @@ paths:
             type: integer
             example: 500
       responses:
-        200:
+        "200":
           description: Successful operation
           content:
             application/json:
               schema:
-                # allOf:
-                # $ref: "#/components/schemas/SuccessResponseObject"
                 properties:
                   status:
                     type: integer
@@ -322,17 +395,14 @@ paths:
                       properties:
                         type: object
                       $ref: "#/components/schemas/Photo"
-                      # $ref: "#/components/schemas/Photo"
                       additionalProperties:
                         $ref: "#/components/schemas/PhotoDetail"
-        # Definition of all error statuses
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-
     put:
       tags:
         - Photo
@@ -344,19 +414,20 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: 0050580b-1a3e-452e-adb6-7618f36519a9
                 title:
                   type: string
-                  example: "This is a new title"
+                  example: This is a new title
                 description:
                   type: string
-                  example: "This should be a very long description"
-                # address:
-                #   type: string
-                #   example: 'Jl. Pinang Kayu no.30 Bandung'
-                # profilephoto:
-                #   type: string
-                # coverphoto:
-                #   type: string
+                  example: This should be a very long description
+                tag:
+                  type: string
+                  format: csv
+                  example: robot,kuda
       responses:
         "200":
           description: Successful operation
@@ -364,7 +435,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photo"
-
   /photos/user/{id}:
     get:
       tags:
@@ -376,9 +446,8 @@ paths:
           description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
-            example: 4
+            type: string
+            format: uuid
       responses:
         "200":
           description: Successful operation
@@ -386,7 +455,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photo"
-
   /photos/{photoId}:
     get:
       tags:
@@ -398,17 +466,16 @@ paths:
           description: photo ID
           required: true
           schema:
-            type: integer
-            format: int64
-            example: 4
+            type: string
+            format: uuid
+            example: 277dfc20-a881-4105-b344-1dfca911166b
       responses:
-        "200":
+        200:
           description: Successful operation
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Photo"
-
   /photos/upload:
     post:
       tags:
@@ -417,38 +484,31 @@ paths:
       description: Logged user only
       operationId: uploadePhoto
       requestBody:
-        required: true
         content:
           multipart/form-data:
             schema:
               type: object
               properties:
-                title:
-                  type: string
-                  example: "Standing & terbang"
-                description:
-                  type: string
-                  example: "Lagi liburan di Papua New Guinea"
                 photo:
-                  type: string
-                  format: binary
-                tag:
-                  type: string
-                  example: "sport,bunga,ikan,bekasi"
-
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  oneOf:
+                    - minItems: 1
+                      maxItems: 1
+                    - minItems: 3
+                      maxItems: 3
       responses:
         default:
           description: successful operation
           content: {}
       x-codegen-request-body-name: body
-
   /albums/galleryall:
     get:
       tags:
         - Album
       summary: Get one most updated album from all users, ordered by createdAt
-      description: >
-        Get one most updated album from all users, ordered by createdAt
       parameters:
         - name: skip
           in: query
@@ -472,14 +532,11 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
   /albums:
     post:
       tags:
         - Album
       summary: Create an album
-      description: >
-        Create an album
       requestBody:
         description: Create an album
         content:
@@ -506,12 +563,11 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
     get:
       tags:
         - Album
       summary: Get all albums in the database, with skip and take query, ordered by createdAt
-      description: >
+      description: |
         Get all albums in the database, with skip and take query, ordered by createdAt
       parameters:
         - name: skip
@@ -536,13 +592,10 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
     put:
       tags:
         - Album
       summary: Update detail of specific album, by album Id
-      description: >
-        Update detail of specific album, by album Id
       requestBody:
         description: Update detail of specific album, by album Id
         content:
@@ -565,14 +618,11 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
   /albums/id/{albumId}:
     get:
       tags:
         - Album
       summary: Get a specific album by album id, include its photos
-      description: >
-        Get a specific album by album id, include its photos
       parameters:
         - name: albumId
           in: path
@@ -590,14 +640,46 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/AlbumNested"
-
+  /albums/userid/{userId}:
+    get:
+      tags:
+        - Album
+      summary: Get all albums from specific Username
+      parameters:
+        - name: userId
+          in: path
+          description: userId
+          required: true
+          schema:
+            type: string
+            example: 4b6ddf52-40f9-4545-ab3a-bdd6eb44746b
+        - name: skip
+          in: query
+          description: skip
+          required: false
+          schema:
+            type: integer
+            example: 0
+        - name: take
+          in: query
+          description: take
+          required: false
+          schema:
+            type: integer
+            example: 100
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Album"
   /albums/username/{userName}:
     get:
       tags:
         - Album
       summary: Get all albums from specific Username
-      description: >
-        Get all albums from specific Username
       parameters:
         - name: userName
           in: path
@@ -628,43 +710,36 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
-
   /albums/search/username/{string}:
     get:
       tags:
         - Album
       summary: Search all albums whose username contain certain string
-      description: >
-        Search all albums whose username contain certain string
       parameters:
         - name: string
           in: path
-          description: username that containt string
+          description: username that contain string
           required: true
           schema:
             type: string
             example: arm
       responses:
-        "200":
+        200:
           description: Successful operation
           content:
             application/json:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
   /albums/search/title/{string}:
     get:
       tags:
         - Album
       summary: Search all albums by albums's name that contain certain string
-      description: >
-        Search all albums by albums's name that contain certain string
       parameters:
         - name: string
           in: path
-          description: album title that contain string 
+          description: album title that contain string
           required: true
           schema:
             type: string
@@ -677,126 +752,120 @@ paths:
               schema:
                 type: object
                 $ref: "#/components/schemas/Album"
-
+                # $ref: "#/components/examples/Coord"
 components:
-  # examples:
-  #   ObjectLoginByUserName:
-  #     value:
-  #       username: arman
-  #       password: Pass123?
-  # summary: A sample object
-  schemas:
-    LoginJSON: # Schema name
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-      example: # Object-level example
+  examples:
+    ObjectLoginByUserName:
+      value:
         username: arman
         password: Pass123?
+    skip:
+      value: 0
+    take:
+      value: 100
+  schemas:
+    GetAllUsers200:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 200
+        message:
+          type: string
+          example: Success
+        result:
+          # example:
+          # $ref: "#/components/schemas/ArrayOfUsers"
+          type: array
+          items:
+            type: object
+            anyOf:
+              - $ref: "#/components/schemas/User"
+              - $ref: "#/components/schemas/User"
+
     User:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
+          format: uuid
+          example: 7f3ed61f-cd69-44c4-8a6e-fd723ff896ec
         userName:
           type: string
+          example: kharefoot7
         email:
           type: string
+          format: email
+          example: mfudger7@hatena.ne.jp
         password:
           type: string
-          minLength: 8
-          maxLength: 254
+          example: $2a$10$71IM5uVMR5KE1skbUySVM.6ONjZ9wj1Rxq08FNRQjXiJSykqR445O
         role:
           type: string
+          example: USER
+        isActive:
+          type: boolean
+          example: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          example: 2022-03-06T23:16:15.850Z
         createdAt:
           type: string
           format: date-time
+          example: 2022-03-03T19:38:30.610Z
         updatedAt:
           type: string
           format: date-time
+          example: 2020-01-16T12:43:16.000Z
+
+    UserProfileAlbum:
+      type: object
+      properties:
+        items:
+          $ref: "#/components/schemas/User"
+      additionalProperties:
+        items:
+          profile:
+          type: object
+          $ref: "#/components/schemas/Profile"
+          album:
+            type: object
+            $ref: "#/components/schemas/Album"  
+
+
 
     Profile:
       type: object
+      title: Profile
       properties:
+        userId:
+          type: string
+          format: uuid
+          example: 7f3ed61f-cd69-44c4-8a6e-fd723ff896ec
         name:
           type: string
+          example: Harley Gaffer
         addres:
           type: string
+          example: 00 Fremont Pass
         profilePhoto:
           type: string
+          format: url
+          example: https://randomuser.me/api/portraits/men/27.jpg
         coverPhoto:
           type: string
-        userId:
-          type: integer
-          format: int64
+          format: url
+          example: https://picsum.photos/id/8/800/600
         createdAt:
           type: string
           format: date-time
+          example: 2020-03-28T11:37:03.000Z
         updatedAt:
           type: string
           format: date-time
-
-    Photo:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        description:
-          type: string
-        path:
-          type: string
-        userId:
-          type: integer
-          format: int64
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-
-    PhotoDetail:
-      type: object
-      properties:
-        photoId:
-          type: string
-        fileName:
-          type: string
-        originalName:
-          type: string
-        mimeType:
-          type: string
-        encoding:
-          type: string
-        size:
-          type: integer
-        isPrivate:
-          type: boolean
-        views:
-          type: integer
-        likes:
-          type: integer
-        downloaded:
-          type: integer
-        starRating:
-          type: integer
-        cameraMake:
-          type: string
-        shutterSpeed:
-          type: string
-        aperture:
-          type: string
-        focalLength:
-          type: number
-          format: float
-        iso:
-          type: integer
+          example: 2020-03-28T13:48:38.000Z
 
     Album:
       type: object
@@ -804,22 +873,127 @@ components:
         id:
           type: string
           format: uuid
+          example: a40568c5-174f-4b34-8f9c-e0dedeab0cd8
         title:
           type: string
+          example: Wrapsafe
         description:
           type: string
+          example: Inverse encompassing extranet
         coverPhotoId:
           type: string
+          format: uuid
+          example: 00771301-989b-4599-aed0-b1a64dc2d23c
         isPrivate:
           type: boolean
+          example: false
         isDownloadable:
           type: boolean
+          example: false
         createdAt:
           type: string
           format: date-time
+          example: 2021-05-11T03:44:35.000Z
         updatedAt:
           type: string
           format: date-time
+          example: 2021-05-11T05:56:10.000Z
+
+    Photo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 277dfc20-a881-4105-b344-1dfca911166b
+        title:
+          type: string
+          example: Amblyrhynchus cristatus
+        description:
+          type: string
+          example: Team-oriented real-time intranet
+        path:
+          type: string
+          format: url
+          example: https://picsum.photos/seed/28/800/600
+        userId:
+          type: string
+          format: uuid
+          example: 7f3ed61f-cd69-44c4-8a6e-fd723ff896ec
+        createdAt:
+          type: string
+          format: date-time
+          example: 2017-12-06T00:00:00.000Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2017-12-06T00:00:00.000Z
+
+
+    PhotoDetail:
+      type: object
+      properties:
+        photoId:
+          type: string
+          format: uuid
+          example: 277dfc20-a881-4105-b344-1dfca911166b
+        fileName:
+          type: string
+          example: 260d3b01-129c-4284-99a2-78a403041e9e
+        originalName:
+          type: string
+          example: Venenatis.png
+        mimeType:
+          type: string
+          example: image/png
+        encoding:
+          type: string
+          example: base64
+        size:
+          type: integer
+          example: 3390164
+        isPrivate:
+          type: boolean
+          example: false
+        views:
+          type: integer
+          example: 427
+        likes:
+          type: integer
+          example: 14
+        downloaded:
+          type: integer
+          example: 13
+        starRating:
+          type: integer
+          example: 5
+        cameraMake:
+          type: string
+          example: Ricoh
+        cameraModel:
+          type: string
+          example: Hasselblad
+        shutterSpeed:
+          type: string
+          example: 1/500
+        aperture:
+          type: string
+          example: 35 mm
+        focalLength:
+          type: string
+          example: 35 mm
+        iso:
+          type: integer
+          example: 800
+
+    PhotoIncludePhotoDetail:
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Photo'
+      additionalProperties:
+        anyOf:
+          - $ref: '#/components/schemas/PhotoDetail'
 
     AlbumNested:
       type: object
@@ -851,7 +1025,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-
     UpdateAlbumDetail:
       type: object
       properties:
@@ -868,7 +1041,6 @@ components:
           type: boolean
         isDownloadable:
           type: boolean
-
     SuccessResponseObject:
       type: object
       properties:
@@ -879,7 +1051,6 @@ components:
           type: string
         data:
           type: object
-
     SuccessResponseArray:
       type: object
       properties:
@@ -892,7 +1063,7 @@ components:
           type: array
           items:
             type: object
-
+      example:
     ErrorResponse:
       type: object
       properties:
@@ -903,3 +1074,13 @@ components:
           type: string
         message:
           type: string
+    LoginJSON:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+      example:
+        userName: maksi
+        password: Pass123?
