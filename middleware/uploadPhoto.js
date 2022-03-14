@@ -1,5 +1,6 @@
 const multer = require('multer');
 const sharp = require("sharp");
+var cloudinary = require('cloudinary')
 var exif = require('exif-reader');
 const fs = require('fs/promises')
 const path = require('path');
@@ -23,7 +24,9 @@ const storeOnDisk = multer.diskStorage({
             // check route name to decide the final folder to store
             // if (req.baseUrl.includes('photo')) finalPath = path.join(basePath, userDir, "photos")
             // if (req.baseUrl.includes('profile')) finalPath = path.join(basePath, userDir, "profile")
-            finalPath = path.join(basePath, 'tmp')
+
+            // finalPath = path.join(basePath, 'tmp')
+            finalPath = basePath
             await fs.mkdir(finalPath, { recursive: true })
             // if no error, callback will execute to create folder
             cb(null, finalPath);
@@ -97,8 +100,10 @@ const resizeImagesFromDisk = async (req, res, next) => {
                 const userDir = sprintf('%010s', userId)
                 let newPath = ``;
                 // check route name to decide the final folder to store
-                if (req.baseUrl.includes('photo')) newPath = path.join(basePath, userDir, "photos")
-                if (req.baseUrl.includes('profile')) newPath = path.join(basePath, userDir, "profile")
+                // if (req.baseUrl.includes('photo')) newPath = path.join(basePath, userDir, "photos")
+                // if (req.baseUrl.includes('profile')) newPath = path.join(basePath, userDir, "profile")
+                
+                newPath = path.join(basePath, userDir)
                 await fs.mkdir(newPath, { recursive: true })
                 winston.info(file.path)
                 const oldPath = file.path
@@ -136,16 +141,26 @@ const resizeImagesFromDisk = async (req, res, next) => {
                             // const fullNewPath = path.join(newPath, file.filename)
                             .toFile(path.join(newPath, file.filename))
                     })
-
-                    .then(result => {
+                    // .cloudinary.uploader.upload(newPath)
+                    .then(function (){
+                        return cloudinary.uploader.upload(path.join(newPath, file.filename), function(result) {
+                            return result
+                        })
+                    })
+                    .then(resultCloudinary => {
                         // winston.log('info', "Done!", result);
+
+                        // console.log(resultCloudinary)
+                        // delete temp file
                         fs.unlink(file.path)
-                        file.path = path.join(newPath, file.filename)
+                        // delete temp sharp file
+                        fs.rmdir(newPath, { recursive: true })
+                        console.log('newPath', newPath)
+                        file.path = resultCloudinary.secure_url
                         // file.path = `${newPath}/${file.filename}`
                         file.destination = newPath
-                        file.size = result.size
-
-
+                        file.size = resultCloudinary.bytes   
+                        file.cloudinary = resultCloudinary
                     })
             })
         );

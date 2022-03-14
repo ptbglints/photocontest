@@ -104,12 +104,12 @@ const uploadPhotoUser = async (req, res, next) => {
                 }
             } else if (description) {
                 if (description.length < 2) {
-                    photoDesc = generateSlug(15, { format: "sentence" })
+                    photoDesc = generateSlug(3, { format: "sentence" })
                 } else {
                     photoDesc = description
                 }
             } else {
-                photoDesc = generateSlug(15, { format: "sentence" })
+                photoDesc = generateSlug(3, { format: "sentence" })
             }
 
             let path = file.path // di sini kita sudah dapat fullpath string dari file yang diupload
@@ -118,6 +118,7 @@ const uploadPhotoUser = async (req, res, next) => {
 
             let option = {}
             option.data = {
+                id: file.cloudinary.asset_id,
                 title: photoTitle,
                 description: photoDesc,
                 path,
