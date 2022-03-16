@@ -18,7 +18,7 @@ enum Role {
 }
 
 model Membership {
-  id                             String      @id @default(uuid())
+  id                             String      @id @default(cuid())
   name                           String      @unique @db.VarChar(254)
   maxEntriesPerContest           Int
   maxContestEntry                BigInt
@@ -39,7 +39,7 @@ enum SupportType {
 }
 
 model User {
-  id                       String             @id @default(uuid())
+  id                       String             @id @default(cuid())
   userName                 String             @unique @db.VarChar(254)
   email                    String             @unique @db.VarChar(254)
   password                 String             @db.VarChar(254)
@@ -75,7 +75,7 @@ model UserFollowing {
 }
 
 model Profile {
-  userId       String   @id @default(uuid())
+  userId       String   @id @default(cuid())
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String?  @db.VarChar(254)
   address      String?
@@ -86,7 +86,7 @@ model Profile {
 }
 
 model Photo {
-  id                         String             @id @default(uuid())
+  id                         String             @id @default(cuid())
   title                      String?            @db.VarChar(254)
   description                String?
   path                       String             @unique
@@ -108,7 +108,7 @@ model Photo {
 
 model PhotoDetail {
   photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  photoId      String   @id @default(uuid())
+  photoId      String   @id @default(cuid())
   fileName     String   @unique
   originalName String
   mimeType     String
@@ -132,7 +132,7 @@ model PhotoDetail {
 }
 
 model Album {
-  id             String   @id @default(uuid())
+  id             String   @id @default(cuid())
   title          String
   description    String?
   coverPhotoId   String?
@@ -147,7 +147,7 @@ model Album {
 }
 
 model Tag {
-  id                String             @id @default(uuid())
+  id                String             @id @default(cuid())
   name              String             @unique @db.VarChar(64)
   photos            Photo[]
   albums            Album[]
@@ -156,7 +156,7 @@ model Tag {
 }
 
 model CommunityContest {
-  id                  String           @id @default(uuid())
+  id                  String           @id @default(cuid())
   createdBy           User?            @relation(fields: [createdById], references: [id])
   createdById         String?
   title               String
@@ -184,7 +184,7 @@ model CommunityContest {
 }
 
 model PremiumContest {
-  id                  String           @id @default(uuid())
+  id                  String           @id @default(cuid())
   title               String
   constestCathegory   ContestCathegory @relation(fields: [constestCathegoryId], references: [id], onDelete: Cascade)
   constestCathegoryId String
@@ -217,7 +217,7 @@ model PremiumContest {
 }
 
 model ContestCathegory {
-  id               String             @id @default(uuid())
+  id               String             @id @default(cuid())
   name             String             @db.VarChar(64)
   CommunityContest CommunityContest[]
   PremiumContest   PremiumContest[]
@@ -247,7 +247,7 @@ model ContestCathegory {
 // Technique
 
 model ExpertJudge {
-  id              String           @id @default(uuid())
+  id              String           @id @default(cuid())
   name            String           @db.VarChar(64)
   caption         String           @db.VarChar(64)
   profilePhotoUrl String
@@ -258,10 +258,10 @@ model ExpertJudge {
 }
 
 // model PhotographyAwardContest {
-//   id                  String   @id @default(uuid())
+//   id                  String   @id @default(cuid())
 //   title               String
-//   contestTypeId       String   @default(uuid())
-//   constestCathegoryId String   @default(uuid())
+//   contestTypeId       String   @default(cuid())
+//   constestCathegoryId String   @default(cuid())
 //   startAt             DateTime @default(now())
 //   endAt               DateTime
 //   judgeStartAt        DateTime
