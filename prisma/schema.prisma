@@ -160,8 +160,8 @@ model CommunityContest {
   createdBy           User?            @relation(fields: [createdById], references: [id])
   createdById         String?
   title               String
-  constestCathegory   ContestCathegory @relation(fields: [constestCathegoryId], references: [id], onDelete: Cascade)
-  constestCathegoryId String
+  constestCategory   ContestCategory @relation(fields: [constestCategoryId], references: [id], onDelete: Cascade)
+  constestCategoryId String
   startAt             DateTime         @default(now())
   endAt               DateTime
   ratingStartAt       DateTime
@@ -186,8 +186,8 @@ model CommunityContest {
 model PremiumContest {
   id                  String           @id @default(cuid())
   title               String
-  constestCathegory   ContestCathegory @relation(fields: [constestCathegoryId], references: [id], onDelete: Cascade)
-  constestCathegoryId String
+  constestCategory   ContestCategory @relation(fields: [constestCategoryId], references: [id], onDelete: Cascade)
+  constestCategoryId String
   startAt             DateTime         @default(now())
   endAt               DateTime
   judgeStartAt        DateTime
@@ -216,7 +216,7 @@ model PremiumContest {
   updatedAt           DateTime         @default(now())
 }
 
-model ContestCathegory {
+model ContestCategory {
   id               String             @id @default(cuid())
   name             String             @db.VarChar(64)
   CommunityContest CommunityContest[]
