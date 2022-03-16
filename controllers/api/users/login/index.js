@@ -54,7 +54,17 @@ const login = async (req, res, next) => {
 
         // generate tokens
         const accessToken = jwt.GenerateAccessToken(tokenObj)
+        let decoded;
+        decoded = jwt.verifyAccessToken(accessToken)
+        console.log({acces: decoded})
+        console.log('Access Expires: %s', new Date(decoded.exp*1000));
+        console.log('Access Expires: %s', new Date(decoded.exp*1000) - new Date(Date.now()));
+
         const refreshToken = jwt.GenerateRefreshToken(tokenObj)
+        decoded = jwt.verifyRefreshToken(refreshToken)
+        console.log({refresh: decoded})
+        console.log('Refresh Expires: %s', new Date(decoded.exp*1000));
+        console.log('Refresh Expires: %s', new Date(decoded.exp*1000) - new Date(Date.now()));
 
         // send tokens using using cookies
         // https://expressjs.com/en/api.html#res.cookie

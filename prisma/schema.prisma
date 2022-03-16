@@ -17,19 +17,61 @@ enum Role {
   USER
 }
 
+model Membership {
+  id                             String      @id @default(uuid())
+  name                           String      @unique @db.VarChar(254)
+  maxEntriesPerContest           Int
+  maxContestEntry                BigInt
+  discountPhotoAward             Decimal
+  canCreateOwnContest            Boolean
+  canEnterSubscriberOnlyContests Boolean
+  isFlagNotOnBrief               Boolean
+  canGetDiscountsWithTopBrands   Boolean
+  canCreateOwnCustomUrl          Boolean
+  supportType                    SupportType
+  user                           User[]
+  isActive                       Boolean     @default(false)
+}
+
+enum SupportType {
+  BASIC
+  PRIORITY
+}
+
 model User {
-  id          String   @id @default(uuid())
-  userName    String   @unique @db.VarChar(254)
-  email       String   @unique @db.VarChar(254)
-  password    String   @db.VarChar(254)
-  role        Role     @default(USER)
-  isActive    Boolean  @default(false)
-  profile     Profile?
-  photos      Photo[]
-  albums      Album[]
-  lastLoginAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  id                       String             @id @default(uuid())
+  userName                 String             @unique @db.VarChar(254)
+  email                    String             @unique @db.VarChar(254)
+  password                 String             @db.VarChar(254)
+  role                     Role               @default(USER)
+  membership               Membership?        @relation(fields: [membershipId], references: [id])
+  membershipId             String?
+  isActive                 Boolean            @default(false)
+  profile                  Profile?
+  copyright                String?
+  about                    String?
+  rankingPoints            BigInt             @default(0)
+  photos                   Photo[]            @relation("photos")
+  likedPhotos              Photo[]            @relation("likedphotos")
+  albums                   Album[]
+  followers                UserFollower[]
+  followings               UserFollowing[]
+  createdCommunityContests CommunityContest[]
+  lastLoginAt              DateTime           @default(now())
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @default(now())
+}
+
+model UserFollower {
+  id     String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+}
+
+model UserFollowing {
+  id     String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }
 
 model Profile {
@@ -44,39 +86,49 @@ model Profile {
 }
 
 model Photo {
-  id          String       @id @default(uuid())
-  title       String?      @db.VarChar(254)
-  description String?
-  path        String       @unique
-  photoDetail PhotoDetail?
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  albums      Album[]
-  tags        Tag[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
-
+  id                         String             @id @default(uuid())
+  title                      String?            @db.VarChar(254)
+  description                String?
+  path                       String             @unique
+  photoDetail                PhotoDetail?
+  user                       User               @relation("photos", fields: [userId], references: [id], onDelete: Cascade)
+  userId                     String
+  albums                     Album[]
+  tags                       Tag[]
+  likeBy                     User[]             @relation("likedphotos")
+  entryCommunityContests     CommunityContest[] @relation("entryCommunityContest")
+  shortlistCommunityContests CommunityContest[] @relation("shortlistCommunityContest")
+  winnerCommunityContests    CommunityContest[] @relation("winnerCommunityContest")
+  entryPremiumContests       PremiumContest[]   @relation("entryPremiumContest")
+  shortlistPremiumContests   PremiumContest[]   @relation("shortlistPremiumContest")
+  winnerPremiumContests      PremiumContest[]   @relation("winnerPremiumContest")
+  createdAt                  DateTime           @default(now())
+  updatedAt                  DateTime           @default(now())
 }
 
 model PhotoDetail {
-  photo        Photo   @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  photoId      String  @id @default(uuid())
-  fileName     String  @unique
+  photo        Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  photoId      String   @id @default(uuid())
+  fileName     String   @unique
   originalName String
   mimeType     String
   encoding     String
   size         Int
-  isPrivate    Boolean @default(false)
-  views        Int?    @default(0)
-  likes        Int?    @default(0)
-  downloaded   Int?    @default(0)
-  starRating   Float?  @default(0)
+  width        Int?
+  height       Int?
+  isPrivate    Boolean  @default(false)
+  views        Int?     @default(0)
+  likes        Int?     @default(0)
+  downloaded   Int?     @default(0)
+  starRating   Float?   @default(0)
   cameraMake   String?
   cameraModel  String?
   shutterSpeed String?
   aperture     String?
   focalLength  String?
   iso          Int?
+  lat          Decimal?
+  lon          Decimal?
 }
 
 model Album {
@@ -95,18 +147,136 @@ model Album {
 }
 
 model Tag {
-  id     String  @id @default(uuid())
-  name   String  @unique @db.VarChar(64)
-  photos Photo[]
-  albums Album[]
+  id                String             @id @default(uuid())
+  name              String             @unique @db.VarChar(64)
+  photos            Photo[]
+  albums            Album[]
+  communityContests CommunityContest[]
+  premiumContests   PremiumContest[]
 }
 
-// model Contest {
-//   id Int @id @default(autoincrement())
-//   name String @db.VarChar(255)
-//   description String
-//   startdate DateTime @default(now())
-//   enddate DateTime
-//   winneruserid Int[]
-//   winnerphotoid Photo[]
+model CommunityContest {
+  id                  String           @id @default(uuid())
+  createdBy           User?            @relation(fields: [createdById], references: [id])
+  createdById         String?
+  title               String
+  constestCathegory   ContestCathegory @relation(fields: [constestCathegoryId], references: [id], onDelete: Cascade)
+  constestCathegoryId String
+  startAt             DateTime         @default(now())
+  endAt               DateTime
+  ratingStartAt       DateTime
+  ratingEndtAt        DateTime
+  coverPhotoPath      String
+  isJudged            Boolean          @default(false)
+  brief               String?
+  entryPhoto          Photo?           @relation("entryCommunityContest", fields: [entryPhotoId], references: [id])
+  entryPhotoId        String?
+  shortlistPhoto      Photo?           @relation("shortlistCommunityContest", fields: [shortlistPhotoId], references: [id])
+  shortlistPhotoId    String?
+  winnerPhoto         Photo?           @relation("winnerCommunityContest", fields: [winnerPhotoId], references: [id])
+  winnerPhotoId       String?
+  tags                Tag[]
+  likes               Int?             @default(0)
+  isActive            Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @default(now())
+
+}
+
+model PremiumContest {
+  id                  String           @id @default(uuid())
+  title               String
+  constestCathegory   ContestCathegory @relation(fields: [constestCathegoryId], references: [id], onDelete: Cascade)
+  constestCathegoryId String
+  startAt             DateTime         @default(now())
+  endAt               DateTime
+  judgeStartAt        DateTime
+  judgeEndAt          DateTime
+  coverPhotoPath      String
+  isFreeEntry         Boolean          @default(false)
+  isExpertJudged      Boolean          @default(false)
+  expertJudges        ExpertJudge[]
+  isCrowdVoted        Boolean          @default(false)
+  isRanked            Boolean          @default(false)
+  isAwarded           Boolean          @default(false)
+  brief               String?
+  briefDetail         String?
+  prizeDetail         String?
+  howItWorks          String?
+  entryPhoto          Photo?           @relation("entryPremiumContest", fields: [entryPhotoId], references: [id])
+  entryPhotoId        String?
+  shortlistPhoto      Photo?           @relation("shortlistPremiumContest", fields: [shortlistPhotoId], references: [id])
+  shortlistPhotoId    String?
+  winnerPhoto         Photo?           @relation("winnerPremiumContest", fields: [winnerPhotoId], references: [id])
+  winnerPhotoId       String?
+  tags                Tag[]
+  likes               Int?             @default(0)
+  isActive            Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @default(now())
+}
+
+model ContestCathegory {
+  id               String             @id @default(uuid())
+  name             String             @db.VarChar(64)
+  CommunityContest CommunityContest[]
+  PremiumContest   PremiumContest[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+}
+
+// Landscape
+// Travel
+// Animals
+// Architecture
+// Portrait
+// Street
+// Documentary
+// Waterscape
+// Still life
+// Nature
+// Night
+// Food
+// Sport
+// Wildlife
+// Nude
+// Abstract
+// Macro
+// Black & white
+// General
+// Technique
+
+model ExpertJudge {
+  id              String           @id @default(uuid())
+  name            String           @db.VarChar(64)
+  caption         String           @db.VarChar(64)
+  profilePhotoUrl String
+  biography       String
+  urls            String[]
+  JudgePhotoUrls  String[]
+  PremiumContest  PremiumContest[]
+}
+
+// model PhotographyAwardContest {
+//   id                  String   @id @default(uuid())
+//   title               String
+//   contestTypeId       String   @default(uuid())
+//   constestCathegoryId String   @default(uuid())
+//   startAt             DateTime @default(now())
+//   endAt               DateTime
+//   judgeStartAt        DateTime
+//   judgeEndAt          DateTime
+//   announceDate        DateTime
+//   coverPhotoPath      String
+//   isFreeEntry         Boolean  @default(true)
+//   isExpertJudged      Boolean  @default(false)
+//   isCrowdVoted        Boolean  @default(false)
+//   isRanked            Boolean  @default(false)
+//   isAwarded           Boolean  @default(false)
+//   awardAmount         Decimal  @db.Money
+//   brief               String
+//   briefDetail         String
+//   prizeDetail         String
+//   howItWorks          String
+//   Photo               Photo[]
 // }

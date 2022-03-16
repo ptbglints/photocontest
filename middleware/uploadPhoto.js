@@ -95,19 +95,26 @@ const resizeImagesFromDisk = async (req, res, next) => {
             req.files.map(async file => {
                 // const filename = file.originalname.replace(/\..+$/, "");
                 // const newFilename = `bezkoder-${filename}-${Date.now()}.jpeg`;
-                const userId = req.user.id;
+                const userId = req.user.userName;
                 const basePath = './public/tmp'
-                const userDir = sprintf('%010s', userId)
-                let newPath = ``;
+                // const userDir = sprintf('%010s', userId)
+                const userDir = userId
+
+                const projectName = process.env.PROJECT_NAME
+                let storePath = '';
                 // check route name to decide the final folder to store
-                // if (req.baseUrl.includes('photo')) newPath = path.join(basePath, userDir, "photos")
-                // if (req.baseUrl.includes('profile')) newPath = path.join(basePath, userDir, "profile")
-                
+                if (req.baseUrl.includes('photo')) storePath = path.join(projectName, userDir, "photos")
+                if (req.baseUrl.includes('profile')) storePath = path.join(projectName, userDir, "profile")
+
+                storePath = storePath.split(path.sep).join(path.posix.sep)
+
+                let newPath = ``;
+
                 newPath = path.join(basePath, userDir)
                 await fs.mkdir(newPath, { recursive: true })
                 winston.info(file.path)
                 const oldPath = file.path
-                const image = await sharp(oldPath)
+                const image = sharp(oldPath)
                 await image
                     .metadata()
                     .then(function (metadata) {
@@ -142,8 +149,8 @@ const resizeImagesFromDisk = async (req, res, next) => {
                             .toFile(path.join(newPath, file.filename))
                     })
                     // .cloudinary.uploader.upload(newPath)
-                    .then(function (){
-                        return cloudinary.uploader.upload(path.join(newPath, file.filename), function(result) {
+                    .then(function () {
+                        return cloudinary.v2.uploader.upload(path.join(newPath, file.filename), { folder: storePath }, function (result) {
                             return result
                         })
                     })
@@ -159,7 +166,7 @@ const resizeImagesFromDisk = async (req, res, next) => {
                         file.path = resultCloudinary.secure_url
                         // file.path = `${newPath}/${file.filename}`
                         file.destination = newPath
-                        file.size = resultCloudinary.bytes   
+                        file.size = resultCloudinary.bytes
                         file.cloudinary = resultCloudinary
                     })
             })
