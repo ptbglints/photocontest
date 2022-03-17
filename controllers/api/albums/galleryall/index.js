@@ -20,25 +20,47 @@ const galleryAll = async (req, res, next) => {
 
         if (take > 100) take = 100
 
-        const result = await prisma.$queryRaw
-        `
-        SELECT
-        album.id as "albumId", "updatedAt",
-        title, description, path, album."userId",
-        name, address, "profilePhoto", "coverPhoto"
-        FROM "Album" as album
-        INNER JOIN
-        (select "userId", max("updatedAt") as bob from "Album" group by "userId") AS latest
-        ON album."updatedAt" = latest."bob"
-        INNER JOIN
-        (select "userId", name, address, "profilePhoto", "coverPhoto" from "Profile") AS profile
-        ON album."userId" = profile."userId"
-        INNER JOIN
-        (select "Photo".id, path from "Photo") AS photo
-        ON album."coverPhotoId" = photo.id
-        ORDER BY album."updatedAt" DESC
-        OFFSET ${skip} LIMIT ${take};
-        `
+        // const result = await prisma.$queryRaw
+        // `
+        // SELECT
+        // album.id as "albumId", "updatedAt",
+        // title, description, path, album."userId",
+        // name, address, "profilePhoto", "coverPhoto"
+        // FROM "Album" as album
+        // INNER JOIN
+        // (select "userId", max("updatedAt") as bob from "Album" group by "userId") AS latest
+        // ON album."updatedAt" = latest."bob"
+        // INNER JOIN
+        // (select "userId", name, address, "profilePhoto", "coverPhoto" from "Profile") AS profile
+        // ON album."userId" = profile."userId"
+        // INNER JOIN
+        // (select "Photo".id, path from "Photo") AS photo
+        // ON album."coverPhotoId" = photo.id
+        // ORDER BY album."updatedAt" DESC
+        // OFFSET ${skip} LIMIT ${take};
+        // `
+
+        const result = await Album.findMany({
+            where: {
+                coverPhotoId: {
+                    not: null
+                }
+            },
+            distinct: ['userId'],
+            orderBy: {
+                updatedAt: 'desc',
+            },
+            include: {
+                // id: true,
+                // userId: true,
+                photos: true,
+                _count: {
+                    select: { photos: true }
+                }
+            },
+            skip: 0,
+            take: 100 
+        })
 
         req.result = result
         next()

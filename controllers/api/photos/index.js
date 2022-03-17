@@ -1,7 +1,7 @@
 const { Photo, User, prisma } = require('../../../model')
 const { verifyJWT } = require('../../../middleware/authJwt')
 const uploadPhoto = require('../../../middleware/uploadPhoto')
-const { modifyImagePath } = require('../../../middleware/modifyImagePath')
+const { modifyImagePath, modifyImagePath2ndLayer } = require('../../../middleware/modifyImagePath')
 const { generateSlug, totalUniqueSlugs } = require("random-word-slugs");
 
 // helper function
@@ -104,12 +104,12 @@ const uploadPhotoUser = async (req, res, next) => {
                 }
             } else if (description) {
                 if (description.length < 2) {
-                    photoDesc = generateSlug(15, { format: "sentence" })
+                    photoDesc = generateSlug(3, { format: "sentence" })
                 } else {
                     photoDesc = description
                 }
             } else {
-                photoDesc = generateSlug(15, { format: "sentence" })
+                photoDesc = generateSlug(3, { format: "sentence" })
             }
 
             let path = file.path // di sini kita sudah dapat fullpath string dari file yang diupload
@@ -118,6 +118,7 @@ const uploadPhotoUser = async (req, res, next) => {
 
             let option = {}
             option.data = {
+                id: file.cloudinary.asset_id,
                 title: photoTitle,
                 description: photoDesc,
                 path,
@@ -226,7 +227,7 @@ const getAllPhotosInDatabaseWithLimit = async (req, res, next) => {
 }
 
 //API to get all photos from a specific user
-const getAllPhotoUser = async (req, res, next) => {
+const getPhotosByUserId = async (req, res, next) => {
     try {
         const id = req.params.id
         let { skip, take } = req.query
@@ -237,20 +238,62 @@ const getAllPhotoUser = async (req, res, next) => {
         take = parseInt(take)
 
         if (take > 100) take = 100
-        let option = {}
-        option.skip = skip
-        option.take = take
 
-        option.where = { userId: id }
-        option.include = { tags: true, albums: true }
-        let result = await Photo.findMany(option)
-        const count = await Photo.count()
+        let result = await Photo.findMany({
+            skip,
+            take,
+            where: { userId: id },        
+        })
+
+        let count = await Photo.count({
+            where: { userId: id },        
+        })
+        // console.log('count', count)
         req.result = result
+        req.result.count = count
         next()
     } catch (err) {
         next(err)
     }
 }
+
+// //API to get all photos from a specific user
+// const getPhotosByUserId = async (req, res, next) => {
+//     try {
+//         const id = req.params.id
+//         let { skip, take } = req.query
+//         if (!skip) skip = 0
+//         if (!take) take = 100
+
+//         skip = parseInt(skip)
+//         take = parseInt(take)
+
+//         if (take > 100) take = 100
+//         let option = {}
+//         option.skip = skip
+//         option.take = take
+//         // option._count = {
+//         //     id: true
+//         // }
+
+//         option.where = { userId: id }
+//         option.include = {
+//             // _count: true,
+//             // id: true,            
+//             tags: true,
+//             albums: true
+//         }
+//         // option.select = {
+//         //     _count: true,
+//         // }
+//         let result = await Photo.findMany(option)
+//         const count = await Photo.count()
+//         req.result = result
+//         next()
+//     } catch (err) {
+//         next(err)
+//     }
+// }
 
 //API to get a spesific photos from a specific user
 const getOnePhotoUser = async (req, res, next) => {
@@ -306,8 +349,8 @@ module.exports = routes => {
     )
 
     routes.get('/user/:id',
-        getAllPhotoUser,
-        modifyImagePath
+        getPhotosByUserId,
+        // modifyImagePath
     )
     routes.get('/:photoId',
         getOnePhotoUser,

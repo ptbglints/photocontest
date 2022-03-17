@@ -85,7 +85,7 @@ function modifyProfilePhotoPath(req, res, next) {
         // If not an array, then it must be an object.
         // Check for empty object
         else if (Object.keys(resultObj).length > 0) {
-            console.log('resultObj must be an Object')
+            // console.log('resultObj must be an Object')
             if (resultObj[objKey]) {
                 let photoPath = resultObj[objKey]
                 if (photoPath !== null && !photoPath.match(/http/i)) {

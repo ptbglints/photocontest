@@ -19,6 +19,8 @@ let refreshExpire = process.env.REFRESH_TOKEN_EXPIRE
 let activationSecret = process.env.ACTIVATION_TOKEN_SECRET
 let activationExpire = process.env.ACTIVATION_TOKEN_EXPIRE
 
+console.log(accesExpire, refreshExpire, activationExpire)
+
 const GenerateAccessToken = (obj) => {
     return jwt.sign(obj, accessSecret, {
         algorithm: 'HS256',
